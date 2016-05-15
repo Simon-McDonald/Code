@@ -7,7 +7,7 @@
 
 #include "_Shape.h"
 
-CLASS_PRIVATE_LINKING(Shape)
+CLASS_PRIVATE_LINKING(Shape, Shape_METHODS)
 
 void translate (void *self, Vector2D translation) {
 	ShapeInst *_object = self;

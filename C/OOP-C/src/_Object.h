@@ -10,25 +10,24 @@
 
 #include "Object.h"
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 
-#define Object_VARIABLES(VARIABLE)
-CLASS_PRIVATE_INTERFACE(Object)
+#define Object_VARIABLES(VARIABLE) // contains no new variables
 
-int equals (void *self, void *other);
-void print (void *self, FILE *filePtr);
+CLASS_PRIVATE_INTERFACE(Object, Root)
 
-void * objectCtor (void *self, va_list *args);
-void objectDtor (void *self);
-int objectEquals (void *self, void *other);
-void objectPrint (void *self, FILE *filePtr);
+// helper macro, MUST be after CLASS_PRIVATE_INTERFACE
+#define getClass(classInst) ((ObjectInst *) classInst)->class
 
-/*struct _ObjectInst {
-	Class *class;
-};
+void *copy(void *self);
+int equals(void *self, void *other);
+void print(void *self, FILE *filePtr);
 
-extern const Class _ObjectClass;*/
+void *objectCtor(void *self, va_list *args);
+void objectDtor(void *self);
+void *objectCopy(void *self);
+int objectEquals(void *self, void *other);
+void objectPrint(void *self, FILE *filePtr);
 
 #endif /* _OBJECT_H_ */

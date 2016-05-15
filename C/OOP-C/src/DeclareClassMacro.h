@@ -8,20 +8,54 @@
 #ifndef DECLARECLASSMACRO_H_
 #define DECLARECLASSMACRO_H_
 
+/*****************************************************************************/
+/* Base definitions                                                          */
+/*****************************************************************************/
+
+/*
+ * Class type used to store static information about each class including name,
+ * constructors, destructors etc.
+ */
 typedef const void *Class;
 
+/*
+ * Class instance of the Base class from which all objects inherit. The base
+ * instance contains no fields and is used to terminate macro construction.
+ */
 struct _RootInst {
-	//Class *const class;
 };
 typedef struct _RootInst RootInst;
 
-#define _VAR_CAT(start,end) start##end
-#define _VAR_CAT_WRAP(start,end) _VAR_CAT(start,end)
-#define _VAR_CAT2(start,end) start##end
+/*
+ * Method construction of the base class. The Base class has no methods.
+ */
+//#define Root_METHODS(PUBLIC, PRIVATE, OVERRIDE, STATIC)
 
-#define Root_METHODS(PUBLIC, PRIVATE, OVERRIDE, STATIC)
+/*****************************************************************************/
+/* Misc. Helper Macros                                                       */
+/*****************************************************************************/
 
 /*
+ * Concatenate tokens.
+ */
+#define _VAR_CAT(start,end) start##end
+
+/*
+ * Concatenate and expand tokens.
+ */
+#define _VAR_CAT_WRAP(start,end) _VAR_CAT(start,end)
+//#define _VAR_CAT_WRAP2(start,end) _VAR_CAT_WRAP(start,end)
+//#define _VAR_CAT2(start,end) start##end
+
+/*****************************************************************************/
+/* Public Class Interface                                                    */
+/*****************************************************************************/
+
+/*
+ * CLASS_INTERFACE(className) expands to the public class interface and should
+ * be placed in a file such as className.h. The following is generated with
+ * CLASS_INTERFACE(Shape).
+ *
 struct _ShapeInst;
 typedef struct _ShapeInst ShapeInst;
 
@@ -34,10 +68,16 @@ struct _ShapeRef {
 typedef struct _ShapeRef ShapeRef;
 extern const ShapeRef *const Shape;
  */
-#define _INTERFACE_PUBLIC(method_type, method_name, method_instance) method_type method_name;
+
+/*
+ * The following macros should not be used directly.
+ */
+#define _INTERFACE_PUBLIC(method_type, method_name, method_instance) \
+	method_type method_name;
 #define _INTERFACE_PRIVATE(method_type, method_name, method_instance)
 #define _INTERFACE_OVERRIDE(method_name, method_instance)
-#define _INTERFACE_STATIC(method_type, method_name, method_instance) method_type method_name;
+#define _INTERFACE_STATIC(method_type, method_name, method_instance) \
+	method_type method_name;
 
 #define CLASS_INTERFACE(class) \
 	extern Class const class##Class; \
@@ -46,12 +86,23 @@ extern const ShapeRef *const Shape;
 	typedef struct _##class##Inst class##Inst; \
 	 \
 	struct _##class##Ref { \
-		_VAR_CAT(class,_METHODS)(_INTERFACE_PUBLIC, _INTERFACE_PRIVATE, _INTERFACE_OVERRIDE, _INTERFACE_STATIC) \
+		_VAR_CAT(class,_METHODS)(_INTERFACE_PUBLIC, \
+								 _INTERFACE_PRIVATE, \
+								 _INTERFACE_OVERRIDE, \
+								 _INTERFACE_STATIC) \
 	}; \
 	typedef const struct _##class##Ref class##Ref; \
 	extern class##Ref class;
 
+/*****************************************************************************/
+/* Private Class Interface                                                   */
+/*****************************************************************************/
+
 /*
+ * CLASS_PRIVATE_INTERFACE(className) expands to the public class interface and
+ * should be placed in a file such as className.h. The following is generated
+ * with CLASS_INTERFACE(Shape).
+ *
 struct _ShapeInst {
 	ObjectInst _;
 	Vector2D centreCoord;
@@ -60,7 +111,9 @@ extern const ShapeDef _ShapeClass;
  */
 #define CLASS_DEFINE_VARIABLES(type, name) type name;
 
-#define CLASS_PRIVATE_INTERFACE(classType) \
+#define EXPAND(bla) bla
+
+#define CLASS_PRIVATE_INTERFACE(classType, a) \
 	struct _##classType##Inst { \
 		Class class; \
 		_VAR_CAT_WRAP(classType##_PARENT,Inst) _; \
@@ -105,6 +158,9 @@ const Class *ShapeClass = &_ShapeClass;
  */
 /*  .##method_name = method_name, */
 
+#define parent_METHODS(class, PUBLIC, PRIVATE, OVERRIDE, STATIC) \
+	_VAR_CAT_WRAP(class##_PARENT,_METHODS)(PUBLIC, PRIVATE, OVERRIDE, STATIC)
+
 #define _LINKING_PUBLIC(method_type, method_name, method_instance) method_name,
 #define _LINKING_PRIVATE(method_type, method_name, method_instance)
 #define _LINKING_OVERRIDE(method_name, method_instance)
@@ -128,60 +184,33 @@ const Class *ShapeClass = &_ShapeClass;
 
 /* _VAR_CAT(class, _VARIABLES)(_LINKING_VARIABLES_DEF) \ */
 
-#define CLASS_PRIVATE_LINKING(class) \
+#define CLASS_PRIVATE_LINKING(class, a) \
 	const class##Ref class = { \
-		_VAR_CAT(class,_METHODS)(_LINKING_PUBLIC, _LINKING_PRIVATE, _LINKING_OVERRIDE, _LINKING_STATIC) \
+		_VAR_CAT(class,_METHODS)(_LINKING_PUBLIC, \
+								 _LINKING_PRIVATE, \
+								 _LINKING_OVERRIDE, \
+								 _LINKING_STATIC) \
 	}; \
 	 \
 	struct _##class##Def { \
 		char *name; \
 		Class super; \
 		size_t size; \
-		_VAR_CAT(class,_METHODS)(_LINKING_DECLARE_PUBLIC, _LINKING_DECLARE_PRIVATE, _LINKING_DECLARE_OVERRIDE, _LINKING_DECLARE_STATIC) \
+		_VAR_CAT(class,_METHODS)(_LINKING_DECLARE_PUBLIC, \
+								 _LINKING_DECLARE_PRIVATE, \
+								 _LINKING_DECLARE_OVERRIDE, \
+								 _LINKING_DECLARE_STATIC) \
 	}; \
 	 \
 	const class##Def _##class##Class = { \
 		#class, \
 		NULL, \
 		sizeof (class##Inst), \
-		_VAR_CAT(class,_METHODS)(_LINKING_DEFINE_PUBLIC, _LINKING_DEFINE_PRIVATE, _LINKING_DEFINE_OVERRIDE, _LINKING_DEFINE_STATIC) \
+		_VAR_CAT(class,_METHODS)(_LINKING_DEFINE_PUBLIC, \
+								 _LINKING_DEFINE_PRIVATE, \
+								 _LINKING_DEFINE_OVERRIDE, \
+								 _LINKING_DEFINE_STATIC) \
 	}; \
 	Class const class##Class = &_##class##Class;
-	/*	parent(...) \ 	methods(...) \*/
-//////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-/*struct _Vector2D {
-	float x;
-	float y;
-};
-typedef struct _Vector2D Vector2D;
-
-
-
-
-
-
-
-typedef void (*moveType) (void*, Vector2D);
-typedef void (*getCoordType) (void*);
-
-
-#define pointDefinition(NEW, OVERRIDE, STATIC) \
-	NEW()*/
-
-
-
-
 
 #endif /* DECLARECLASSMACRO_H_ */

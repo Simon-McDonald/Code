@@ -7,64 +7,24 @@
 
 #define CLASS_DEFINITION
 
+#include <assert.h>
 #include <stdlib.h>
 
 #include "_Object.h"
 
-CLASS_PRIVATE_LINKING(Object)
+CLASS_PRIVATE_LINKING(Object, Object_METHODS)
 
-int equals (void *self, void *other) {
-	ObjectInst *_object = self;
-	ObjectDef *_class = _object->class;
+// call the supers constructor, maybe need destructors also
+/*struct Object * super_new (const void * _class,
+	const void * _self, va_list * app) {
+	const struct Class * superclass = super(_class);
+	assert(superclass->new.method);
+	return
+	((struct Object * (*) ()) superclass->new.method)
+	(_self, app);
+}*/
 
-	return _class->equals (self, other);
-}
-
-void print (void *self, FILE *filePtr) {
-	ObjectInst *_object = self;
-	ObjectDef *_class = _object->class;
-
-	_class->print (self, filePtr);
-}
-
-
-
-/*int equals (void *self, void *other);
-void print (void *self, FILE *filePtr);
-
-ObjectRef Object = {
-	.Equals = equals,
-	.Print = print
-};
-
-void * objectCtor (void *self, va_list *args);
-void objectDtor (void *self);
-int objectEquals (void *self, void *other);
-void objectPrint (void *self, FILE *filePtr);
-
-struct _ObjectDef {
-	char *name;
-	Class *const super;
-	size_t size;
-	void * (*ctor) (void *self, va_list *args);
-	void (*dtor) (void *self);
-	int (*equals) (void *self, void *other);
-	void (*print) (void *self, FILE *filePtr);
-};
-typedef struct _ObjectDef ObjectDef;
-
-const ObjectDef _ObjectClass = {
-	.name = "Object",
-	.super = NULL,
-	.size = sizeof (ObjectInst),
-	.ctor = objectCtor,
-	.dtor = objectDtor,
-	.equals = objectEquals,
-	.print = objectPrint
-};
-const Class *ObjectClass = &_ObjectClass;*/
-
-void * new (Class classInst, ...) {
+void *new(Class classInst, ...) {
 	ObjectDef *_class = classInst;
 	ObjectInst *_object;
 	va_list ap;
@@ -80,7 +40,7 @@ void * new (Class classInst, ...) {
 	return _object;
 }
 
-void delete (void *self) {
+void delete(void *self) {
 	ObjectInst *_object = self;
 	ObjectDef *_class = _object->class;
 
@@ -88,29 +48,45 @@ void delete (void *self) {
 	free (self);
 }
 
-/*int equals (void *self, void *other) {
+void *copy(void *self) {
 	ObjectInst *_object = self;
-	Class *_class = _object->class;
+	ObjectDef *_class = _object->class;
 
-	return _class->equals (self, other);
+	return _class->copy(self);
 }
 
-void print (void *self, FILE *filePtr) {
+int equals(void *self, void *other) {
 	ObjectInst *_object = self;
-	Class *_class = _object->class;
+	ObjectDef *_class = _object->class;
 
-	_class->print (self, filePtr);
-}*/
+	return _class->equals(self, other);
+}
 
-void * objectCtor (void *self, va_list *args) {
+void print(void *self, FILE *filePtr) {
+	if (!self) {
+		return;
+	}
+
+	ObjectDef *_class = getClass(self);
+
+	assert(_class->print);
+
+	_class->print(self, filePtr);
+}
+
+void * objectCtor(void *self, va_list *args) {
 	return self;
 }
 
-void objectDtor (void *self) {
+void objectDtor(void *self) {
 	return;
 }
 
-int objectEquals (void *self, void *other) {
+void *objectCopy(void *self) {
+	return NULL;
+}
+
+int objectEquals(void *self, void *other) {
 	if (self == other) {
 		return 0;
 	} else if (self < other) {
@@ -120,17 +96,8 @@ int objectEquals (void *self, void *other) {
 	}
 }
 
-void objectPrint (void *self, FILE *filePtr) {
+void objectPrint(void *self, FILE *filePtr) {
 	ObjectInst *_object = self;
 	ObjectDef *_class = _object->class;
 	fprintf (filePtr, "%s: %p", _class->name, self);
 }
-
-/*struct Object * super_new (const void * _class,
-	const void * _self, va_list * app) {
-	const struct Class * superclass = super(_class);
-	assert(superclass->new.method);
-	return
-	((struct Object * (*) ()) superclass->new.method)
-	(_self, app);
-}*/

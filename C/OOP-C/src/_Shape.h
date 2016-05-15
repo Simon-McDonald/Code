@@ -12,24 +12,20 @@
 #include "Shape.h"
 
 #define Shape_VARIABLES(VARIABLE) \
-	VARIABLE(Vector2D, centreLoc)
+	VARIABLE(Vector2D, centreLoc) \
+	VARIABLE(float, orientationAngle)
 
-CLASS_PRIVATE_INTERFACE(Shape)
+CLASS_PRIVATE_INTERFACE(Shape, Object)
 
 void translate (void *self, Vector2D translation);
 void setLocation (void *self, Vector2D location);
 
-void * shapeCtor (void *self, va_list *args);
+void *shapeCtor (void *self, va_list *args);
 void shapeDtor (void *self);
 
 void shapePrint (void *self, FILE *filePtr);
 
 void shapeTranslate (void *self, Vector2D translation);
 void shapeSetLocation (void *self, Vector2D location);
-
-/*struct _ShapeInst {
-	ObjectInst _;
-	Vector2D centreCoord;
-};*/
 
 #endif /* _SHAPE_H_ */
