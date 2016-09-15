@@ -1,0 +1,15 @@
+
+[RESOURCES]
+shader_dir=shaders
+images_dir=images
+meshes_dir=meshes
+
+[FOREGROUND_SHADER]
+#geometry_shader=BillboardShader.gs
+vertex_shader=BillboardShader.vs
+fragment_shader=BillboardShader.fs
+
+[WINDOW]
+base_unit=16
+window_width_units=16
+window_height_units=16
