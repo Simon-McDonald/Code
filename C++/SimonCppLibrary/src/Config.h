@@ -11,6 +11,7 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 /*
  * Read configuration information from file.
@@ -18,6 +19,9 @@
 class Config {
 public:
 	typedef std::string ConfigKey, ConfigHeader;
+
+	typedef std::map<ConfigKey, std::string> ConfigMap;
+	typedef ConfigMap::value_type KeyValuePair;
 
 	Config(std::string);
 
@@ -35,10 +39,12 @@ public:
 	float getFloat(ConfigHeader, ConfigKey);
 
 	void displayConfig(void);
+	void listConfigKeys(ConfigHeader, std::vector<ConfigKey>);
+	void listConfigKeyValues(ConfigHeader, std::vector<KeyValuePair>);
 
 private:
-	typedef std::map<ConfigKey, std::string> ConfigMap;
-	typedef std::map<ConfigHeader, ConfigMap*> ConfigHeaderMap;
+	typedef std::map<ConfigHeader, ConfigMap> ConfigHeaderMap;
+
 	ConfigHeaderMap configMap;
 };
 

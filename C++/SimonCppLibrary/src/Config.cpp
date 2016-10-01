@@ -67,17 +67,17 @@ bool Config::addKey(ConfigHeader header, ConfigKey key, std::string value) {
 	}
 
 	if (!this->configMap.count(header)) {
-		this->configMap.emplace(header, new ConfigMap());
+		this->configMap.emplace(header, ConfigMap());
 	}
 
-	ConfigMap *map = this->configMap.at(header);
+	ConfigMap &map = this->configMap.at(header);
 
-	if (map->count(key)) {
+	if (map.count(key)) {
 		//WARN("Config '%s:%s' duplicated. Initial value '%s' kept, '%s' discarded");
 		return false;
 	}
 
-	map->emplace(key, value);
+	map.emplace(key, value);
 	return true;
 } /* Config::addKey */
 
@@ -91,7 +91,7 @@ bool Config::containsKey(ConfigHeader header, ConfigKey key) {
 		throw std::invalid_argument(errorMessage);
 	}
 
-	return this->configMap.at(header)->count(key);
+	return this->configMap.at(header).count(key);
 } /* Config::containsKey */
 
 std::string Config::getString(ConfigHeader header, ConfigKey key) {
@@ -100,7 +100,7 @@ std::string Config::getString(ConfigHeader header, ConfigKey key) {
 		throw std::invalid_argument(errorMessage);
 	}
 
-	std::string value = this->configMap.at(header)->at(key);
+	std::string value = this->configMap.at(header).at(key);
 
 	if (!value.length ()) {
 		std::string errorMessage = "Empty value for key '" + key + "' under header '" + header + "'";
@@ -119,7 +119,7 @@ std::string Config::getStringEmpty(ConfigHeader header, ConfigKey key) {
 		return "";
 	}
 
-	return this->configMap.at (header)->at (key);
+	return this->configMap.at (header).at (key);
 } /* Config::getStringEmpty */
 
 bool Config::getBool(ConfigHeader header, ConfigKey key) {
@@ -204,12 +204,42 @@ void Config::displayConfig(void) {
 		 mapItr++) {
 
 		std::cout << "[" << mapItr->first << "]" << std::endl;
-		ConfigMap *inMap = mapItr->second;
+		ConfigMap &inMap = mapItr->second;
 
-		for (ConfigMap::iterator inMapItr = inMap->begin();
-			 inMapItr != inMap->end();
+		for (ConfigMap::iterator inMapItr = inMap.begin();
+			 inMapItr != inMap.end();
 			 inMapItr++) {
 			std::cout << inMapItr->first << ":" << inMapItr->second << std::endl;
 		}
 	}
 } /* Config::displayConfig */
+
+void Config::listConfigKeys(ConfigHeader header, std::vector<ConfigKey> keyList) {
+	if (!this->containsHeader(header)) {
+		std::string errorMessage = "Non-existant header '" + header + "'";
+		throw std::invalid_argument(errorMessage);
+	}
+
+	ConfigMap &mapItr = this->configMap.at(header);
+
+	for (ConfigMap::iterator inMapItr = mapItr.begin();
+		 inMapItr != mapItr.end();
+		 inMapItr++) {
+		keyList.push_back(inMapItr->first);
+	}
+} /* listConfigKeys */
+
+void Config::listConfigKeyValues(ConfigHeader header, std::vector<KeyValuePair> keyValueList) {
+	if (!this->containsHeader(header)) {
+		std::string errorMessage = "Non-existant header '" + header + "'";
+		throw std::invalid_argument(errorMessage);
+	}
+
+	ConfigMap &mapItr = this->configMap.at(header);
+
+	for (ConfigMap::iterator inMapItr = mapItr.begin();
+		 inMapItr != mapItr.end();
+		 inMapItr++) {
+		keyValueList.push_back(*inMapItr);
+	}
+} /* listConfigKeyValues */

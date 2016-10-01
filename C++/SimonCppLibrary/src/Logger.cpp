@@ -5,6 +5,8 @@
  *      Author: Simon
  */
 
+#include <iostream>
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -59,6 +61,18 @@ void Logger::Log(LogLevel level, std::string fileName, std::string funcName,
 
 	printf ("%s\n", formatBuffer);
 } /* Logger::Log */
+
+std::string Logger::formatLength(std::string baseString, size_t length) {
+	size_t strLength = baseString.length();
+	if (strLength < length) {
+		for (size_t idx = strLength; idx != length; idx++) {
+			baseString.append(" ");
+		}
+	} else if (strLength > length) {
+		baseString = baseString.substr(0, length);
+	}
+	return baseString;
+} /* Logger::formatLength */
 
 Logger::~Logger() {
 } /* Logger::~Logger */
