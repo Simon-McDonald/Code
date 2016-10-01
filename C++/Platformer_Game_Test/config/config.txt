@@ -1,15 +1,20 @@
 
+[WINDOW]
+window_width=1024
+window_height=640
+block_size=64
+
 [RESOURCES]
 shader_dir=shaders
 images_dir=images
 meshes_dir=meshes
 
 [FOREGROUND_SHADER]
-#geometry_shader=BillboardShader.gs
 vertex_shader=BillboardShader.vs
+geometry_shader=BillboardShader.gs
 fragment_shader=BillboardShader.fs
 
-[WINDOW]
-base_unit=16
-window_width_units=16
-window_height_units=16
+[CHARACTER_SHADER]
+vertex_shader=PlayerShader.vs
+geometry_shader=BillboardShader.gs
+fragment_shader=BillboardShader.fs

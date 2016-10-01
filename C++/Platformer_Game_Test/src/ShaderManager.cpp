@@ -9,6 +9,7 @@
 #include <fstream>
 #include <string>
 
+#include "CheckErrors.h"
 #include "ShaderManager.h"
 
 const Config::ConfigHeader ShaderManager::resourceLoc = "RESOURCES";
@@ -42,6 +43,8 @@ bool ShaderManager::Initialise() {
     GLint linkStatus;
     glGetProgramiv(this->shaderProgram, GL_LINK_STATUS, &linkStatus);
 
+	CHECKERRORS();
+
     if (linkStatus != GL_TRUE) {
 		const int bfrLen = 512;
 		char errorMsgBfr[bfrLen];
@@ -57,6 +60,8 @@ bool ShaderManager::Initialise() {
 	glDeleteShader(geometryShader);
 	glDeleteShader(fragmentShader);
 	glDeleteShader(vertexShader);
+
+	CHECKERRORS();
 
 	this->useProgram();
 
@@ -220,6 +225,21 @@ bool ShaderManager::bindArray(std::string arrayName, int numArrays, bool someBoo
 	return true;
 } /* ShaderManager::bindArray */
 
+bool ShaderManager::bindVector2(std::string vectorName, GLfloat vectorData[2]) {
+	glUniform2f(this->getUniformLocation(vectorName), vectorData[0], vectorData[1]);
+	return true;
+}
+
+bool ShaderManager::bindVector3(std::string vectorName, GLfloat vectorData[3]) {
+	glUniform3f(this->getUniformLocation(vectorName), vectorData[0], vectorData[1], vectorData[2]);
+	return true;
+}
+
+bool ShaderManager::bindVector4(std::string vectorName, GLfloat vectorData[4]) {
+	glUniform4f(this->getUniformLocation(vectorName), vectorData[0], vectorData[1], vectorData[2], vectorData[3]);
+	return true;
+}
+
 GLuint ShaderManager::getShaderProgram() {
 	return this->shaderProgram;
 } /* ShaderManager::getShaderProgram */
@@ -244,9 +264,17 @@ GLuint ShaderManager::getUniformLocation(std::string uniformName) {
 	return uniformLocation;
 } /* ShaderManager::getUniformLocation */
 
-void ShaderManager::setUniformValue(std::string shaderLocation, GLfloat uniformValue) {
+void ShaderManager::setUniformFloat(std::string shaderLocation, GLfloat uniformValue) {
 	glUniform1f(this->getUniformLocation(shaderLocation), uniformValue);
 } /* ShaderManager::setUniformValue */
+
+void ShaderManager::setUniformInt(std::string shaderLocation, GLint uniformValue) {
+	glUniform1i(this->getUniformLocation(shaderLocation), uniformValue);
+}
+
+void ShaderManager::setUniformBool(std::string shaderLocation, bool uniformValue) {
+	glUniform1i(this->getUniformLocation(shaderLocation), uniformValue ? 1 : 0);
+}
 
 void ShaderManager::useProgram() {
 	if (ShaderManager::currentShaderProgram == this) {

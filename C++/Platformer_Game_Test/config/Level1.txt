@@ -1,0 +1,12 @@
++-------------------------------------------------------------+
+|                                                             |
+|                                                             |
+|  C     C                                                    |
+|                                                             |
+|              C                                              |
+|                                                             |
+|       LR                                                    |
+|       lr   LR                                               |
+|  S    lr   lr                                               |
+|BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB|
++-------------------------------------------------------------+

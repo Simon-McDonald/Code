@@ -16,17 +16,19 @@ class BillboardManager : protected ResourceManager {
 public:
 	BillboardManager(void);
 	BillboardManager(std::string imageFile);
-	~BillboardManager(void);
 
 	bool InitialiseBillboard(
 		std::vector<std::pair<std::string, std::vector<GLfloat>>> &resourcesVector);
 
 	void Render(void);
 
+	~BillboardManager(void);
+
 private:
 	GLuint pointBufferID;
 	size_t numVertices;
-	std::string imageName;
+	GLuint imageID;
+	float textureGridDim;
 };
 
 #endif /* BILLBOARDMANAGER_H_ */

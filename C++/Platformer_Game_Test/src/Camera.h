@@ -24,11 +24,16 @@ public:
 
 	glm::vec2 GetPosition(void);
 	glm::mat4 GetViewProjMatrix(void);
+	void SetViewMatrix(void);
 
 	~Camera(void);
 
 private:
 	glm::vec2 cameraPosition;
+
+	GLfloat screenHeightPixels;
+	GLfloat screenWidthPixels;
+	GLfloat blockSizePixels;
 };
 
 #endif /* CAMERA_H_ */

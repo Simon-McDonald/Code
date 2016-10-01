@@ -31,43 +31,26 @@
 #include <assimp/Importer.hpp>
 #include <assimp/matrix3x3.h>
 
-
-// Shader sources
-const GLchar* vertexSource =
-    "#version 330\n"
-    "layout (location = 0) in vec2 position;"
-    "void main()"
-    "{"
-    "    gl_Position = vec4(position, 0.0, 1.0);"
-    "}";
-const GLchar* fragmentSource =
-    "#version 330\n"
-    "out vec4 outColor;"
-    "void main()"
-    "{"
-    "    outColor = vec4(1.0, 1.0, 1.0, 1.0);"
-    "}";
-
-
 class ProgramManager : protected UtilityManager {
 public:
 	ProgramManager(void) :
-		shaderMap{{"Billboard", ShaderManager("FOREGROUND_SHADER")}} {
+		shaderMap{{"Billboard", ShaderManager("FOREGROUND_SHADER")},
+				  {"Character", ShaderManager("CHARACTER_SHADER")}} {
 	}
 
 	bool Initialise(void) {
 		if (!this->mainWindow.Initialise()) {
 			return false;
 		}
-
-		/*for (std::map<std::string, ShaderManager>::iterator mapItr = this->shaderMap.begin();
+		CHECKERRORS();
+		for (std::map<std::string, ShaderManager>::iterator mapItr = this->shaderMap.begin();
 			 mapItr != this->shaderMap.end();
 			 mapItr++) {
 			if (!mapItr->second.Initialise()) {
 				return false;
 			}
 		}
-
+		CHECKERRORS();
 		WorldManager::Initialise(&this->mainWindow, &this->shaderMap);
 
 		this->shaderMap.at("Billboard").useProgram();
@@ -75,81 +58,26 @@ public:
 		//ResourceManager::setupShaderDataFormat();
 		GLuint VertexArrayID;
 		glGenVertexArrays (1, &VertexArrayID);
-		glBindVertexArray (VertexArrayID);*/
+		glBindVertexArray (VertexArrayID);
 
 		return true;
 	}
 
 	void Run(void) {
-
-		/*Level level("potato");
+		CHECKERRORS();
+		Level level("potato");
 		level.LoadResources();
-		level.InitialiseLevel();*/
+		level.InitialiseLevel(this->camera);
 
 
 		CHECKERRORS();
 
 
-
-
-
-
-	    // Create Vertex Array Object
-	    GLuint vao;
-	    glGenVertexArrays(1, &vao);
-	    glBindVertexArray(vao);
-
-	    // Create a Vertex Buffer Object and copy the vertex data to it
-	    GLuint vbo;
-	    glGenBuffers(1, &vbo);
-
-	    GLfloat vertices[] = {
-	         0.0f,  0.5f,
-	        -0.5f, -0.5f,
-	         0.5f, -0.5f
-	    };
-
-	    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	    // Create and compile the vertex shader
-	    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	    glShaderSource(vertexShader, 1, &vertexSource, NULL);
-	    glCompileShader(vertexShader);
-
-	    // Create and compile the fragment shader
-	    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	    glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
-	    glCompileShader(fragmentShader);
-
-	    // Link the vertex and fragment shader into a shader program
-	    GLuint shaderProgram = glCreateProgram();
-	    glAttachShader(shaderProgram, vertexShader);
-	    glAttachShader(shaderProgram, fragmentShader);
-	    glBindFragDataLocation(shaderProgram, 0, "outColor");
-	    glLinkProgram(shaderProgram);
-	    glUseProgram(shaderProgram);
-
-	    // Specify the layout of the vertex data
-	    GLint posAttrib = glGetAttribLocation(shaderProgram, "position");
-	    glEnableVertexAttribArray(posAttrib);
-	    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
-
-
-
-
-
-
-
-
-
-
-
-
-
 		bool isRunning = true;
 		StopWatch timer;
 		timer.Start ();
+
+		camera.Update({0.5, 0.5});
 
 		while (isRunning) {
 			float deltaTime = timer.Mark();
@@ -157,31 +85,16 @@ public:
 
 			this->mainWindow.clearWindow();
 
-			//level.UpdateLevel(deltaTime, this->camera);
+			level.UpdateLevel(deltaTime, this->camera);
 
-	        // Clear the screen to black
-	        glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-	        glClear(GL_COLOR_BUFFER_BIT);
-
-	        // Draw a triangle from the 3 vertices
-	        glDrawArrays(GL_TRIANGLES, 0, 3);
-
+			level.RenderLevel(this->camera);
 	        CHECKERRORS();
 
 			this->mainWindow.updateWindow();
 			isRunning = !this->mainWindow.getInput().quit;
 		}
 
-
-	    glDeleteProgram(shaderProgram);
-	    glDeleteShader(fragmentShader);
-	    glDeleteShader(vertexShader);
-
-	    glDeleteBuffers(1, &vbo);
-
-	    glDeleteVertexArrays(1, &vao);
-
-		//level.FinaliseLevel();
+		level.FinaliseLevel();
 	}
 
 	bool Destroy(void) {
@@ -221,7 +134,7 @@ int main(int argc, char *argv[]) {
 
 	program.Run();
 
-	//program.Destroy();
+	program.Destroy();
 
 	return EXIT_SUCCESS;
 }

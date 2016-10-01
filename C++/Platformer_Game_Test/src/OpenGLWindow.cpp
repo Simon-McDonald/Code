@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+#include "CheckErrors.h"
 #include "OpenGLWindow.h"
 
 OpenGLWindow::OpenGLWindow(void) : userInputStruct(),
@@ -50,6 +51,7 @@ bool OpenGLWindow::Initialise(void) {
 
 	glewExperimental = GL_TRUE;
 	glewInit();
+	CHECKERRORS();
 
 	//glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_CULL_FACE);

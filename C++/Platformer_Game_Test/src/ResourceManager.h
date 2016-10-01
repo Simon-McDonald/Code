@@ -28,8 +28,8 @@ public:
 
 	GLuint loadTexture(std::string textureFileName);
 
-	void generateTexture(std::string stringIdentifier,
-		std::vector<std::string> textureFileNames);
+	GLuint generateTexture(std::vector<std::string> textureFileNames);
+	int determineTextureGridSize(int numTextures);
 
 	void unloadTexture(std::string textureFileName);
 
@@ -46,6 +46,7 @@ public:
 
 private:
 	static std::map<std::string, std::pair<GLuint, unsigned>> textureResourceID;
+	static std::map<GLuint, unsigned> textureResourceStore;
 };
 
 #endif /* RESOURCEMANAGER_H_ */

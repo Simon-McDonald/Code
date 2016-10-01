@@ -18,6 +18,7 @@
 #include "ResourceManager.h"
 
 std::map<std::string, std::pair<GLuint, unsigned>> ResourceManager::textureResourceID;
+std::map<GLuint, unsigned> ResourceManager::textureResourceStore;
 
 ResourceManager::ResourceManager() {}
 
@@ -82,26 +83,30 @@ GLuint ResourceManager::loadTexture(std::string textureFileName) {
 	return -1u;
 } /* ResourceManager::loadTexture */
 
-void ResourceManager::generateTexture(std::string stringIdentifier, std::vector<std::string> textureFileNames) {
+int ResourceManager::determineTextureGridSize(int numTextures) {
+	return static_cast<int>(ceil(sqrt(static_cast<float>(numTextures))));
+}
+
+GLuint ResourceManager::generateTexture(std::vector<std::string> textureFileNames) {
 	int numTextures = textureFileNames.size();
 
 	if (numTextures == 0) {
-		return;
+		return -1u;
 	}
 
 	int indTexDim = 16;
-	int texDim = static_cast<int>(ceil(sqrt(static_cast<float>(numTextures))));
+	int texDim = this->determineTextureGridSize(numTextures);
 	int numPixels = texDim * indTexDim;
 
 	std::vector<unsigned char> combinedTexture;
-	combinedTexture.resize(((numPixels) * (numPixels + 1)) * 3);
+	combinedTexture.resize((numPixels) * (3 * numPixels + 1));
+
 	//set default colors to Magenta
-
 	for (int texRowIdx = 0; texRowIdx < numPixels; texRowIdx++) {
-		for (int texColIdx = 0; texColIdx < numPixels; texColIdx += 3) {
-			int idx = texRowIdx * (numPixels + 1) + texColIdx;
+		for (int texColIdx = 0; texColIdx < numPixels; texColIdx++) {
+			int idx = texRowIdx * (numPixels * 3) + texColIdx * 3;
 
-			combinedTexture.at(idx) = 255;
+			combinedTexture.at(idx) = 250;
 			combinedTexture.at(idx + 1) = 0;
 			combinedTexture.at(idx + 2) = 255;
 		}
@@ -112,13 +117,13 @@ void ResourceManager::generateTexture(std::string stringIdentifier, std::vector<
 			int startCol = (textureFileIdx % texDim) * indTexDim;
 			int startRow = (textureFileIdx / texDim) * indTexDim;
 
-			for (int texRow = 0; texRow < texDim; texRow++)
+			for (int texRow = 0; texRow < indTexDim; texRow++)
 			{
 				unsigned char *rawData = (unsigned char *)textureData->pixels;
 
-				std::copy(&rawData[3 * texRow * (indTexDim + 1)],
-						&rawData[3 * (texRow + 1) * (indTexDim + 1) - 1],
-						combinedTexture.begin() + (startRow + texRow) * numPixels + startCol);
+				std::copy(&rawData[3 * texRow * indTexDim],
+						&rawData[3 * (texRow + 1) * indTexDim],
+						combinedTexture.begin() + (startRow + texRow) * numPixels * 3 + startCol * 3);
 			}
 
 			SDL_FreeSurface (textureData);
@@ -128,7 +133,7 @@ void ResourceManager::generateTexture(std::string stringIdentifier, std::vector<
 	GLuint textureBufferID;
 	glGenTextures(1, &textureBufferID);
 	glBindTexture(GL_TEXTURE_2D, textureBufferID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, numPixels, numPixels, 0, GL_BGR, GL_UNSIGNED_BYTE, combinedTexture.data());
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, numPixels, numPixels, 0, GL_RGB, GL_UNSIGNED_BYTE, combinedTexture.data());
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -136,7 +141,9 @@ void ResourceManager::generateTexture(std::string stringIdentifier, std::vector<
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	ResourceManager::textureResourceID.emplace(stringIdentifier, std::make_pair(textureBufferID, 1));
+	ResourceManager::textureResourceStore.emplace(textureBufferID, 1);
+
+	return textureBufferID;
 }
 
 void ResourceManager::setTexture(std::string textureFileName) {

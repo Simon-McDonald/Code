@@ -28,11 +28,17 @@ public:
 	GLuint getLayoutLocation(std::string);
 	GLuint getUniformLocation(std::string);
 
-	void setUniformValue(std::string shaderLocation, GLfloat uniformValue);
+	void setUniformFloat(std::string shaderLocation, GLfloat uniformValue);
+	void setUniformInt(std::string shaderLocation, GLint uniformValue);
+	void setUniformBool(std::string shaderLocation, bool uniformValue);
 
 	bool bindTexture(std::string samplerName, GLuint textureID);
 	bool bindTexture(std::string samplerName, GLuint textureID, GLenum textureType);
 	bool bindArray(std::string arrayName, int numArrays, bool someBool, GLfloat *arrayToSet);
+
+	bool bindVector2(std::string vectorName, GLfloat vectorData[2]);
+	bool bindVector3(std::string vectorName, GLfloat vectorData[3]);
+	bool bindVector4(std::string vectorName, GLfloat vectorData[4]);
 
 	void useProgram();
 	bool validateProgram();

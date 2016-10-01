@@ -10,6 +10,7 @@
 
 #include "Camera.h"
 #include "BillboardManager.h"
+#include "Player.h"
 #include "ResourceManager.h"
 
 class Level : ResourceManager {
@@ -18,9 +19,11 @@ public:
 
 	bool LoadResources(void);
 
-	bool InitialiseLevel(void);
+	bool InitialiseLevel(Camera &camera);
 
 	bool UpdateLevel(float timeIncrement, Camera &camera);
+
+	void RenderLevel(Camera &camera);
 
 	void FinaliseLevel(void);
 
@@ -30,9 +33,11 @@ private:
 	Config::ConfigHeader levelConfigInfo;
 
 	BillboardManager sceneObjects;
+	Player player;
 
-	GLuint imageID;
-	GLuint vbo;
+	std::vector<std::vector<char>> worldArray;
+	//GLuint imageID;
+
 };
 
 #endif /* LEVEL_H_ */

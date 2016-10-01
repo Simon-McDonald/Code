@@ -8,35 +8,47 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
-#include "RenderableObject.h"
+#include "ResourceManager.h"
 
-class Player : public RenderableObject {
+class Player : protected ResourceManager {
 public:
-	Player(glm::vec3 initPosition, float scale);
+	Player(void);
 
-	virtual void Update(float deltaTime);
+	bool InitialisePlayer(
+		std::vector<std::string> &resourcesVector);
 
-	glm::mat4 getViewMatrix(void);
-	glm::mat4 getRotationMatrix(void);
+	void Update(float deltaTime, std::vector<std::vector<char>> &worldArray);
+
+	void Render(void);
 
 	~Player();
 
-	/*float horizontalAngle;
-	float verticalAngle;*/
-
 private:
-	static const float translationRate;
-	static const float rotationRate;
+	static const float accelerationRate;
+	static const float decelerationRate;
+	static const float maxSpeed;
+	static const float jumpAcceleration;
+	static const float gravity;
+	static const float jumpAccelerationTime;
 
-	glm::vec3 velocity;
-	float jumpDuration;
-	bool jumpAnimation;
+	glm::vec2 position;
+	glm::vec2 velocity;
 
-	float fieldView;
+	bool jumping;
+	float actionDuration;
+	bool facingForward;
+	int runNum;
 
-public:
-	float horizontalAngle;
-	float verticalAngle;
+	GLuint textureID;
+	GLuint pointBufferID;
+	GLuint textureGridDim;
+
+	void HandleMovementUpdates(float deltaTime, std::vector<std::vector<char>> &worldArray);
+	void HandleInputUpdate(float deltaTime);
+	float getIntersectionTime(float pos, float vel);
+	glm::vec2 getIntersectionTimes(glm::vec2 &pos, glm::vec2 &vel);
+	bool checkCollisionsOnLine(std::vector<std::vector<char>> &worldArray, int lengthIdx,
+			std::vector<int> &idxsToCheck, bool isVerticalLine);
 };
 
 #endif /* PLAYER_H_ */
