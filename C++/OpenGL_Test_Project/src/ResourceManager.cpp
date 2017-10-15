@@ -20,151 +20,6 @@
 #include <iostream>
 #include "ResourceManager.h"
 
-/*ObjectDimensions loadBMP_raw(const char * imagepath, std::vector<unsigned char> &dataVector) {
-	printf("Reading image %s\n", imagepath);
-
-	// Data read from the header of the BMP file
-	unsigned char header[54];
-	unsigned int dataPos;
-	unsigned int imageSize;
-	unsigned int width, height;
-	// Actual RGB data
-	unsigned char * data;
-
-	// Open the file
-	FILE * file = fopen(imagepath,"rb");
-	if (!file)
-	{printf("%s could not be opened. Are you in the right directory ? Don't forget to read the FAQ !\n", imagepath); getchar(); return {0, 0};}
-	else
-	{printf ("Got the file open\n");}
-
-	// Read the header, i.e. the 54 first bytes
-
-	// If less than 54 bytes are read, problem
-	if ( fread(header, 1, 54, file)!=54 ){
-		printf("Not a correct BMP file\n");
-		return {0, 0};
-	}
-	// A BMP files always begins with "BM"
-	if ( header[0]!='B' || header[1]!='M' ){
-		printf("Not a correct BMP file, no header\n");
-		return {0, 0};
-	}
-	// Make sure this is a 24bpp file
-	if ( *(int*)&(header[0x1E])!=0  )         {printf("Not a correct BMP file\n");    return {0, 0};}
-	if ( *(int*)&(header[0x1C])!=24 )         {printf("Not a correct BMP file\n");    return {0, 0};}
-
-	// Read the information about the image
-	dataPos    = *(int*)&(header[0x0A]);
-	imageSize  = *(int*)&(header[0x22]);
-	width      = *(int*)&(header[0x12]);
-	height     = *(int*)&(header[0x16]);
-
-	// Some BMP files are misformatted, guess missing information
-	if (imageSize==0)    imageSize=width*height*3; // 3 : one byte for each Red, Green and Blue component
-	if (dataPos==0)      dataPos=54; // The BMP header is done that way
-
-	// Create a buffer
-	data = new unsigned char [imageSize];
-
-	// Read the actual data from the file into the buffer
-	fread(data,1,imageSize,file);
-
-	// Everything is in memory now, the file wan be closed
-	fclose (file);
-
-	dataVector.resize(imageSize);
-	memcpy(dataVector.data(), data, imageSize);
-
-	// OpenGL has now copied the data. Free our own version
-	delete [] data;
-	return {width, height};
-}
-
-GLuint loadBMP_custom(const char * imagepath){
-
-	printf("Reading image %s\n", imagepath);
-
-	// Data read from the header of the BMP file
-	unsigned char header[54];
-	unsigned int dataPos;
-	unsigned int imageSize;
-	unsigned int width, height;
-	// Actual RGB data
-	unsigned char * data;
-
-	// Open the file
-	FILE * file = fopen(imagepath,"rb");
-	if (!file)
-	{printf("%s could not be opened. Are you in the right directory ? Don't forget to read the FAQ !\n", imagepath); getchar(); return 0;}
-	else
-	{printf ("Got the file open\n");}
-
-	// Read the header, i.e. the 54 first bytes
-
-	// If less than 54 bytes are read, problem
-	if ( fread(header, 1, 54, file)!=54 ){
-		printf("Not a correct BMP file\n");
-		return 0;
-	}
-	// A BMP files always begins with "BM"
-	if ( header[0]!='B' || header[1]!='M' ){
-		printf("Not a correct BMP file, no header\n");
-		return 0;
-	}
-	// Make sure this is a 24bpp file
-	if ( *(int*)&(header[0x1E])!=0  )         {printf("Not a correct BMP file\n");    return 0;}
-	if ( *(int*)&(header[0x1C])!=24 )         {printf("Not a correct BMP file\n");    return 0;}
-
-	// Read the information about the image
-	dataPos    = *(int*)&(header[0x0A]);
-	imageSize  = *(int*)&(header[0x22]);
-	width      = *(int*)&(header[0x12]);
-	height     = *(int*)&(header[0x16]);
-
-	// Some BMP files are misformatted, guess missing information
-	if (imageSize==0)    imageSize=width*height*3; // 3 : one byte for each Red, Green and Blue component
-	if (dataPos==0)      dataPos=54; // The BMP header is done that way
-
-	// Create a buffer
-	data = new unsigned char [imageSize];
-
-	// Read the actual data from the file into the buffer
-	fread(data,1,imageSize,file);
-
-	// Everything is in memory now, the file wan be closed
-	fclose (file);
-
-	// Create one OpenGL texture
-	GLuint textureID;
-	glGenTextures(1, &textureID);
-
-	// "Bind" the newly created texture : all future texture functions will modify this texture
-	glBindTexture(GL_TEXTURE_2D, textureID);
-
-	// Give the image to OpenGL
-	glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
-
-	// OpenGL has now copied the data. Free our own version
-	delete [] data;
-
-	// Poor filtering, or ...
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-	// ... nice trilinear filtering.
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	// Return the ID of the texture we just created
-	return textureID;
-}*/
 
 bool loadOBJ(
 	const char * path,
@@ -257,8 +112,177 @@ bool loadOBJ(
 	return true;
 }
 
-std::map<std::string, struct ResourceManager::bufferedResource> ResourceManager::bufferedResourceID;
+bool ResourceManager::loadObjectFile(
+	std::string fileName,
+	std::vector<glm::vec3> &verticesList,
+	std::vector<glm::vec2> &uvsList,
+	std::vector<glm::vec3> &normalsList,
+	std::vector<GLuint> &indicesList,
+	std::string &textureFile) {
+
+	INFO << "Load " << fileName << END;
+
+	std::vector<unsigned> vertexIndices, uvIndices, normalIndices;
+	std::vector<glm::vec3> tempVertices;
+	std::vector<glm::vec2> tempUVs;
+	std::vector<glm::vec3> tempNormals;
+
+	FILE *file = fopen(fileName.c_str(), "r");
+	if (file == NULL) {
+		ERR << "Cannot open file " << fileName << END;
+		return false;
+	}
+
+	while(true) {
+		char lineHeader[128];
+
+		int res = fscanf(file, "%s", lineHeader);
+		if (res == EOF) {
+			break;
+		}
+
+		if (strcmp(lineHeader, "v") == 0){
+			glm::vec3 vertex;
+			fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z );
+			tempVertices.push_back(vertex);
+		} else if (strcmp(lineHeader, "vt") == 0) {
+			glm::vec2 uv;
+			fscanf(file, "%f %f\n", &uv.x, &uv.y );
+			uv.y = -uv.y;
+			tempUVs.push_back(uv);
+		} else if (strcmp(lineHeader, "vn") == 0) {
+			glm::vec3 normal;
+			fscanf(file, "%f %f %f\n", &normal.x, &normal.y, &normal.z );
+			tempNormals.push_back(normal);
+		} else if (strcmp(lineHeader, "f") == 0) {
+			std::string vertex1, vertex2, vertex3;
+			unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
+			int matches = fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2] );
+
+			if (matches != 9) {
+				ERR << "File can't be read by our simple parser" << END;
+				return false;
+			}
+
+			vertexIndices.push_back(vertexIndex[0]);
+			vertexIndices.push_back(vertexIndex[1]);
+			vertexIndices.push_back(vertexIndex[2]);
+			uvIndices.push_back(uvIndex[0]);
+			uvIndices.push_back(uvIndex[1]);
+			uvIndices.push_back(uvIndex[2]);
+			normalIndices.push_back(normalIndex[0]);
+			normalIndices.push_back(normalIndex[1]);
+			normalIndices.push_back(normalIndex[2]);
+		} else if (strcmp(lineHeader, "usemtl") == 0) {
+			char imageName[256];
+			fscanf(file, "%s\n", imageName);
+			textureFile = std::string(imageName);
+		} else {
+			char stupidBuffer[1000];
+			fgets(stupidBuffer, 1000, file);
+		}
+	}
+
+	for(unsigned int i=0; i < vertexIndices.size(); i++){
+		unsigned int vertexIndex = vertexIndices[i];
+		unsigned int uvIndex = uvIndices[i];
+		unsigned int normalIndex = normalIndices[i];
+
+		glm::vec3 vertex = tempVertices[vertexIndex - 1];
+		glm::vec2 uv = tempUVs[uvIndex - 1];
+		glm::vec3 normal = tempNormals[normalIndex - 1];
+
+		verticesList.push_back(vertex);
+		uvsList.push_back(uv);
+		normalsList.push_back(normal);
+	}
+
+	indicesList.resize(vertexIndices.size());
+	for (unsigned idx = 0; idx < indicesList.size(); ++idx) {
+		indicesList.at(idx) = idx;
+	}
+
+	return true;
+}
+
+void ResourceManager::loadObjectIntoVertexBuffer(std::string objectFilename) {
+/* typedef struct {
+	GLuint dataBuffers[3];
+	GLuint indexBuffer;
+	GLuint texture;
+	GLuint vertexBuffer;
+} vertexResource;
+
+static std::map<std::string, vertexResource> vertexResourceMap; */
+
+	std::string objectFilePath = this->getConfig().getString("RESOURCES", "meshes_dir") + "\\" + objectFilename;
+
+	std::vector<glm::vec3> verticesList;
+	std::vector<glm::vec2> uvsList;
+	std::vector<glm::vec3> normalsList;
+	std::vector<unsigned> indicesList;
+	std::string textureFile;
+
+	if (!this->loadObjectFile(objectFilePath, verticesList, uvsList, normalsList, indicesList, textureFile)) {
+		ERR << "Some error with " << objectFilename << END;
+		return;
+	}
+
+	VertexResource vertexResource;
+
+	vertexResource.numVertices = indicesList.size() / 3;
+
+	glGenVertexArrays(1, &vertexResource.vertexBuffer);
+	glBindVertexArray(vertexResource.vertexBuffer);
+
+	glGenBuffers(3, vertexResource.dataBuffers);
+	glGenBuffers(1, &vertexResource.indexBuffer);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertexResource.dataBuffers[0]);
+	glBufferData(GL_ARRAY_BUFFER, verticesList.size() * sizeof(glm::vec3), verticesList.data(), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertexResource.dataBuffers[1]);
+	glBufferData(GL_ARRAY_BUFFER, uvsList.size() * sizeof(glm::vec2), uvsList.data(), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vertexResource.dataBuffers[2]);
+	glBufferData(GL_ARRAY_BUFFER, normalsList.size() * sizeof(glm::vec3), normalsList.data(), GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertexResource.indexBuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned) * indicesList.size(), indicesList.data(), GL_STATIC_DRAW);
+
+	glBindVertexArray(0);
+
+	vertexResource.texture = this->loadTexture(textureFile);
+
+	ResourceManager::vertexResourceMap.emplace(objectFilename, vertexResource);
+}
+
+void ResourceManager::renderVertexBufferReference(std::string objectFilename) {
+	if (!ResourceManager::vertexResourceMap.count(objectFilename)) {
+		ERR << "Somethign blal" << END;
+		return;
+	}
+
+	VertexResource &vertexResource = ResourceManager::vertexResourceMap.at(objectFilename);
+
+	glBindVertexArray(vertexResource.vertexBuffer);
+
+	this->setTexture(vertexResource.texture);
+
+	glDrawElementsBaseVertex(GL_TRIANGLES, vertexResource.numVertices, GL_UNSIGNED_INT, 0, 0);
+
+	glBindVertexArray(0);
+}
+
+std::map<std::string, ResourceManager::BufferedResource> ResourceManager::bufferedResourceID;
 std::map<std::string, GLuint> ResourceManager::textureResourceID;
+std::map<std::string, ResourceManager::VertexResource> ResourceManager::vertexResourceMap;
 
 ResourceManager::ResourceManager() {}
 ResourceManager::~ResourceManager() {}
@@ -289,13 +313,7 @@ void ResourceManager::loadCubeTexture(std::array<std::string, 6> &fileNames,
 	glBindTexture(GL_TEXTURE_CUBE_MAP, cubeMapID);
 
 	for (unsigned int arrIdx = 0; arrIdx < fileNames.size(); arrIdx++) {
-
 		std::string imageLoc = imageDirPath + fileNames.at(arrIdx);
-
-		/*int width;
-		int height;
-		void *imageData;*/
-
 		SDL_Surface *textureData = IMG_Load(imageLoc.c_str());
 		if (!textureData) {
 			ERR << "Failed to load image: '" << imageLoc << "', used for cube texture: '" << cubeName << "'" << std::endl;
@@ -320,7 +338,6 @@ void ResourceManager::loadCubeTexture(std::array<std::string, 6> &fileNames,
     //glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
     ResourceManager::textureResourceID.emplace(cubeName, cubeMapID);
-
 } /* ResourceManager::loadCubeTexture */
 
 void ResourceManager::loadRawImage(std::string imageFileName, int &width, int&height, void *&imageData) {
@@ -337,38 +354,12 @@ void ResourceManager::loadRawImage(std::string imageFileName, int &width, int&he
 	width = textureData->w;
 	height = textureData->h;
 	imageData = textureData->pixels;
-	//imageData = new unsigned char[width * height * 3 + height];
-	//memcpy(imageData, textureData->pixels, width * height * 3 + height);
-
-	/*unsigned char * dataPtr = (unsigned char *) imageData;
-	unsigned char * tempPtr = (unsigned char *) textureData->pixels;
-
-	for (int heightIdx = 0; heightIdx < height; heightIdx++)
-	{
-		int srcSt = heightIdx * width * 3;// + heightIdx;
-		int destSt = heightIdx * width * 3;
-		int len = width * 3;
-		memcpy (&dataPtr[destSt], &tempPtr[srcSt], len);
-		INFO << "Source index, start: " << srcSt << " - Destination index, start: " << destSt << " - Length: " << len << std::endl;
-	}*/
-
-
-
-	/*unsigned char *data = (unsigned char *) textureData->pixels;
-	if (imageFileName == "smallRed2.bmp") {
-		printf ("Printing the contents of blue.bmp\n");
-		for (int i = 0; i < textureData->w * textureData->h * 3; i+=3){
-			printf ("(%i, %i, %i)-", data[i], data[i+1], data[i+2]);
-		}
-	}*/
-
-	//SDL_FreeSurface (textureData);
 } /* ResourceManager::loadRawImage */
 
-void ResourceManager::loadTexture(std::string textureFileName) {
+GLuint ResourceManager::loadTexture(std::string textureFileName) {
 	if (ResourceManager::textureResourceID.count(textureFileName) != 0) {
 		// texture has already been loaded!
-		return;
+		return -1u;
 	}
 
 	std::string texturePath = this->getConfig().getString("RESOURCES", "images_dir") + "\\" + textureFileName;
@@ -376,7 +367,7 @@ void ResourceManager::loadTexture(std::string textureFileName) {
 	SDL_Surface *textureData = IMG_Load(texturePath.c_str());
 	if (!textureData) {
 		ERR << "Failed to load image: '" << texturePath << "'" << std::endl;
-		return;
+		return -1u;
 	} else {
 		INFO << "Loaded image '" << texturePath << "'" << std::endl;
 	}
@@ -408,6 +399,7 @@ void ResourceManager::loadTexture(std::string textureFileName) {
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	ResourceManager::textureResourceID.emplace(textureFileName, textureBufferID);
+	return textureBufferID;
 } /* ResourceManager::loadTexture */
 
 void ResourceManager::loadMesh(std::string meshFileName) {
@@ -442,7 +434,7 @@ void ResourceManager::loadMesh(std::string meshFileName) {
 	glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
 	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), &normals[0], GL_STATIC_DRAW);
 
-	struct bufferedResource br = {vertexbuffer, uvbuffer, normalbuffer, vertices.size()};
+	BufferedResource br = {vertexbuffer, uvbuffer, normalbuffer, vertices.size()};
 
 	ResourceManager::bufferedResourceID.emplace(meshFileName, br);
 }
@@ -497,7 +489,7 @@ void ResourceManager::renderMesh(std::string meshFileName, bool renderFlag) {
 		return;
 	}
 
-	struct bufferedResource *meshIDs = &ResourceManager::bufferedResourceID.at(meshFileName);
+	BufferedResource *meshIDs = &ResourceManager::bufferedResourceID.at(meshFileName);
 	CHECKERRORS();
 	glBindBuffer(GL_ARRAY_BUFFER, meshIDs->vertexbuffer);
 	glVertexAttribPointer(

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="cdt.managedbuild.config.gnu.mingw.lib.debug.944365916">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.lib.debug.944365916" moduleId="org.eclipse.cdt.core.settings" name="Debug">
+				<externalSettings>
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/OpenGLCppCommon"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/OpenGLCppCommon/Debug"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="OpenGLCppCommon" srcPrefixMapping="" srcRootPath=""/>
+					</externalSetting>
+				</externalSettings>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactExtension="a" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.mingw.lib.debug.944365916" name="Debug" parent="cdt.managedbuild.config.gnu.mingw.lib.debug" postbuildStep="cmd /c if not exist include md include; cmd /c if not exist lib md lib; cmd /c copy ..\src\*.hpp include\;cmd /c copy lib${ProjName}.a lib\;">
+					<folderInfo id="cdt.managedbuild.config.gnu.mingw.lib.debug.944365916." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.mingw.lib.debug.646471327" name="MinGW GCC" superClass="cdt.managedbuild.toolchain.gnu.mingw.lib.debug">
+							<targetPlatform id="cdt.managedbuild.target.gnu.platform.mingw.lib.debug.211412504" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.mingw.lib.debug"/>
+							<builder buildPath="${workspace_loc:/OpenGLCppCommon}/Debug" id="cdt.managedbuild.tool.gnu.builder.mingw.base.186015023" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="cdt.managedbuild.tool.gnu.builder.mingw.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.mingw.lib.debug.1597923436" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.lib.debug">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.873376440" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.mingw.lib.debug.1624380994" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.mingw.lib.debug"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.lib.debug.1297443908" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.lib.debug">
+								<option id="gnu.cpp.compiler.mingw.lib.debug.option.optimization.level.538160717" name="Optimization Level" superClass="gnu.cpp.compiler.mingw.lib.debug.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.mingw.lib.debug.option.debugging.level.1305878894" name="Debug Level" superClass="gnu.cpp.compiler.mingw.lib.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.include.paths.1169646515" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;D:\Simon\Dropbox\Code\C++\SimonCppLibrary\Debug\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\MinGW\external\SDL2-2.0.5\x86_64-w64-mingw32\include\SDL2&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\MinGW\external\glew-2.0.0\include&quot;"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.dialect.std.752996310" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++1y" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.384629106" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.lib.debug.812286372" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.lib.debug">
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.mingw.lib.debug.option.optimization.level.2067315291" name="Optimization Level" superClass="gnu.c.compiler.mingw.lib.debug.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option id="gnu.c.compiler.mingw.lib.debug.option.debugging.level.830869252" name="Debug Level" superClass="gnu.c.compiler.mingw.lib.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1406870430" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.base.1398576365" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base.87439655" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base"/>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+		<cconfiguration id="cdt.managedbuild.config.gnu.mingw.lib.release.1061896743">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.lib.release.1061896743" moduleId="org.eclipse.cdt.core.settings" name="Release">
+				<externalSettings>
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/OpenGLCppCommon"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/OpenGLCppCommon/Release"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="OpenGLCppCommon" srcPrefixMapping="" srcRootPath=""/>
+					</externalSetting>
+				</externalSettings>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactExtension="a" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib,org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.mingw.lib.release.1061896743" name="Release" parent="cdt.managedbuild.config.gnu.mingw.lib.release" postbuildStep="cmd /c if not exist include md include; cmd /c if not exist lib md lib; cmd /c copy ..\src\*.hpp include\;cmd /c copy lib${ProjName}.a lib\;">
+					<folderInfo id="cdt.managedbuild.config.gnu.mingw.lib.release.1061896743." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.mingw.lib.release.846701765" name="MinGW GCC" superClass="cdt.managedbuild.toolchain.gnu.mingw.lib.release">
+							<targetPlatform id="cdt.managedbuild.target.gnu.platform.mingw.lib.release.554366315" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.mingw.lib.release"/>
+							<builder buildPath="${workspace_loc:/OpenGLCppCommon}/Release" id="cdt.managedbuild.tool.gnu.builder.mingw.base.2119759407" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="cdt.managedbuild.tool.gnu.builder.mingw.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.mingw.lib.release.1467555612" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.lib.release">
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.673329990" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.mingw.lib.release.780509389" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.mingw.lib.release"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.lib.release.489519635" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.lib.release">
+								<option id="gnu.cpp.compiler.mingw.lib.release.option.optimization.level.225977069" name="Optimization Level" superClass="gnu.cpp.compiler.mingw.lib.release.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.mingw.lib.release.option.debugging.level.27962953" name="Debug Level" superClass="gnu.cpp.compiler.mingw.lib.release.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1835411088" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.lib.release.1484629436" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.lib.release">
+								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.mingw.lib.release.option.optimization.level.301332456" name="Optimization Level" superClass="gnu.c.compiler.mingw.lib.release.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option id="gnu.c.compiler.mingw.lib.release.option.debugging.level.588282897" name="Debug Level" superClass="gnu.c.compiler.mingw.lib.release.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.none" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.280328009" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.base.1893339287" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base.742557252" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base"/>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="OpenGLCppCommon.cdt.managedbuild.target.gnu.mingw.lib.845734389" name="Static Library" projectType="cdt.managedbuild.target.gnu.mingw.lib"/>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.lib.release.1061896743;cdt.managedbuild.config.gnu.mingw.lib.release.1061896743.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.lib.release.489519635;cdt.managedbuild.tool.gnu.cpp.compiler.input.1835411088">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.lib.release.1061896743;cdt.managedbuild.config.gnu.mingw.lib.release.1061896743.;cdt.managedbuild.tool.gnu.c.compiler.mingw.lib.release.1484629436;cdt.managedbuild.tool.gnu.c.compiler.input.280328009">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.lib.debug.944365916;cdt.managedbuild.config.gnu.mingw.lib.debug.944365916.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.lib.debug.1297443908;cdt.managedbuild.tool.gnu.cpp.compiler.input.384629106">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.lib.debug.944365916;cdt.managedbuild.config.gnu.mingw.lib.debug.944365916.;cdt.managedbuild.tool.gnu.c.compiler.mingw.lib.debug.812286372;cdt.managedbuild.tool.gnu.c.compiler.input.1406870430">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/OpenGLCppCommon"/>
+		</configuration>
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/OpenGLCppCommon"/>
+		</configuration>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+</cproject>

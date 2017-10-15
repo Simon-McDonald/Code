@@ -21,7 +21,9 @@ public:
 
 	void Render(void);
 
-	~Player();
+	void Destroy(void);
+
+	~Player(void);
 
 private:
 	static const float accelerationRate;

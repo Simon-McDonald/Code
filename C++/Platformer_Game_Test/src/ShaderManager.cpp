@@ -21,13 +21,9 @@ ShaderManager *ShaderManager::getActiveShaderManager(void) {
 
 ShaderManager::ShaderManager(Config::ConfigHeader configHeader) :
 	header(configHeader), shaderProgram(-1u) {
-	//shaderManagerMap.emplace(configHeader, this);
 } /* ShaderManager::ShaderManager */
 
-ShaderManager::~ShaderManager() {
-} /* ShaderManager::~ShaderManager */
-
-bool ShaderManager::Initialise() {
+bool ShaderManager::Initialise(void) {
 	GLuint vertexShader = this->createShader(GL_VERTEX_SHADER, "vertex_shader");
 	GLuint fragmentShader = this->createShader(GL_FRAGMENT_SHADER, "fragment_shader");
 	GLuint geometryShader = this->createShader(GL_GEOMETRY_SHADER, "geometry_shader");
@@ -161,13 +157,9 @@ void ShaderManager::parseRawShader(std::string &shaderText) {
 			strPos += layoutStr.length();
 			strPos = shaderText.find_first_not_of(" =", strPos);
 
-			//size_t tempStrPos = shaderText.find_first_of(" )", strPos);
-
-			//std::string layoutNumStr = shaderText.substr(strPos, (tempStrPos - strPos));
-
 			char num = shaderText.at(strPos);
 			GLuint value = num - 48;
-			//int num = stoi(layoutNumStr);
+
 			this->layoutList.push_back(value);
 			DEBUG << "Adding " << num << " to the list of layouts" << std::endl;
 		}
@@ -240,7 +232,7 @@ bool ShaderManager::bindVector4(std::string vectorName, GLfloat vectorData[4]) {
 	return true;
 }
 
-GLuint ShaderManager::getShaderProgram() {
+GLuint ShaderManager::getShaderProgram(void) {
 	return this->shaderProgram;
 } /* ShaderManager::getShaderProgram */
 
@@ -258,7 +250,7 @@ GLuint ShaderManager::getUniformLocation(std::string uniformName) {
 	GLint uniformLocation = glGetUniformLocation(this->shaderProgram, uniformName.c_str());
 
 	if (uniformLocation == -1) {
-		//this->getLogger().Log(Logger::error, LOG_ARGS, "The uniform %s is not present in the shader program %s", uniformName.c_str(), this->header.c_str());
+		ERR << "The uniform " << uniformName << " is not present in the shader program " << this->header.c_str() << std::endl;
 	}
 
 	return uniformLocation;
@@ -276,7 +268,7 @@ void ShaderManager::setUniformBool(std::string shaderLocation, bool uniformValue
 	glUniform1i(this->getUniformLocation(shaderLocation), uniformValue ? 1 : 0);
 }
 
-void ShaderManager::useProgram() {
+void ShaderManager::useProgram(void) {
 	if (ShaderManager::currentShaderProgram == this) {
 		return;
 	}
@@ -289,7 +281,7 @@ void ShaderManager::useProgram() {
 	ShaderManager::currentShaderProgram = this;
 } /* ShaderManager::useProgram */
 
-bool ShaderManager::validateProgram() {
+bool ShaderManager::validateProgram(void) {
 	glValidateProgram(this->shaderProgram);
 
 	GLint progStatus;
@@ -312,7 +304,6 @@ void ShaderManager::enableAttributeLocations(void) {
 	for (std::vector<GLuint>::iterator vecItr = this->layoutList.begin();
 		 vecItr != this->layoutList.end();
 		 vecItr++) {
-		//DEBUG << "Enable number " << *vecItr << std::endl;
 		glEnableVertexAttribArray(*vecItr);
 	}
 } /* ShaderManager::enableAttributeLocations */
@@ -321,11 +312,17 @@ void ShaderManager::disableAttributeLocations(void) {
 	for (std::vector<GLuint>::iterator vecItr = this->layoutList.begin();
 		 vecItr != this->layoutList.end();
 		 vecItr++) {
-		//DEBUG << "Disable number " << *vecItr << std::endl;
 		glDisableVertexAttribArray(*vecItr);
 	}
 } /* ShaderManager::disableAttribuateLocations */
 
 void ShaderManager::Destroy(void) {
     glDeleteProgram(this->shaderProgram);
+    this->shaderProgram = -1u;
 } /* ShaderManager::Destroy */
+
+ShaderManager::~ShaderManager(void) {
+	if (this->shaderProgram != -1u) {
+		this->Destroy();
+	}
+} /* ShaderManager::~ShaderManager */

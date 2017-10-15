@@ -15,7 +15,7 @@
 
 #define INACTIVE_SHADER_LOC (-1u)
 
-class ShaderManager : UtilityManager {
+class ShaderManager : protected UtilityManager {
 public:
 	ShaderManager(Config::ConfigHeader configHeader);
 
@@ -56,7 +56,6 @@ private:
 
 	std::map<std::string, GLenum> samplerMap;
 
-	//std::map<int, std::pair<std::string, GLuint>> layoutList;
 	std::vector<GLuint> layoutList;
 
 	GLuint shaderProgram;

@@ -19,12 +19,12 @@ class ShaderManager : UtilityManager {
 public:
 	ShaderManager(Config::ConfigHeader configHeader);
 
-	bool Initialise();
-	void Destroy();
+	bool Initialise(void);
+	void Destroy(void);
 
 	static ShaderManager *getActiveShaderManager(void);
 
-	GLuint getShaderProgram();
+	GLuint getShaderProgram(void);
 	GLuint getLayoutLocation(std::string);
 	GLuint getUniformLocation(std::string);
 
@@ -40,13 +40,13 @@ public:
 	bool bindVector3(std::string vectorName, GLfloat vectorData[3]);
 	bool bindVector4(std::string vectorName, GLfloat vectorData[4]);
 
-	void useProgram();
-	bool validateProgram();
+	void useProgram(void);
+	bool validateProgram(void);
 
-	void enableAttributeLocations();
-	void disableAttributeLocations();
+	void enableAttributeLocations(void);
+	void disableAttributeLocations(void);
 
-	~ShaderManager();
+	~ShaderManager(void);
 
 private:
 	static const Config::ConfigHeader resourceLoc;
@@ -56,7 +56,6 @@ private:
 
 	std::map<std::string, GLenum> samplerMap;
 
-	//std::map<int, std::pair<std::string, GLuint>> layoutList;
 	std::vector<GLuint> layoutList;
 
 	GLuint shaderProgram;

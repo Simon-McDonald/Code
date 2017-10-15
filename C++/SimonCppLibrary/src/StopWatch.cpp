@@ -5,7 +5,7 @@
  *      Author: Simon
  */
 
-#include "StopWatch.h"
+#include "StopWatch.hpp"
 
 StopWatch::StopWatch() : running(true), counts(0), pausedDuration(0.0f) {
 	this->startTime = std::chrono::high_resolution_clock::now();

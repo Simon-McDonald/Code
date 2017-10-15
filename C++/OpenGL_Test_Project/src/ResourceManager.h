@@ -27,7 +27,7 @@ public:
 	void loadCubeTexture(std::array<std::string, 6> &fileNames, std::string cubeName);
 	void loadRawImage(std::string imageFileName, int &width, int &height,
 			void *&imageData);
-	void loadTexture(std::string textureFileName);
+	GLuint loadTexture(std::string textureFileName);
 	void loadMesh(std::string meshFileName);
 
 	void setupShaderDataFormat(void);
@@ -38,21 +38,41 @@ public:
 			std::string textureFileName);
 	void setCubeTexture(std::string shaderSamplerName, std::string textureCubeName);
 
+	void loadObjectIntoVertexBuffer(std::string objectFilename);
+	void renderVertexBufferReference(std::string objectFilename);
+
 	void renderMesh(std::string meshFileName, bool renderFlag);
 	void renderMesh(std::string meshFileName);
 
 	~ResourceManager(void);
 
 private:
-	struct bufferedResource {
+	typedef struct {
 		GLuint vertexbuffer;
 		GLuint uvbuffer;
 		GLuint normalbuffer;
 		GLuint verticesSize;
-	};
+	} BufferedResource;
 
-	static std::map<std::string, struct bufferedResource> bufferedResourceID;
+	typedef struct {
+		GLuint dataBuffers[3];
+		GLuint indexBuffer;
+		GLuint texture;
+		GLuint vertexBuffer;
+		unsigned numVertices;
+	} VertexResource;
+
+	static std::map<std::string, BufferedResource> bufferedResourceID;
 	static std::map<std::string, GLuint> textureResourceID;
+	static std::map<std::string, VertexResource> vertexResourceMap;
+
+	bool loadObjectFile(
+		std::string fileName,
+		std::vector<glm::vec3> &verticesList,
+		std::vector<glm::vec2> &uvsList,
+		std::vector<glm::vec3> &normalsList,
+		std::vector<GLuint> &indicesList,
+		std::string &textureFile);
 };
 
 #endif /* RESOURCEMANAGER_H_ */

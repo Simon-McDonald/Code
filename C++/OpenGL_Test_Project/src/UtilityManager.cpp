@@ -28,13 +28,13 @@ void UtilityManager::Initialise(Config *config, Logger *logger) {
 	}
 } /* UtilityManager::Initialise */
 
-Config& UtilityManager::getConfig(void) const {
+Config& UtilityManager::getConfig(void) {
 	assert (UtilityManager::config);
 
 	return *UtilityManager::config;
 } /* UtilityManager::getConfig */
 
-Logger& UtilityManager::getLogger(void) const {
+Logger& UtilityManager::getLogger(void) {
 	assert (UtilityManager::logger);
 
 	return *UtilityManager::logger;

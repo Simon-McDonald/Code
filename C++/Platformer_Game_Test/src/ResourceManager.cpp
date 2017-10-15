@@ -12,17 +12,22 @@
 
 #include <SDL_image.h>
 
+#include "CheckErrors.h"
 #include "ShaderManager.h"
 
 #include <iostream>
 #include "ResourceManager.h"
 
-std::map<std::string, std::pair<GLuint, unsigned>> ResourceManager::textureResourceID;
+std::map<std::string, GLuint> ResourceManager::textureResourceID;
 std::map<GLuint, unsigned> ResourceManager::textureResourceStore;
+GLuint ResourceManager::errorTexture = -1u;
 
 ResourceManager::ResourceManager() {}
 
 bool ResourceManager::InitialiseResourceManager(void) {
+	ResourceManager::errorTexture = ResourceManager::generateErrorTexture();
+
+	DEBUG << "Error texture ID: " << ResourceManager::errorTexture << std::endl;
 	return true;
 }
 
@@ -45,19 +50,13 @@ GLuint ResourceManager::loadTexture(std::string textureFileName) {
 	}
 
 	if (ResourceManager::textureResourceID.count(textureFileName) != 0) {
-		// texture has already been loaded, need to increment counter
-		return -1u;
+		GLuint bufferID = ResourceManager::textureResourceID.at(textureFileName);
+
+		assert (ResourceManager::textureResourceStore.count(bufferID) != 0);
+		++ResourceManager::textureResourceStore.at(bufferID);
+
+		return bufferID;
 	}
-
-	/*std::string texturePath = this->getConfig().getString("RESOURCES", "images_dir") + "\\" + textureFileName;
-
-	SDL_Surface *textureData = IMG_Load(texturePath.c_str());
-	if (!textureData) {
-		ERR << "Failed to load image: '" << texturePath << "'" << std::endl;
-		return;
-	} else {
-		INFO << "Loaded image '" << texturePath << "'" << std::endl;
-	}*/
 
 	if (SDL_Surface* textureData = getSDLSurface(textureFileName)) {
 		GLuint textureBufferID;
@@ -75,7 +74,8 @@ GLuint ResourceManager::loadTexture(std::string textureFileName) {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
-		ResourceManager::textureResourceID.emplace(textureFileName, std::make_pair(textureBufferID, 1));
+		ResourceManager::textureResourceID.emplace(textureFileName, textureBufferID);
+		ResourceManager::textureResourceStore.emplace(textureBufferID, 1);
 
 		return textureBufferID;
 	}
@@ -85,6 +85,42 @@ GLuint ResourceManager::loadTexture(std::string textureFileName) {
 
 int ResourceManager::determineTextureGridSize(int numTextures) {
 	return static_cast<int>(ceil(sqrt(static_cast<float>(numTextures))));
+}
+
+GLuint ResourceManager::generateErrorTexture(void) {
+	int indTexDim = 16;
+	int numPixels = indTexDim;
+
+	std::vector<unsigned char> rawTexture;
+	rawTexture.resize(3 * numPixels * numPixels);
+
+	for (int texRowIdx = 0; texRowIdx < numPixels; texRowIdx++) {
+		for (int texColIdx = 0; texColIdx < numPixels; texColIdx++) {
+			int idx = texRowIdx * (numPixels * 3) + texColIdx * 3;
+
+			rawTexture.at(idx) = 250;
+			rawTexture.at(idx + 1) = 0;
+
+			if ((texRowIdx + texColIdx) % 2) {
+				rawTexture.at(idx + 2) = 255;
+			} else {
+				rawTexture.at(idx + 2) = 127;
+			}
+		}
+	}
+
+	GLuint textureBufferID;
+	glGenTextures(1, &textureBufferID);
+	glBindTexture(GL_TEXTURE_2D, textureBufferID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, numPixels, numPixels, 0, GL_RGB, GL_UNSIGNED_BYTE, rawTexture.data());
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	return textureBufferID;
 }
 
 GLuint ResourceManager::generateTexture(std::vector<std::string> textureFileNames) {
@@ -99,7 +135,7 @@ GLuint ResourceManager::generateTexture(std::vector<std::string> textureFileName
 	int numPixels = texDim * indTexDim;
 
 	std::vector<unsigned char> combinedTexture;
-	combinedTexture.resize((numPixels) * (3 * numPixels + 1));
+	combinedTexture.resize((numPixels) * (3 * numPixels));
 
 	//set default colors to Magenta
 	for (int texRowIdx = 0; texRowIdx < numPixels; texRowIdx++) {
@@ -147,17 +183,11 @@ GLuint ResourceManager::generateTexture(std::vector<std::string> textureFileName
 }
 
 void ResourceManager::setTexture(std::string textureFileName) {
-	if (ResourceManager::textureResourceID.count(textureFileName) == 0) {
-		return;
-	}
-
-
-
-	//this->getShaderManager().bindTexture("gTextureSampler", this->textureResourceID.at(textureFileName));
+	this->setTexture("gTextureSampler", textureFileName);
 }
 
 void ResourceManager::setTexture(GLuint textureID) {
-	this->getShaderManager().bindTexture("gSampler", textureID);
+	this->setTexture("gSampler", textureID);
 }
 
 void ResourceManager::setTexture(std::string shaderSamplerName, std::string textureFileName) {
@@ -165,11 +195,40 @@ void ResourceManager::setTexture(std::string shaderSamplerName, std::string text
 		return;
 	}
 
-	this->getShaderManager().bindTexture(shaderSamplerName, this->textureResourceID.at(textureFileName).first);
+	this->setTexture(shaderSamplerName, this->textureResourceID.at(textureFileName));
+}
+
+void ResourceManager::setTexture(std::string shaderSamplerName, GLuint textureID) {
+	this->getShaderManager().bindTexture(shaderSamplerName, textureID);
+}
+
+void ResourceManager::unloadTexture(std::string textureFileName) {
+	if (ResourceManager::textureResourceID.count(textureFileName) == 0) {
+		return;
+	}
+
+	GLuint bufferID = ResourceManager::textureResourceID.at(textureFileName);
+	assert (ResourceManager::textureResourceStore.count(bufferID) != 0);
+
+	this->unloadTexture(bufferID);
+
+	if (ResourceManager::textureResourceStore.count(bufferID) == 0) {
+		ResourceManager::textureResourceID.erase(textureFileName);
+	}
+}
+
+void ResourceManager::unloadTexture(GLuint textureID) {
+	if ((--ResourceManager::textureResourceStore.at(textureID)) == 0) {
+		ResourceManager::textureResourceStore.erase(textureID);
+		glDeleteTextures(1, &textureID);
+	}
 }
 
 void ResourceManager::FinaliseResourceManager(void) {
-
+	if (this->errorTexture != -1u) {
+		glDeleteTextures(1, &this->errorTexture);
+		this->errorTexture = -1u;
+	}
 }
 
 void ResourceManager::setupShaderDataFormat(void) {
@@ -177,5 +236,7 @@ void ResourceManager::setupShaderDataFormat(void) {
 	glGenVertexArrays (1, &VertexArrayID);
 	glBindVertexArray (VertexArrayID);
 }
+
+// removeShaderDataFormat stuff
 
 ResourceManager::~ResourceManager() {}

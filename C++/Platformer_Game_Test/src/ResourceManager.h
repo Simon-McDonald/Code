@@ -22,21 +22,23 @@ class ResourceManager : protected WorldManager, protected UtilityManager {
 public:
 	ResourceManager(void);
 
-	bool InitialiseResourceManager(void);
+	static bool InitialiseResourceManager(void);
 
 	SDL_Surface* getSDLSurface(std::string imageFileName);
 
 	GLuint loadTexture(std::string textureFileName);
 
+	static GLuint generateErrorTexture(void);
 	GLuint generateTexture(std::vector<std::string> textureFileNames);
 	int determineTextureGridSize(int numTextures);
 
 	void unloadTexture(std::string textureFileName);
+	void unloadTexture(GLuint textureID);
 
 	void setTexture(std::string textureFileName);
 	void setTexture(GLuint textureID);
-	void setTexture(std::string shaderSamplerName,
-			std::string textureFileName);
+	void setTexture(std::string shaderSamplerName, std::string textureFileName);
+	void setTexture(std::string shaderSamplerName, GLuint textureID);
 
 	void FinaliseResourceManager(void);
 
@@ -45,8 +47,17 @@ public:
 	~ResourceManager(void);
 
 private:
-	static std::map<std::string, std::pair<GLuint, unsigned>> textureResourceID;
+	/*
+	 * Map between the image name used to generate the texture and the buffer ID.
+	 */
+	static std::map<std::string, GLuint> textureResourceID;
+
+	/*
+	 * Map between the texture buffers ID and the number of current references.
+	 */
 	static std::map<GLuint, unsigned> textureResourceStore;
+
+	static GLuint errorTexture;
 };
 
 #endif /* RESOURCEMANAGER_H_ */

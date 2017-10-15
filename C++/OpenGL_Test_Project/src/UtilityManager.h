@@ -24,8 +24,8 @@ private:
 protected:
 	UtilityManager(void);
 
-	Config& getConfig(void) const;
-	Logger& getLogger(void) const;
+	static Config& getConfig(void);
+	static Logger& getLogger(void);
 };
 
 #endif /* UTILITYMANAGER_H_ */

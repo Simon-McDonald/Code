@@ -20,8 +20,7 @@ ShaderManager *ShaderManager::getActiveShaderManager(void) {
 
 ShaderManager::ShaderManager(Config::ConfigHeader configHeader) :
 	header(configHeader), shaderProgram(-1u) {
-	// should probably check if configHeader exists in the config
-	//if (this->getConfig().containsHeader(this->header)) ...
+	// Do not check validity of configHeader, will fail to initialise if configHeader not valid.
 } /* ShaderManager::ShaderManager */
 
 ShaderManager::~ShaderManager() {
@@ -47,7 +46,7 @@ bool ShaderManager::Initialise() {
     	if (fragmentShader == -1u) {
         	this->setFeedbackVaryings();
     	} else {
-    		ERR << "The 'feedback_variables' key is present with a fragment shader!" << std::endl;
+    		ERR << "The 'feedback_variables' key is present with a fragment shader!";
     	}
     }
 
@@ -61,11 +60,11 @@ bool ShaderManager::Initialise() {
 		char errorMsgBfr[bfrLen];
 		glGetProgramInfoLog(this->shaderProgram, bfrLen, NULL, errorMsgBfr);
 
-    	this->getLogger().Log(Logger::error, LOG_ARGS, "Failed to link shader program '%s', error: %s", this->header.c_str(), errorMsgBfr);
+    	//this->getLogger().Log(Logger::error, LOG_ARGS, "Failed to link shader program '%s', error: %s", this->header.c_str(), errorMsgBfr);
 
     	return false;
     } else {
-    	this->getLogger().Log(Logger::info, LOG_ARGS, "Linked shader program '%s'", this->header.c_str());
+    	//this->getLogger().Log(Logger::info, LOG_ARGS, "Linked shader program '%s'", this->header.c_str());
     }
 
 	glDeleteShader(geometryShader);
@@ -86,7 +85,7 @@ void ShaderManager::setFeedbackVaryings(void) {
 	const GLchar *feedbackVaryings[10] = {0};
 
 	for (unsigned vary_idx = 0; vary_idx < varyings.size(); ++vary_idx) {
-		INFO << "Adding varying '" << varyings.at(vary_idx) << "' in shader '" << this->header << "'" << std::endl;
+		INFO << "Adding varying '" << varyings.at(vary_idx) << "' in shader '" << this->header << "'" << END;
 		feedbackVaryings[vary_idx] = varyings.at(vary_idx).data();
 	}
 
@@ -96,7 +95,7 @@ void ShaderManager::setFeedbackVaryings(void) {
 GLuint ShaderManager::createShader(GLenum type, Config::ConfigKey key) {
 	if (!this->getConfig().containsHeader(ShaderManager::resourceLoc) ||
 	    !this->getConfig().containsKey(ShaderManager::resourceLoc, "shader_dir")) {
-		this->getLogger().Log(Logger::info, LOG_ARGS, "No shader folder path");
+		//this->getLogger().Log(Logger::info, LOG_ARGS, "No shader folder path");
 		return -1u;
 	}
 	std::string path = this->getConfig().getString(ShaderManager::resourceLoc, "shader_dir");
@@ -118,8 +117,8 @@ GLuint ShaderManager::createShader(GLenum type, Config::ConfigKey key) {
 		}
 		shaderStream.close();
 	} else {
-		this->getLogger().Log(Logger::error, LOG_ARGS,
-			"Cannot open shader %s!", shaderFile.c_str());
+		//this->getLogger().Log(Logger::error, LOG_ARGS,
+			//"Cannot open shader %s!", shaderFile.c_str());
 		return -1u;
 	}
 
@@ -142,10 +141,17 @@ GLuint ShaderManager::createShader(GLenum type, Config::ConfigKey key) {
 
 		return -1u;
 	} else {
-		this->getLogger().Log(Logger::info, LOG_ARGS, "Shader '%s' of type %i compiled successfully!", shaderFile.c_str(), type);
+		//this->getLogger().Log(Logger::info, LOG_ARGS, "Shader '%s' of type %i compiled successfully!", shaderFile.c_str(), type);
 	}
 
 	this->parseRawShader(shaderText);
+
+	if (type == GL_TESS_CONTROL_SHADER) {
+		GLint MaxPatchVertices = 0;
+		glGetIntegerv(GL_MAX_PATCH_VERTICES, &MaxPatchVertices);
+		INFO << "Max supported patch vertices " << MaxPatchVertices << END;
+		glPatchParameteri(GL_PATCH_VERTICES, 3);
+	}
 
     return shader;
 } /* ShaderManager::createShader */
@@ -256,7 +262,7 @@ GLuint ShaderManager::getLayoutLocation(std::string layoutName) {
 	GLint layoutLocation = glGetAttribLocation(this->shaderProgram, layoutName.c_str());
 
 	if (layoutLocation == -1) {
-		this->getLogger().Log(Logger::error, LOG_ARGS, "The layout %s is not present in the shader program %s", layoutName.c_str(), this->header.c_str());
+		//this->getLogger().Log(Logger::error, LOG_ARGS, "The layout %s is not present in the shader program %s", layoutName.c_str(), this->header.c_str());
 	}
 
 	return layoutLocation;
@@ -305,7 +311,7 @@ void ShaderManager::useProgram() {
 	}
 
 	if (ShaderManager::currentShaderProgram) {
-		ShaderManager::currentShaderProgram->disableAttributeLocations();
+		//ShaderManager::currentShaderProgram->disableAttributeLocations();
 	}
 
 	glUseProgram(this->shaderProgram);
@@ -323,7 +329,7 @@ bool ShaderManager::validateProgram() {
 		char errorMsgBfr[bfrLen];
 		glGetProgramInfoLog(this->shaderProgram, bfrLen, NULL, errorMsgBfr);
 
-		this->getLogger().Log(Logger::error, LOG_ARGS, "Shader program %s is invalid, msg: %s", this->header.c_str(), errorMsgBfr);
+		//this->getLogger().Log(Logger::error, LOG_ARGS, "Shader program %s is invalid, msg: %s", this->header.c_str(), errorMsgBfr);
 
 		return false;
 	} else {

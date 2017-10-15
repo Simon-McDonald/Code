@@ -41,7 +41,8 @@ class ProgramManager : protected UtilityManager {
 public:
 	ProgramManager(void) : currentShader(nullptr), player(glm::vec3(0, -5, 1), 1),
 		light("gDirectionalLight", glm::vec3(1.0f, 1.0f, 1.0f), 0.1, 0.9, glm::vec3(0.0f, -1.0f, -1.0f)) {
-
+		std::cout << "CCCCCCCCCCCCCCC" << std::endl;
+		INFO << "AAAAAAAAAAAAAAAA" << END;
 		shaderMap.emplace("SkyBox", ShaderManager("SKYBOX_SHADER"));
 		shaderMap.emplace("Standard", ShaderManager("SHADOW_SHADER"));
 		shaderMap.emplace("Billboard", ShaderManager("BILLBOARD_SHADER"));
@@ -56,6 +57,7 @@ public:
 			return false;
 		}
 		CHECKERRORS();
+
 		for (std::map<std::string, ShaderManager>::iterator mapItr = this->shaderMap.begin();
 			 mapItr != this->shaderMap.end();
 			 mapItr++) {
@@ -75,8 +77,8 @@ public:
 		this->shaderMap.at("SkyBox").useProgram();
 
 		DirectionalLight::setGlobalShaderParams();
-		light.setLightInShader();
 		////////////////////////////////////////
+
 		this->shaderMap.at("Standard").useProgram();
 
 		resourceManager.setupShaderDataFormat();
@@ -84,18 +86,9 @@ public:
 
 		currentShader = ShaderManager::getActiveShaderManager();
 
-		GLint MaxPatchVertices = 0;
-		glGetIntegerv(GL_MAX_PATCH_VERTICES, &MaxPatchVertices);
-		printf("Max supported patch vertices %d\n", MaxPatchVertices);
-		glPatchParameteri(GL_PATCH_VERTICES, 3);
-		CHECKERRORS();
-		GLint majorVer = 0, minorVer = 0;
-		glGetIntegerv(GL_MAJOR_VERSION, &majorVer);
-		glGetIntegerv(GL_MINOR_VERSION, &minorVer);
-		INFO << "OpenGL version " << majorVer << "." << minorVer << std::endl;
 
-		const GLubyte *bla = glGetString(GL_VERSION);
-		INFO << "String: " << bla << " --- " << std::endl << std::endl;;
+
+		CHECKERRORS();
 
 		return true;
 	}
@@ -123,11 +116,30 @@ public:
 		RenderableObject fullScreen = RenderableObject("fullScreenObj.obj", "", glm::vec3(0.6, -0.6, 0.0), 1.2);
 		resourceManager.loadTexture("green.bmp");
 
-		ParticleSystem particleSystem;
-		particleSystem.InitParticleSystem(glm::vec3(5.0, 5.0, 0.0));
 
-		ParticleSystem particleSystem2;
-		particleSystem2.InitParticleSystem(glm::vec3(-5.0, -5.0, 0.0));
+
+
+		ParticleSystem fireworkLauncher1(
+			glm::vec3(5.0, 5.0, 0.0),
+			glm::vec3(1.0, -1.0, 8.0),
+			0.08,
+			1.0,
+			0.5,
+			1.0,
+			20,
+			1.5);
+		fireworkLauncher1.InitParticleSystem();
+
+		ParticleSystem fireworkLauncher2(
+			glm::vec3(-5.0, -5.0, 0.0),
+			glm::vec3(1.0, 1.0, 10.0),
+			0.1,
+			1.0,
+			0.5,
+			1.0,
+			20,
+			1.5);
+		fireworkLauncher2.InitParticleSystem();
 
 		TessellatedObject tessObj("suzanne.obj", "bla.bmp", glm::vec3(0.0, 0.0, 0.2));
 
@@ -215,9 +227,9 @@ public:
 			currentShader->disableAttributeLocations();
 			CHECKERRORS();
 			// Render the particle system
-			particleSystem.Render(deltaTime_sec, ViewProj, eyeLoc);
+			fireworkLauncher1.Render(deltaTime_sec, ViewProj, eyeLoc);
 			CHECKERRORS();
-			particleSystem2.Render(deltaTime_sec, ViewProj, eyeLoc);
+			fireworkLauncher2.Render(deltaTime_sec, ViewProj, eyeLoc);
 			CHECKERRORS();
 			this->currentShader = &shaderMap.at("Tessellation");
 			this->currentShader->useProgram();
@@ -288,12 +300,14 @@ int main(int argc, char *argv[])
 	Config config("config/config.txt");
 	Logger logger;
 
-	config.displayConfig();
+	//config.displayConfig();
 	UtilityManager::Initialise(&config, &logger);
 
+	std::cout << "BBBBBBBBBBBB" << std::endl;
 	ProgramManager program;
 	if (!program.Initialise()) {
-		ERR << "Failed to initialise stuff" << std::endl;
+		std::cout << "QQQQQQQQQQQQQQQQQQQQQ" << std::endl;
+		//ERR << "Failed to initialise stuff" << std::endl;
 		return EXIT_FAILURE;
 	}
 

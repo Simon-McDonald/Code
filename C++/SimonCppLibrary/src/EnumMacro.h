@@ -32,6 +32,8 @@
  *   suitsEnum stringToEnum (std::string);
  */
 
+#include <string.h>
+
 #define _PLAIN(x) x
 #define _STRINGY(x) #x
 
@@ -77,5 +79,15 @@
 		} while (enumIdx != typeName##Enum (0)); \
 		return typeName::EnumLimit; \
 	}
+
+#define CREATE_LOCAL_ENUM(typeName, enumList) \
+	enum typeName { \
+		enumList(_PLAIN) \
+	};
+
+#define CREATE_LOCAL_LIST(typeName, enumList) \
+	static const std::string typeName [] = { \
+		enumList(_STRINGY) \
+	};
 
 #endif /* ENUMMACRO_H_ */

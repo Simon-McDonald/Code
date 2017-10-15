@@ -8,7 +8,7 @@ out vec4 FragColor;
 void main() {
 	FragColor = texture2D(gSampler, TexCoord);
 	
-	//if (FragColor.r == 0 && FragColor.g == 0 && FragColor.b == 0) {
-		//discard;
-	//}
+	if (FragColor.r == 1.0 && FragColor.g == 1.0 && FragColor.b == 1.0) {
+		discard;
+	}
 }

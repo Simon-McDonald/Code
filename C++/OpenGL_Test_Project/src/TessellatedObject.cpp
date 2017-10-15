@@ -37,7 +37,7 @@ void TessellatedObject::render(glm::mat4 viewProjMat) {
 	if (this->getWindow().getInput().space && !tick) {
 		tessLevel += 1.0;
 		tick = 50;
-		INFO << "New Tess Level: " << tessLevel << std::endl;
+		INFO << "New Tess Level: " << tessLevel;
 	}
 	if (tick != 0)
 	{

@@ -5,15 +5,17 @@
  *      Author: Simon
  */
 
+#include "Config.hpp"
+
 #include <assert.h>
 #include <ctype.h>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <stdlib.h>
 #include <string>
 
-#include "Config.h"
-#include "Logger.h"
+#include "Logger.hpp"
 
 Config::Config(std::string configFilePath) {
 	std::ifstream configFile;
@@ -183,6 +185,19 @@ int Config::getInt(ConfigHeader header, ConfigKey key) {
 	return intValue;
 } /* Config::getInt */
 
+unsigned Config::getUInt(ConfigHeader header, ConfigKey key) {
+	std::string value = this->getString(header, key);
+
+	if (!value.length()) {
+		std::string errorMessage = "Empty value for key '" + key + "' under header '" + header + "'";
+		throw std::invalid_argument(errorMessage);
+	}
+
+	unsigned intValue = stoul(value);
+
+	return intValue;
+} /* Config::getUInt */
+
 float Config::getFloat(ConfigHeader header, ConfigKey key) {
 	std::string value = this->getString(header, key);
 
@@ -196,22 +211,37 @@ float Config::getFloat(ConfigHeader header, ConfigKey key) {
 	return floatValue;
 } /* Config::getFloat */
 
-void Config::displayConfig(void) {
-	std::cout << "----Configuration----" << std::endl;
+void Config::getVector(ConfigHeader header, ConfigKey key, std::vector<std::string> &valueList) {
+	std::string value = this->getString(header, key);
+
+	std::stringstream ss;
+	ss.str(value);
+	std::string item;
+	while (std::getline(ss, item, ',')) {
+		valueList.push_back(item);
+	}
+}
+
+void Config::displayConfig(std::ostream &os) {
+	os << "----Configuration----" << std::endl;
 
 	for (ConfigHeaderMap::iterator mapItr = this->configMap.begin();
 		 mapItr != this->configMap.end();
 		 mapItr++) {
 
-		std::cout << "[" << mapItr->first << "]" << std::endl;
+		os << "[" << mapItr->first << "]" << std::endl;
 		ConfigMap &inMap = mapItr->second;
 
 		for (ConfigMap::iterator inMapItr = inMap.begin();
 			 inMapItr != inMap.end();
 			 inMapItr++) {
-			std::cout << inMapItr->first << ":" << inMapItr->second << std::endl;
+			os << inMapItr->first << ":" << inMapItr->second << std::endl;
 		}
 	}
+} /* Config::displayConfig */
+
+void Config::displayConfig(void) {
+	this->displayConfig(std::cout);
 } /* Config::displayConfig */
 
 void Config::listConfigKeys(ConfigHeader header, std::vector<ConfigKey> keyList) {

@@ -55,7 +55,8 @@ public:
 
 		this->shaderMap.at("Billboard").useProgram();
 
-		//ResourceManager::setupShaderDataFormat();
+		ResourceManager::InitialiseResourceManager();
+
 		GLuint VertexArrayID;
 		glGenVertexArrays (1, &VertexArrayID);
 		glBindVertexArray (VertexArrayID);

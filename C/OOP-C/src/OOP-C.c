@@ -14,31 +14,18 @@
 #include "Shape.h"
 #include "Triangle.h"
 
-/*#define cat(start, end) start ## end
+/*
+Inheritance Tree:
 
-#define test1 "aaa"
-#define test2 cat(test, 1)*/
+       Root
+        |
+      Object
+        |
+      Shape
+     /     \
+ Square   Triangle
 
-/*#define a_PARENT
-#define b_PARENT a
-#define c_PARENT b
-#define d_PARENT c
-
-#define a_STATE printf("a\n");
-#define b_STATE printf("b\n");
-#define c_STATE printf("c\n");
-#define d_STATE printf("d\n");
-
-#define _VAR_CAT2(start,end) start##end
-#define _VAR_CAT_WRAP2(start,end) _VAR_CAT(start,end)
-
-#define display(letter) \
-		display2(letter) \
-		_VAR_CAT2(letter,_STATE)
-
-#define display2(letter) \
-		display(_VAR_CAT2(letter,_PARENT)) \
-		_VAR_CAT2(letter,_STATE)*/
+*/
 
 int main ()
 {

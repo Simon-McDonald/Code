@@ -1,0 +1,296 @@
+<!doctype html>
+<html>
+    <head>
+    <meta charset="UTF-8">
+    </head>
+   <body>
+      <canvas width = "570" height = "570" id = "my_Canvas"></canvas>
+
+      <script src='WebGL-Library.js' type='text/javascript'></script>
+      
+<script id='shader-vs' type='x-shader/x-vertex'>
+attribute vec4 position;
+attribute vec2 samplerPos;
+
+uniform mat4 Pmatrix;
+uniform mat4 Vmatrix;
+uniform mat4 Mmatrix;
+
+varying vec2 vSamplerPos;
+
+void main(void) {
+  gl_Position = Pmatrix*Vmatrix*Mmatrix*position;
+  vSamplerPos = samplerPos;
+}
+</script>
+      
+<script id='shader-fs' type='x-shader/x-vertex'>
+precision mediump float;
+varying vec2 vSamplerPos;
+
+uniform sampler2D gSampler;
+
+void main(void) {
+  gl_FragColor = texture2D(gSampler, vSamplerPos);
+}
+</script>
+      
+<script type='text/javascript'>
+
+/*============= Creating a canvas =================*/
+var canvas = document.getElementById('my_Canvas');
+gl = canvas.getContext('experimental-webgl');
+if (!gl) {
+    console.log ("Unable to get WebGL context. Browser does not support WebGL");
+}
+
+/*=============== Load the World ==========================*/
+
+function loadWorld() {
+    var request = new XMLHttpRequest();
+    request.open("GET", "world.txt");
+    request.onreadystatechange = function() {
+        if (request.readyState == 4) {
+            console.log ("Loaded the file");
+            handleLoadedWorld(request.responseText);
+        }
+    }
+    request.send();
+}
+
+var vertexBuffer = null;
+var uvsBuffer = null;
+function handleLoadedWorld(data) {
+    var lines = data.split("\n");
+    var vertexCount = 0;
+    var vertexPositions = [];
+    var vertexTextureCoords = [];
+    for (var i in lines) {
+        var vals = lines[i].replace(/^\s+/, "").split(/\s+/);
+        if (vals.length == 5 && vals[0] != "//") {
+            // It is a line describing a vertex; get X, Y and Z first
+            vertexPositions.push(parseFloat(vals[0]));
+            vertexPositions.push(parseFloat(vals[1]));
+            vertexPositions.push(parseFloat(vals[2]));
+
+            // And then the texture coords
+            vertexTextureCoords.push(parseFloat(vals[3]));
+            vertexTextureCoords.push(parseFloat(vals[4]));
+
+            vertexCount += 1;
+        }
+    }
+
+    vertexBuffer = new bufferObj (gl.ARRAY_BUFFER, vertexPositions)
+        .setSizeStrideOffset(3, 0, 0);
+    uvsBuffer = new bufferObj (gl.ARRAY_BUFFER, vertexTextureCoords)
+        .setSizeStrideOffset(2, 0, 0);
+}
+
+loadWorld();
+
+/*=================== Textures =============================*/
+
+var actTexture = new tex2D ("glass.gif");
+
+/*=================== Shaders =========================*/
+  
+var shaderProgram = new shaderProg()
+    .addShader(new shaderObj(gl.VERTEX_SHADER, getShaderSrc('shader-vs')))
+    .addShader(new shaderObj(gl.FRAGMENT_SHADER, getShaderSrc('shader-fs')))
+    .finalise();
+    
+/* ====== Associating attributes to vertex shader =====*/
+
+shaderProgram.use();
+
+/*==================== MATRIX =====================*/
+
+var FoV = 35;
+
+var projMatrix = new mat4();
+var movMatrix = new mat4();
+var viewMatrix = new mat4()//.translateXYZ({data:[0, -0.5, 0]});
+
+/*==================== Mouse Events ===================*/
+
+var yaw = 0;
+var pitch = 0;
+var drag = false;
+var old_x = -1;
+var old_y = -1;
+
+var dX = 0;
+var dY = 0;
+
+var mouseDown = function (e) {
+    drag = true;
+    old_x = e.pageX, old_y = e.pageY;
+    e.preventDefault();
+    return false;
+};
+
+var mouseUp = function (e) {
+    drag = false;
+};
+
+console.log ("AAAABBBB");
+var mouseMove = function (e) {
+    console.log ("AAAAAAAAAA");
+    if (old_x != -1 && old_y != -1) {
+        dX = (e.pageY - old_y) * 2 * Math.PI/canvas.height;
+        dY = (e.pageX - old_x) * 2 * Math.PI/canvas.width;
+    
+        pitch += dX;
+        yaw += dY;
+    }
+
+    old_x = e.pageX, old_y = e.pageY;
+    e.preventDefault();
+};
+
+canvas.addEventListener("mousedown", mouseDown, false);
+canvas.addEventListener("mouseup", mouseUp, false);
+canvas.addEventListener("mouseout", mouseUp, false);
+document.addEventListener("mousemove", mouseMove, false);
+
+/*================ Keyboard Events ======================*/
+
+var currentlyPressedKeys = {};
+var newlyPressedKeys = {};
+
+function handleKeyDown (event) {
+    currentlyPressedKeys[event.keyCode] = true;
+    newlyPressedKeys[event.keyCode] = true;
+}
+
+function handleKeyUp (event) {
+    currentlyPressedKeys[event.keyCode] = false;
+}
+
+function resetNewlyPressedKeys () {
+    newlyPressedKeys = {};
+}
+
+document.onkeydown = handleKeyDown;
+document.onkeyup = handleKeyUp;
+
+var xRotSpeed = 0;
+var yRotSpeed = 0;
+
+var xLoc = 0;
+var yLoc = -0.5;
+var zLoc = 0;
+
+function degToRad (angle) {
+    return Math.PI * angle / 180;
+}
+
+function handleUserInputUpdate () {
+    if (newlyPressedKeys['F'.charCodeAt(0)]) {
+        // do something for F
+    }
+    
+    resetNewlyPressedKeys ();
+    
+    if (currentlyPressedKeys[33]) {
+      // Page Up
+      //viewMatrix.zoom(0.05);
+      FoV -= 0.5;
+    }
+    if (currentlyPressedKeys[34]) {
+      // Page Down
+      //viewMatrix.zoom(-0.05);
+      FoV += 0.5
+    }
+    if (currentlyPressedKeys[37]) {
+      // Left cursor key
+      yRotSpeed -= 0.1;
+    }
+    if (currentlyPressedKeys[39]) {
+      // Right cursor key
+      yRotSpeed += 0.1;
+    }
+    if (currentlyPressedKeys[38]) {
+      // Up cursor key
+      xRotSpeed -= 0.1;
+    }
+    if (currentlyPressedKeys[40]) {
+      // Down cursor key
+      xRotSpeed += 0.1;
+    }
+    
+    
+    
+    if (currentlyPressedKeys['W'.charCodeAt(0)]) {
+        xLoc -= 0.1 * Math.sin(yaw);
+        zLoc += 0.1 * Math.cos(yaw);
+    }
+    if (currentlyPressedKeys['A'.charCodeAt(0)]) {
+        xLoc += 0.1 * Math.cos(yaw);
+        zLoc += 0.1 * Math.sin(yaw);
+    }
+    if (currentlyPressedKeys['D'.charCodeAt(0)]) {
+        xLoc -= 0.1 * Math.cos(yaw);
+        zLoc -= 0.1 * Math.sin(yaw);
+    }
+    if (currentlyPressedKeys['S'.charCodeAt(0)]) {
+        xLoc += 0.1 * Math.sin(yaw);
+        zLoc -= 0.1 * Math.cos(yaw);
+    }
+}
+
+/*================= Drawing ===========================*/
+var THETA = 0.0, PHI = 0.0;
+var viewTHETA = 0.0, viewPHI = 0.0;
+var time_old = 0;
+
+var animate = function(time) {
+    var dt = time-time_old;
+    
+    handleUserInputUpdate ();
+    
+    THETA += yRotSpeed * dt / 1000;
+    PHI += xRotSpeed * dt / 1000;
+
+    movMatrix.reset();
+    viewMatrix.reset().translateXYZ({data:[xLoc, yLoc, zLoc]})
+        .multiply(new mat4().rotateY(yaw).rotateX(pitch));
+    dY = 0, dX = 0;
+    
+    projMatrix.reset().setProjection (FoV, canvas.width/canvas.height, 0.1, 100);
+    
+    time_old = time;
+
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LEQUAL);
+
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clearDepth(1.0);
+
+    gl.viewport(0.0, 0.0, canvas.width, canvas.height);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    shaderProgram.setUniformMatrix4fv(projMatrix, "Pmatrix");
+    shaderProgram.setUniformMatrix4fv(viewMatrix, "Vmatrix");
+    shaderProgram.setUniformMatrix4fv(movMatrix, "Mmatrix");
+
+    shaderProgram.setTexture2D(actTexture, "gSampler", 0);
+
+    if (vertexBuffer == null || uvsBuffer == null) {
+        console.log ("Waiting for loading");
+    } else {
+    
+        shaderProgram.vertexAttribPointer(vertexBuffer, "position");
+        shaderProgram.vertexAttribPointer(uvsBuffer, "samplerPos");
+        
+        gl.drawArrays(gl.TRIANGLES, 0, vertexBuffer.getNumItems());
+    }
+    window.requestAnimationFrame(animate);
+}
+animate(0);
+
+</script>
+
+   </body>
+</html>

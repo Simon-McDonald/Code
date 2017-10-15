@@ -5,74 +5,88 @@
  *      Author: Simon
  */
 
-#include <iostream>
+#include "Logger.hpp"
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <string.h>
+LogLevel::LogLevel(Type t) : t_(t) {};
 
-#include "Logger.h"
+LogLevel::operator LogLevel::Type () const {
+	return t_;
+};
 
-const char Logger::levelNames[Logger::numLevels][8] = {"INFO", "DEBUG", "WARN", "ERROR"};
-const int Logger::fileNameLength = 25;
-const int Logger::funcNameLength = 12;
-const int Logger::lineNumLength = 4;
-const int Logger::logLevelLength = 6;
+const std::string& LogLevel::toString () const {
+	CREATE_LOCAL_LIST(test_list, LOG_LEVEL_ENUM_LIST)
+	unsigned idx = (unsigned) this->t_;
+	return test_list[idx];
+};
 
-Logger::Logger() {
-} /* Logger::Logger */
+LogLevel::operator const std::string& () const {
+	return this->toString();
+}
 
-void Logger::Log(Logger::LogLevel level, std::string formatString, ...)  {
-	char formatBuffer[256];
+std::ostream& operator<<(std::ostream& os, const LogLevel& level) {
+	os << level.toString(); return os;
+}
 
-	sprintf(formatBuffer, "%.*s",
-			this->fileNameLength + this->funcNameLength + this->lineNumLength + 3,
-			" ");
+std::ostream& operator<<(std::ostream& os, const LogLevel::Type& type) {
+	os << LogLevel(type).toString(); return os;
+}
 
-	sprintf(formatBuffer + strlen(formatBuffer), "%.*s:",
-			this->logLevelLength, levelNames[level]);
 
-	va_list argList;
-	va_start (argList, formatString);
+const unsigned Logger::registerLogLevel(std::string newLogLevel) {
+	unsigned newId = customLogLevels.size();
+	customLogLevels.push_back(newLogLevel);
+	return newId;
+}
 
-	vsprintf(formatBuffer + strlen(formatBuffer), formatString.c_str(), argList);
-	va_end (argList);
+Logger::Logger() : customLogLevels({"UNDEFINED"}), currentStream(nullptr) {}
 
-	printf ("%s\n", formatBuffer);
-}; /* Logger::Log */
+std::ostream& Logger::Log(std::ostream &os, std::string levelString, const char *fileName, const char *functionName, int lineNum) {
+	os << std::setfill(' ')
+		<< std::setw(40) << std::left << fileName <<
+		std::setw(0) << ": " <<
+		std::setw(25) << std::left << functionName <<
+		std::setw(0) << ": " <<
+		std::setw(5) << std::right << lineNum <<
+		std::setw(0) << ": " <<
+		std::setw(6) << std::left << levelString <<
+		std::setw(0) << ": ";
+	return os;
+}
 
-void Logger::Log(LogLevel level, std::string fileName, std::string funcName,
-	int lineNum, std::string formatString, ...) {
-	char formatBuffer[256];
-
-	sprintf(formatBuffer, "%.*s:%.*s:%.*d:",
-			this->fileNameLength, fileName.c_str(),
-			this->funcNameLength, funcName.c_str(),
-			this->lineNumLength, lineNum);
-
-	sprintf(formatBuffer + strlen(formatBuffer), "%.*s:",
-			this->logLevelLength, levelNames[level]);
-
-	va_list argList;
-	va_start(argList, formatString);
-
-	vsprintf(formatBuffer + strlen(formatBuffer), formatString.c_str(), argList);
-	va_end(argList);
-
-	printf ("%s\n", formatBuffer);
-} /* Logger::Log */
-
-std::string Logger::formatLength(std::string baseString, size_t length) {
-	size_t strLength = baseString.length();
-	if (strLength < length) {
-		for (size_t idx = strLength; idx != length; idx++) {
-			baseString.append(" ");
-		}
-	} else if (strLength > length) {
-		baseString = baseString.substr(0, length);
+std::ostream& Logger::Log(LogLevel::Type level, const char *fileName, const char *functionName, int lineNum) {
+	if (this->currentStream) {
+		//*this->currentStream << '\n';
 	}
-	return baseString;
-} /* Logger::formatLength */
 
-Logger::~Logger() {
-} /* Logger::~Logger */
+	this->currentStream = &std::cout;
+	return this->Log(*this->currentStream, LogLevel(level), fileName, functionName, lineNum);
+}
+
+std::ostream& Logger::Log(unsigned level, const char *fileName, const char *functionName, int lineNum) {
+	if (this->currentStream) {
+		//*this->currentStream << '\n';
+	}
+
+	this->currentStream = &std::cout;
+	return this->Log(*this->currentStream, this->customLogLevels.at(level), fileName, functionName, lineNum);
+}
+
+std::ostream& Logger::Log() {
+	if (!this->currentStream) {
+		return std::cout;
+	}
+
+	return *this->currentStream;
+}
+
+std::ostream& Logger::Flush() {
+	if (!this->currentStream) {
+		return std::cout;
+	}
+
+	//return this->currentStream->flush();
+	//return *this->currentStream;// << std::endl;
+	return std::cout << "()";
+	//return std::endl;
+}
+

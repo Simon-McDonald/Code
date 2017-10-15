@@ -34,6 +34,8 @@ bool Player::InitialisePlayer(
 
 	this->textureID = this->generateTexture(resourcesVector);
 
+	DEBUG << "Player texture ID: " << this->textureID << std::endl;
+
 	this->textureGridDim = this->determineTextureGridSize(resourcesVector.size());
 
 	std::vector<GLfloat> ha = {0.0, 1.0, 2.0, 3.0};
@@ -277,8 +279,6 @@ void Player::Render(void) {
 		this->setTexture(this->textureID);
 	}
 
-	CHECKERRORS();
-
 	glBindBuffer(GL_ARRAY_BUFFER, this->pointBufferID);
 	glVertexAttribPointer(
 		1,                  // attribute
@@ -302,8 +302,6 @@ void Player::Render(void) {
 
 	this->getShaderManager().setUniformBool("flipVertical", !facingForward);
 
-
-
 	ShaderManager::getActiveShaderManager()->validateProgram();
 
 	if (this->velocity.x != 0) {
@@ -313,6 +311,15 @@ void Player::Render(void) {
 	}
 
 	glDrawArrays(GL_POINTS, this->runNum, 1);
+}
+
+void Player::Destroy(void) {
+	if (this->textureID != -1u) {
+		//this->
+	}
+
+	//GLuint textureID;
+	//GLuint pointBufferID;
 }
 
 Player::~Player() {

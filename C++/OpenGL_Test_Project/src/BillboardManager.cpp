@@ -16,8 +16,6 @@ BillboardManager::~BillboardManager(void) {
 bool BillboardManager::InitialiseBillboard(std::vector<GLfloat> locationsVector) {
 	this->loadTexture(this->imageName);
 
-	//GLuint vertexbuffer;
-
 	glGenBuffers(1, &pointBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, pointBufferID);
 	glBufferData(GL_ARRAY_BUFFER, locationsVector.size() * sizeof(glm::vec3), &locationsVector[0], GL_STATIC_DRAW);
