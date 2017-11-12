@@ -21,7 +21,7 @@ struct Colour {
 	GLubyte b;
 };
 
-template<class T>
+/*template<class T>
 struct check
 {
 	template<class Q = T>
@@ -47,7 +47,7 @@ struct check
     {
 		return false;
     }
-};
+};*/
 
 
 template <typename GLtype> constexpr GLenum getEnumForType(typename std::enable_if<std::is_same<GLtype, GLfloat>::value, void>::type* = nullptr) { return GL_FLOAT; }
@@ -87,12 +87,7 @@ enableLayoutPointer(const GLuint &layoutId, const GLuint &elemSize, const GLuint
 	glVertexAttribLPointer(layoutId, elemSize, getEnumForType<GLtype>(), dataStride * getTypeSize<GLtype>(), pointer);
 }
 
-
-
-
-
-
-template <GLenum glDataType, typename T = void,
+/*template <GLenum glDataType, typename T = void,
 		typename std::enable_if<glDataType == GL_FLOAT || glDataType == GL_HALF_FLOAT, T>::type* = nullptr>
 void enableLayoutPointer(GLuint &layoutId, GLuint elemSize, GLuint &dataStride, GLuint dataOffset) {
 	GLvoid const *pointer = static_cast<char const*>(0) + dataOffset;
@@ -112,12 +107,12 @@ template <GLenum glDataType, typename T = void, typename std::enable_if<glDataTy
 void enableLayoutPointer(GLuint &layoutId, GLuint elemSize, GLuint &dataStride, GLuint dataOffset) {
 	GLvoid const *pointer = static_cast<char const*>(0) + dataOffset;
 	glVertexAttribLPointer(layoutId, elemSize, glDataType, dataStride, pointer);
-}
+}*/
 
 
 
 
-template <GLenum glDataType, GLuint... elemSizes> class DataBufferTemplate : protected UtilityManager {
+/*template <GLenum glDataType, GLuint... elemSizes> class DataBufferTemplate : protected UtilityManager {
 public:
 	template <typename DataType>
 	DataBufferTemplate(GLuint dataLength, GLuint strideLength, DataType *dataBuffer, GLenum usage = GL_STATIC_DRAW) :
@@ -256,8 +251,8 @@ public:
 
 	DataBufferTemplate(void) : DataBufferTemplate<glDataType, elemSizes...>() {}
 
-	/*DataBufferTemplate(DataBufferTemplate<glDataType, elem1, elemSizes...>&& orig) noexcept :
-			DataBufferTemplate<glDataType, elemSizes...>(std::move(orig.DataBufferTemplate<glDataType, elemSizes...>)) {}*/
+	//DataBufferTemplate(DataBufferTemplate<glDataType, elem1, elemSizes...>&& orig) noexcept :
+	//		DataBufferTemplate<glDataType, elemSizes...>(std::move(orig.DataBufferTemplate<glDataType, elemSizes...>)) {}
 
 	template <typename DataType>
 	void resetBuffer(int dataLength, DataType *dataBuffer) {
@@ -333,7 +328,7 @@ protected:
 	bool isValid(void) const noexcept {
 		return this->DataBufferTemplate<glDataType, elemSizes...>::isValid();
 	}
-};
+};*/
 
 /********************************************************************************************************************************/
 /********************************************************************************************************************************/
@@ -362,10 +357,10 @@ public:
 		//glGenBuffers(1, &this->bufferId);
 	}
 
-	//DataBufferTemplate(const DataBufferTemplate& orig) = delete;
-	//DataBufferTemplate& operator=(const	DataBufferTemplate& orig) = delete;
+	DataBuffer(const DataBuffer& orig) = delete;
+	DataBuffer& operator=(const	DataBuffer& orig) = delete;
 
-	DataBuffer(const DataBuffer& orig) {
+	/*DataBuffer(const DataBuffer& orig) {
 		this->bufferId = orig.bufferId;
 		this->numElements = orig.numElements;
 	}
@@ -374,7 +369,7 @@ public:
 		this->bufferId = orig.bufferId;
 		this->numElements = orig.numElements;
 		return *this;
-	}
+	}*/
 
 	DataBuffer(DataBuffer&& orig) noexcept :
 			bufferId(-1u), numElements(0) {
@@ -406,7 +401,7 @@ public:
 
 	void resetBuffer(int dataLength, int strideLength, GLtype *dataBuffer) {
 		if (this->bufferId == -1u) {
-			INFO << "NEw buffer!!!" << END;
+			//INFO << "New buffer!!!" << END;
 			glGenBuffers(1, &this->bufferId);
 		}
 
@@ -432,6 +427,7 @@ public:
 
 	void render(void) const noexcept {
 		if (this->numElements) {
+			//INFO << "Render: " << this->bufferId << END;
 			glDrawArrays(GL_POINTS, 0, this->numElements);
 		}
 	}

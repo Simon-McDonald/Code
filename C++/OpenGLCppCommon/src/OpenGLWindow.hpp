@@ -42,6 +42,9 @@ class OpenGLWindow : UtilityManager {
 public:
 	OpenGLWindow(void);
 
+	OpenGLWindow(const OpenGLWindow &orig) = delete;
+	OpenGLWindow& operator=(const OpenGLWindow &orig) = delete;
+
 	bool Initialise(void);
 
 	int getHeight(void);
@@ -71,6 +74,9 @@ private:
 	SDL_GLContext context;
 
 	Config::ConfigHeader header;
+
+	bool WindowInitialise(void);
+	void cleanUpWindow(void);
 };
 
 #endif /* OPENGLWINDOW_H_ */

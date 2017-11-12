@@ -36,8 +36,8 @@ private:
 	GLuint textureId;
 	unsigned ASCIIOffset;
 	std::vector<letterInfo> letterInfoVec;
-	DataBuffer<GLubyte, 1> renderText;
-	DataBuffer<GLfloat, 1> renderTextSpacing;
+	//DataBuffer<GLubyte, 1> renderText;
+	//DataBuffer<GLfloat, 1> renderTextSpacing;
 
 	SDL_Surface* getImageObject(Config::ConfigHeader configHeader);
 	size_t getBlockHeight(size_t textureWidth, size_t textureHeight, uint8_t *data);

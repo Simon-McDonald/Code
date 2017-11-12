@@ -15,6 +15,15 @@
 #include "TetrisPiece.hpp"
 #include "TextImage.hpp"
 
+/*
+ * Manager class for a level of Tetris.
+ * Game variants to add:
+ *  - Standard
+ *  - Set pieces are invisible
+ *  - No boundaries on either side
+ *  - Random assortment of pieces at beginning
+ *  - Incomplete rows periodically added from bottom
+ */
 class LevelInstance : protected UtilityManager, protected WorldManager {
 public:
 	LevelInstance(void);
@@ -23,11 +32,13 @@ public:
 
 	bool render(void);
 	bool renderText(void);
+	bool renderBackground(void);
 
 	~LevelInstance(void);
 
 private:
 	static const double minTimer_ms;
+	static const float stringStartX;
 
 	GridWindow window;
 	TetrisPiece currentPiece;
@@ -44,6 +55,8 @@ private:
 	unsigned piecesSet;
 	unsigned rowsCleared;
 	unsigned playerPoints;
+
+
 
 	void resetMoveTimer(void);
 

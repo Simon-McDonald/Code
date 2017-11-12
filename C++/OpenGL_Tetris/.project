@@ -3,6 +3,7 @@
 	<name>OpenGL_Tetris</name>
 	<comment></comment>
 	<projects>
+		<project>OpenGLCppCommon</project>
 		<project>SimonCppLibrary</project>
 	</projects>
 	<buildSpec>

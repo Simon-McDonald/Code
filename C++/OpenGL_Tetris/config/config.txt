@@ -14,8 +14,13 @@ vertex_shader=textShader.vs
 geometry_shader=textShader.gs
 fragment_shader=textShader.fs
 
+[BACKGROUND_SHADER]
+vertex_shader=backgroundShader.vs
+geometry_shader=backgroundShader.gs
+fragment_shader=backgroundShader.fs
+
 [WINDOW]
-window_width=450
+window_width=540
 window_height=600
 
 [TEXT]

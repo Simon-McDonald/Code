@@ -13,9 +13,14 @@ static ButtonEventStruct resetVersion;
 
 OpenGLWindow::OpenGLWindow(void) : userInputStruct(),
 	width(0), height(0), window(nullptr), context(nullptr), header("WINDOW") {
+
+	if (!this->WindowInitialise()) {
+		ERR << "Some error" << END;
+		throw std::invalid_argument("Invalid");
+	}
 } /* OpenGLWindow::OpenGLController */
 
-bool OpenGLWindow::Initialise(void) {
+bool OpenGLWindow::WindowInitialise(void) {
 	if (SDL_Init (SDL_INIT_EVERYTHING) == -1) {
 		return false;
 	}
@@ -44,7 +49,7 @@ bool OpenGLWindow::Initialise(void) {
 	std::cout << "Width: " << this->width << ", height: " << this->height << std::endl;
 
 	this->window = SDL_CreateWindow("OpenGL", 100, 100,
-			this->width, this->height, SDL_WINDOW_OPENGL);
+			this->width, this->height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	if (!window) {
 		return false;
 	}
@@ -53,7 +58,7 @@ bool OpenGLWindow::Initialise(void) {
 	glewExperimental = GL_TRUE;
 	glewInit();
 
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glDepthFunc(GL_LESS);
 
@@ -61,6 +66,11 @@ bool OpenGLWindow::Initialise(void) {
 
 	return true;
 } /* OpenGLWindow::Initialise */
+
+bool OpenGLWindow::Initialise(void) {
+	// Obsolete, for compatability
+	return true;
+}
 
 int OpenGLWindow::getWidth(void) {
 	return this->width;
@@ -234,9 +244,14 @@ void OpenGLWindow::updateWindow(void) {
 } /* OpenGLWindow::updateWindow */
 
 void OpenGLWindow::cleanUp(void) {
+	//Obsolete
+}
+
+void OpenGLWindow::cleanUpWindow(void) {
 	SDL_GL_DeleteContext(this->context);
 	SDL_Quit();
 } /* OpenGLWindow::cleanUp */
 
 OpenGLWindow::~OpenGLWindow(void) {
+	this->cleanUpWindow();
 } /* OpenGLWindow::~OpenGLWindow */

@@ -11,7 +11,6 @@
 #include <fstream>
 #include <string>
 
-
 const Config::ConfigHeader ShaderManager::resourceLoc = "RESOURCES";
 ShaderManager* ShaderManager::currentShaderProgram = nullptr;
 
@@ -22,12 +21,36 @@ ShaderManager *ShaderManager::getActiveShaderManager(void) {
 ShaderManager::ShaderManager(Config::ConfigHeader configHeader) :
 	header(configHeader), shaderProgram(-1u) {
 	// Do not check validity of configHeader, will fail to initialise if configHeader not valid.
+
+	if (!this->InitialiseShader()) {
+		throw std::invalid_argument("Argument");
+	}
 } /* ShaderManager::ShaderManager */
 
-ShaderManager::~ShaderManager() {
-} /* ShaderManager::~ShaderManager */
+ShaderManager::ShaderManager(void) noexcept : header(""), shaderProgram(-1u) {}
 
-bool ShaderManager::Initialise() {
+/*ShaderManager::ShaderManager(ShaderManager &&orig) noexcept :
+
+	{
+
+	Config::ConfigHeader header;
+	std::map<std::string, GLenum> samplerMap;
+
+	std::vector<GLuint> layoutList;
+
+	GLuint shaderProgram;
+
+}
+
+ShaderManager& ShaderManager::operator=(ShaderManager &&orig) noexcept {
+
+}*/
+
+bool ShaderManager::Initialise(void) {
+	return true;
+}
+
+bool ShaderManager::InitialiseShader(void) {
 	GLuint vertexShader = this->createShader(GL_VERTEX_SHADER, "vertex_shader");
 	GLuint tessellationControlShader = this->createShader(GL_TESS_CONTROL_SHADER, "tessellation_control_shader");
 	GLuint tessellationEvaluationShader = this->createShader(GL_TESS_EVALUATION_SHADER, "tessellation_evaluation_shader");
@@ -401,5 +424,11 @@ void ShaderManager::disableAttributeLocations(void) {
 } /* ShaderManager::disableAttribuateLocations */
 
 void ShaderManager::Destroy(void) {
-    glDeleteProgram(this->shaderProgram);
+	//Obsolete
+	//glDeleteProgram(this->shaderProgram);
 } /* ShaderManager::Destroy */
+
+ShaderManager::~ShaderManager(void) {
+	glDeleteProgram(this->shaderProgram);
+	ERR << "Destroying a shader manager" << END;
+} /* ShaderManager::~ShaderManager */

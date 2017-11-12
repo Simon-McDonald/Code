@@ -10,7 +10,7 @@
 #include "TextImage.hpp"
 #include "ResourceManager.h"
 
-TextImage::TextImage(Config::ConfigHeader configHeader) {
+TextImage::TextImage(Config::ConfigHeader configHeader) : textureId(-1u), ASCIIOffset(0) {
 	SDL_Surface *imageVar = this->getImageObject(configHeader);
 
 	uint8_t *data = (uint8_t *) imageVar->pixels;
@@ -25,7 +25,7 @@ TextImage::TextImage(Config::ConfigHeader configHeader) {
 
 	this->textureId = ResourceManager::dataToTexture(configHeader, imageVar);
 
-	this->generateStringBuffers("=>?~ABCDEFz{|}", this->renderText, this->renderTextSpacing);
+	//this->generateStringBuffers("=>?~ABCDEFz{|}", this->renderText, this->renderTextSpacing);
 }
 
 void TextImage::setShaderUniforms(void) const {
@@ -142,8 +142,8 @@ void TextImage::calculatePieceDims(size_t texPixelWidth, size_t texPixelHeight,
 			((float) (blockPixelHeight - 1)) / texPixelHeight
 		};
 
-		INFO << "Idx: '" << (char) (blockIdx + this->ASCIIOffset) << "', Start (H,W): " << infoVec[blockIdx].startX << "," << infoVec[blockIdx].startY << " - (W,H): "
-				<< infoVec[blockIdx].width << "," << infoVec[blockIdx].height << ")" << END;
+		//INFO << "Idx: '" << (char) (blockIdx + this->ASCIIOffset) << "', Start (H,W): " << infoVec[blockIdx].startX << "," << infoVec[blockIdx].startY << " - (W,H): "
+		//		<< infoVec[blockIdx].width << "," << infoVec[blockIdx].height << ")" << END;
 	}
 }
 
@@ -159,7 +159,7 @@ void TextImage::generateStringBuffers(std::string renderString, DataBuffer<GLuby
 	for (size_t charIdx = 1; charIdx < stringLength; ++charIdx) {
 		charBuffer[charIdx] = renderString.at(charIdx) - this->ASCIIOffset;
 		spaceBuffer[charIdx] = this->letterInfoVec[charBuffer[charIdx - 1]].width + spaceBuffer[charIdx - 1] + 0.01;
-		INFO << "Got idx: " << charIdx << ", letter: " << renderString.at(charIdx) << END;
+		//INFO << "Got idx: " << charIdx << ", letter: " << renderString.at(charIdx) << END;
 	}
 
 	textBuffer.resetBuffer(stringLength, &charBuffer[0]);

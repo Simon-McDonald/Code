@@ -23,6 +23,20 @@ public:
 	bool Initialise();
 	void Destroy();
 
+	/*
+	ShaderManager(const ShaderManager &orig) noexcept;
+	ShaderManager(ShaderManager &&orig) noexcept;
+
+	ShaderManager& operator=(const ShaderManager &orig) noexcept;
+	ShaderManager& operator=(ShaderManager &&orig) noexcept;
+	 */
+
+	ShaderManager(ShaderManager &&orig) noexcept;
+	ShaderManager& operator=(ShaderManager &&orig) noexcept;
+
+	ShaderManager(const ShaderManager &orig) = delete;
+	ShaderManager& operator=(const ShaderManager &orig) = delete;
+
 	static ShaderManager *getActiveShaderManager(void);
 
 	GLuint getShaderProgram();
@@ -69,6 +83,9 @@ private:
 
 	GLuint shaderProgram;
 
+	ShaderManager(void) noexcept;
+
+	bool InitialiseShader(void);
 	void setFeedbackVaryings(void);
 	GLuint createShader(GLenum type, Config::ConfigKey key);
 	void initialiseTextureLocations(void);

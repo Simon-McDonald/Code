@@ -1,47 +1,127 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
-		<cconfiguration id="0.1246334694">
-			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="0.1246334694" moduleId="org.eclipse.cdt.core.settings" name="Default">
+		<cconfiguration id="cdt.managedbuild.toolchain.gnu.mingw.base.1755305443">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.toolchain.gnu.mingw.base.1755305443" moduleId="org.eclipse.cdt.core.settings" name="Debug">
 				<externalSettings/>
 				<extensions>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.VCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
-					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration buildProperties="" description="" id="0.1246334694" name="Default" parent="org.eclipse.cdt.build.core.prefbase.cfg">
-					<folderInfo id="0.1246334694." name="/" resourcePath="">
-						<toolChain id="org.eclipse.cdt.build.core.prefbase.toolchain.1483697274" name="No ToolChain" resourceTypeBasedDiscovery="false" superClass="org.eclipse.cdt.build.core.prefbase.toolchain">
-							<targetPlatform id="org.eclipse.cdt.build.core.prefbase.toolchain.1483697274.384834409" name=""/>
-							<builder id="org.eclipse.cdt.build.core.settings.default.builder.694536757" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="org.eclipse.cdt.build.core.settings.default.builder"/>
-							<tool id="org.eclipse.cdt.build.core.settings.holder.libs.1583650028" name="holder for library settings" superClass="org.eclipse.cdt.build.core.settings.holder.libs"/>
-							<tool id="org.eclipse.cdt.build.core.settings.holder.243407663" name="Assembly" superClass="org.eclipse.cdt.build.core.settings.holder">
-								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.972273935" languageId="org.eclipse.cdt.core.assembly" languageName="Assembly" sourceContentType="org.eclipse.cdt.core.asmSource" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
+				<configuration artifactExtension="exe" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" description="" id="cdt.managedbuild.toolchain.gnu.mingw.base.1755305443" name="Debug" parent="org.eclipse.cdt.build.core.emptycfg">
+					<folderInfo id="cdt.managedbuild.toolchain.gnu.mingw.base.1755305443.290947953" name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.mingw.base.550384653" name="MinGW GCC" superClass="cdt.managedbuild.toolchain.gnu.mingw.base">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.PE" id="cdt.managedbuild.target.gnu.platform.mingw.base.2122263664" name="Debug Platform" osList="win32" superClass="cdt.managedbuild.target.gnu.platform.mingw.base"/>
+							<builder buildPath="${workspace_loc:/OpenGL_Tetris}/Default" id="cdt.managedbuild.tool.gnu.builder.mingw.base.805157183" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="CDT Internal Builder" superClass="cdt.managedbuild.tool.gnu.builder.mingw.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.mingw.base.228665881" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.base">
+								<option id="gnu.both.asm.option.include.paths.2020216847" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SimonLibrary}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SimonCppLibrary}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OpenGLCppCommon}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1395211081" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
-							<tool id="org.eclipse.cdt.build.core.settings.holder.806229892" name="GNU C++" superClass="org.eclipse.cdt.build.core.settings.holder">
-								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.1548800485" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.mingw.base.685760531" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.mingw.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base.1635672516" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base">
+								<option id="gnu.cpp.compiler.option.include.paths.1893753354" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SimonLibrary}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SimonCppLibrary}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OpenGLCppCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\MinGW\external\glew-2.0.0\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Simon\Dropbox\Code\C++\SimonCppLibrary\Debug\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Simon\Dropbox\Code\C++\OpenGLCppCommon\Debug\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\MinGW\external\glm&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\MinGW\external\assimp-3.1.1\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\MinGW\external\SDL2-2.0.5\x86_64-w64-mingw32\include\SDL2&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\MinGW\external\SDL2_image-2.0.1&quot;"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.other.other.489922200" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -std=c++11" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1161015091" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
-							<tool id="org.eclipse.cdt.build.core.settings.holder.341550321" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder">
-								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.1190922725" languageId="org.eclipse.cdt.core.gcc" languageName="GNU C" sourceContentType="org.eclipse.cdt.core.cSource,org.eclipse.cdt.core.cHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.base.7656111" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.base">
+								<option id="gnu.c.compiler.option.include.paths.314061712" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SimonLibrary}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SimonCppLibrary}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OpenGLCppCommon}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.738069355" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.base.1928468899" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base.1962009195" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base">
+								<option id="gnu.cpp.link.option.libs.357651586" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="SimonCppLibrary"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="OpenGLCppCommon"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="mingw32"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="opengl32"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="glew32"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="SDL2main"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="SDL2"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="SDL2_image"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="assimp"/>
+								</option>
+								<option id="gnu.cpp.link.option.paths.1927309607" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SimonLibrary/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SimonCppLibrary/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/OpenGLCppCommon/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Simon\Dropbox\Code\C++\SimonCppLibrary\Debug\lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;D:\Simon\Dropbox\Code\C++\OpenGLCppCommon\Debug\lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\MinGW\external\assimp-3.1.1\lib64&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\MinGW\external\glew-2.0.0\lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\MinGW\external\SDL2-2.0.5\x86_64-w64-mingw32\lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\MinGW\external\SDL2_image-2.0.1\lib&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.533773269" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
 							</tool>
 						</toolChain>
 					</folderInfo>
 				</configuration>
 			</storageModule>
-			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings">
+				<externalSettings containerId="OpenGLCppCommon;cdt.managedbuild.config.gnu.mingw.lib.debug.944365916" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/OpenGLCppCommon"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/OpenGLCppCommon/Debug"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="OpenGLCppCommon" srcPrefixMapping="" srcRootPath=""/>
+					</externalSetting>
+				</externalSettings>
+				<externalSettings containerId="SimonCppLibrary;cdt.managedbuild.config.gnu.mingw.lib.debug.1632759858" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/SimonLibrary"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/SimonCppLibrary"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/SimonLibrary/Debug"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/SimonCppLibrary/Debug"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="SimonLibrary" srcPrefixMapping="" srcRootPath=""/>
+						<entry flags="RESOLVED" kind="libraryFile" name="SimonCppLibrary" srcPrefixMapping="" srcRootPath=""/>
+					</externalSetting>
+				</externalSettings>
+			</storageModule>
 		</cconfiguration>
 	</storageModule>
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-		<project id="OpenGL_Tetris.null.1144824642" name="OpenGL_Tetris"/>
+		<project id="OpenGL_Tetris.null.1077676431" name="OpenGL_Tetris"/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Default">
+			<resource resourceType="PROJECT" workspacePath="/OpenGL_Tetris"/>
+		</configuration>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
+		<buildTargets/>
 	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.2096177894;cdt.managedbuild.config.gnu.mingw.exe.debug.2096177894.;cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug.930770746;cdt.managedbuild.tool.gnu.c.compiler.input.523862089">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.mingw.base.1755305443;cdt.managedbuild.toolchain.gnu.mingw.base.1755305443.290947953;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base.1635672516;cdt.managedbuild.tool.gnu.cpp.compiler.input.1161015091">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.2096177894;cdt.managedbuild.config.gnu.mingw.exe.debug.2096177894.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.debug.445423896;cdt.managedbuild.tool.gnu.cpp.compiler.input.304742164">
@@ -59,9 +139,11 @@
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.2096177894;cdt.managedbuild.config.gnu.mingw.exe.debug.2096177894.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base.1737876643;cdt.managedbuild.tool.gnu.cpp.compiler.input.1904490238">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.mingw.base.1755305443;cdt.managedbuild.toolchain.gnu.mingw.base.1755305443.290947953;cdt.managedbuild.tool.gnu.c.compiler.mingw.base.7656111;cdt.managedbuild.tool.gnu.c.compiler.input.738069355">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.release.410152032;cdt.managedbuild.config.gnu.mingw.exe.release.410152032.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.release.763198713;cdt.managedbuild.tool.gnu.cpp.compiler.input.468940526">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 </cproject>

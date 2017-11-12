@@ -8,18 +8,19 @@
 #include "LevelInstance.hpp"
 
 const double LevelInstance::minTimer_ms = 100;
+const float LevelInstance::stringStartX = 80.0 / 225.0;
 
 LevelInstance::LevelInstance(void) :
-		window({18, 10}),
+		window{18, 10},
 		currentPiece(TetrisPiece::generateNextTetrisPiece()),
 		nextPiece(TetrisPiece::generateNextTetrisPiece()),
 		timerDuration_ms(1000),
 		currentTimer_ms(timerDuration_ms),
 		timerChangeScaling(50),
 		textImageInst("TEXT"),
-		piecesSetText(&this->textImageInst, " ", (60.0 / 225.0), -0.3, 1.5),
-		rowsClearedText(&this->textImageInst, " ", (60.0 / 225.0), -0.5, 1.5),
-		playerPointsText(&this->textImageInst, " ", (60.0 / 225.0), -0.7, 1.5),
+		piecesSetText(&this->textImageInst, " ", stringStartX, -0.3, 1.5),
+		rowsClearedText(&this->textImageInst, " ", stringStartX, -0.5, 1.5),
+		playerPointsText(&this->textImageInst, " ", stringStartX, -0.7, 1.5),
 		piecesSet(0),
 		rowsCleared(0),
 		playerPoints(0) {
@@ -103,22 +104,41 @@ bool LevelInstance::generateNextPiece() {
 }
 
 bool LevelInstance::render(void) {
-	GLfloat aspectRatio = 0.75;
+	//GLfloat aspectRatio = 0.55;
+	GLfloat aspectRatio = 1.0;
 
 	GLfloat windowPixelHeight = (float) this->getWindow().getHeight();
 	GLfloat windowPixelWidth = (float) this->getWindow().getWidth();
 
-	GLfloat windowCentre[] = {142.5 / 450.0, 0.5};
-	GLfloat windowSize[] = {225.0 / 450.0, 540.0 / 600.0};
+	GLfloat windowCentre[] = {180.0 / 540.0, 0.5};
+	GLfloat windowSize[] = {300.0 / 540.0, 540.0 / 600.0};
 
-	GLfloat blockSizes[] = {windowSize[0] * windowPixelHeight / (this->window.getWidth()),
-							windowSize[1] * windowPixelWidth / (this->window.getHeight() * aspectRatio)};
+	GLfloat blockSizes[] = {windowSize[0] * windowPixelWidth / (this->window.getWidth()),
+							windowSize[1] * windowPixelHeight / (this->window.getHeight() * aspectRatio)};
+
+//	INFO << "blockSizes: " << (windowSize * windowPixel)>
 
 	GLfloat minBlockSize = (blockSizes[0] > blockSizes[1]) ? blockSizes[1] : blockSizes[0];
 
-	GLfloat newWindowSize[] = {minBlockSize * this->window.getWidth() / windowPixelHeight,
-			 	 	 	 	 aspectRatio * minBlockSize * this->window.getHeight() / windowPixelWidth};
+	//INFO << "minBlockSize: " << minBlockSize << END;
 
+	GLfloat newWindowSize[] = {minBlockSize * this->window.getWidth() / windowPixelWidth,
+			 	 	 	 	 aspectRatio * minBlockSize * this->window.getHeight() / windowPixelHeight};
+
+	//INFO << "newWindowSize: " << (newWindowSize[0] * windowPixelWidth) << ", " << (newWindowSize[1] * windowPixelHeight) << END;
+
+	// Calculate the dimensions for the next piece
+	GLfloat tempWindowBlocks[] = {5.0, 5.0};
+	GLfloat tempWindowSize[] = {minBlockSize * tempWindowBlocks[0] / windowPixelWidth,
+			 	 	 	 	 aspectRatio * minBlockSize * tempWindowBlocks[1] / windowPixelHeight};
+	GLfloat tempWindowCentre[] = {450 / 540.0, 480.0 / 600.0};
+
+
+
+
+
+
+	// Render the game grid blocks and the current piece
 	this->currentPiece.prepShaderTextures();
 
 	this->window.setGridDimsInShader();
@@ -133,19 +153,49 @@ bool LevelInstance::render(void) {
 	this->window.render();
 
 	// Render the next piece
-	GLfloat tempWindowBlocks[] = {5.0, 5.0};
-	GLfloat tempWindowSize[] = {minBlockSize * tempWindowBlocks[0] / windowPixelHeight,
-			 	 	 	 	 aspectRatio * minBlockSize * tempWindowBlocks[1] / windowPixelWidth};
-	GLfloat tempWindowCentre[] = {352.5 / 450.0, 480.0 / 600.0};
-
 	this->getShaderManager().bindVector2i("uWindowDims", 5, 5);
 
 	this->getShaderManager().bindVector2("uWindowSize", tempWindowSize[0] * 2, tempWindowSize[1] * 2);
 	this->getShaderManager().bindVector2("uWindowPos", 2 * tempWindowCentre[0] - 1 - tempWindowSize[0],
 														2 * tempWindowCentre[1] - 1 - tempWindowSize[1]);
-
 	this->nextPiece.RenderPiece();
 
+	return true;
+}
+
+bool LevelInstance::renderBackground(void) {
+	GLfloat aspectRatio = 1.0;
+
+	GLfloat windowPixelHeight = (float) this->getWindow().getHeight();
+	GLfloat windowPixelWidth = (float) this->getWindow().getWidth();
+
+	GLfloat windowCentre[] = {180.0 / 540.0, 0.5};
+	GLfloat windowSize[] = {300.0 / 540.0, 540.0 / 600.0};
+
+	GLfloat blockSizes[] = {windowSize[0] * windowPixelWidth / (this->window.getWidth()),
+							windowSize[1] * windowPixelHeight / (this->window.getHeight() * aspectRatio)};
+
+	GLfloat minBlockSize = (blockSizes[0] > blockSizes[1]) ? blockSizes[1] : blockSizes[0];
+
+	GLfloat newWindowSize[] = {minBlockSize * this->window.getWidth() / windowPixelWidth,
+			 	 	 	 	 aspectRatio * minBlockSize * this->window.getHeight() / windowPixelHeight};
+
+	//INFO << "newWindowSize: " << (newWindowSize[0] * windowPixelWidth) << ", " << (newWindowSize[1] * windowPixelHeight) << END;
+
+	// Calculate the dimensions for the next piece
+	GLfloat tempWindowBlocks[] = {5.0, 5.0};
+	GLfloat tempWindowSize[] = {minBlockSize * tempWindowBlocks[0] / windowPixelWidth,
+			 	 	 	 	 aspectRatio * minBlockSize * tempWindowBlocks[1] / windowPixelHeight};
+	GLfloat tempWindowCentre[] = {450 / 540.0, 480.0 / 600.0};
+
+	std::vector<GLfloat> borderPoints = {windowCentre[0], windowCentre[1], newWindowSize[0], newWindowSize[1],
+										 tempWindowCentre[0], tempWindowCentre[1], tempWindowSize[0], tempWindowSize[1],
+										 0.82, 0.32, 0.32, 0.3};
+
+	DataBuffer<GLfloat, 2, 2> borderBuffer(3, &borderPoints[0]);
+
+	borderBuffer.manageRender(1, 2);
+	//	DataBuffer<GLfloat, 2, 2> windowBuffer;
 	return true;
 }
 

@@ -52,7 +52,7 @@ private:
 	std::vector<gridBlock> blockMatrix;
 	//std::array<gridBlock, 1000> blockMatrix;
 
-	DataBufferTemplate<GL_UNSIGNED_BYTE, 1, 1, 1, 1, 1, 3> indexBuffer;
+	DataBuffer<GLubyte, 1, 1, 1, 1, 1, 3> indexBuffer;
 
 	std::vector<int> isPopulated;
 	size_t currentBlock;

@@ -60,22 +60,18 @@ void main() {
 	}
 
 	gl_Position = vec4(blockPosition, 0.0, 1.0);
-	//gTextureCoord = vTexBaseLoc[0] + vec2(0.0, vTexBlockSize[0].y);
 	gTextureCoord = vTexBaseLoc[0] + getBlockOffset(getIndex(0));
 	EmitVertex();
 
 	gl_Position = vec4(blockPosition + vec2(vBlockSize[0].x, 0.0), 0.0, 1.0);
-	//gTextureCoord = vTexBaseLoc[0] + vTexBlockSize[0];
 	gTextureCoord = vTexBaseLoc[0] + getBlockOffset(getIndex(1));
 	EmitVertex();
 
 	gl_Position = vec4(blockPosition + vec2(0.0, vBlockSize[0].y), 0.0, 1.0);
-	//gTextureCoord = vTexBaseLoc[0];
 	gTextureCoord = vTexBaseLoc[0] + getBlockOffset(getIndex(2));
 	EmitVertex();
 
 	gl_Position = vec4(blockPosition + vBlockSize[0], 0.0, 1.0);
-	//gTextureCoord = vTexBaseLoc[0] + vec2(vTexBlockSize[0].x, 0.0);
 	gTextureCoord = vTexBaseLoc[0] + getBlockOffset(getIndex(3));
 	EmitVertex();
 	

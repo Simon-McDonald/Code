@@ -229,7 +229,7 @@ public:
 		}
 
 		//return DataBufferTemplate<GL_UNSIGNED_BYTE, 1, 1>(numBlocks, &indexData[0][0]);
-		return DataBuffer<GLubyte, 1, 1>(numBlocks, &indexData[0][0]);
+		return std::move(DataBuffer<GLubyte, 1, 1>(numBlocks, &indexData[0][0]));
 	}
 
 	/* Instantiate a generic piece template with string corresponding to template outline. Commas indicate next column,
@@ -248,21 +248,34 @@ public:
 		INFO << "Created TetrisPieceTemplate with (w,h) = (" << this->width << "," << this->height << ") numblocks: " << this->numBlocks << END;
 	}
 
+	TetrisPieceTemplate(const TetrisPieceTemplate &orig) = delete;
+	TetrisPieceTemplate& operator=(const TetrisPieceTemplate &orig) = delete;
+
+	TetrisPieceTemplate(TetrisPieceTemplate &&orig) noexcept : height(orig.height), width(orig.width),
+			pieceProfile(orig.pieceProfile), numBlocks(orig.numBlocks), pieceList(orig.pieceList),
+			edgeBuffers(orig.edgeBuffers), textureIndexBuffer(std::move(orig.textureIndexBuffer)),
+			textureNumber(orig.textureNumber) {}
+
+	TetrisPieceTemplate& operator=(TetrisPieceTemplate &&orig) noexcept {
+		this->height = orig.height;
+		this->width = orig.width;
+		this->pieceProfile = orig.pieceProfile;
+		this->numBlocks = orig.numBlocks;
+		this->pieceList = orig.pieceList;
+		this->edgeBuffers = orig.edgeBuffers;
+		this->textureIndexBuffer = std::move(orig.textureIndexBuffer);
+		this->textureNumber = orig.textureNumber;
+
+		return *this;
+	}
+
 	void RenderPiece(void) {
 		CHECKERRORS();
+
 		this->getShaderManager().setUniformBool("uUniformSettings", true);
-
-		//this->getShaderManager().bindTexture("gSampler", this->imgId);
 		this->getShaderManager().setUniformInt("uTexArrayIdx", this->textureNumber);
-
-		this->getShaderManager().setUniformInt("uTextureMod", 2);
-
+		//this->getShaderManager().setUniformInt("uTextureMod", 2);
 		this->getShaderManager().setUniformInt("uBlockMod", this->width);
-		//textureIndexBuffer.ActivateRenderBufferContents(1);
-
-		//INFO << "RENDER THE TETRIS PIECE!!!!!!!!!!!!!!!!!!!" << END;
-
-		CHECKERRORS();
 
 		textureIndexBuffer.manageRender(1, 2);
 		CHECKERRORS();
@@ -321,7 +334,6 @@ private:
 	std::vector<size_t> edgeBuffers;
 
 	DataBuffer<GLubyte, 1, 1> textureIndexBuffer;
-	//DataBufferTemplate<GL_UNSIGNED_BYTE, 1, 1> textureIndexBuffer;
 	GLuint textureNumber;
 };
 
@@ -346,7 +358,6 @@ public:
 	GLuint getTextureNumber(void) const noexcept;
 	Colour getBlockColour(void) const noexcept;
 
-
 	TetrisPiece& rotateCW(void) noexcept;
 	TetrisPiece& rotateCCW(void) noexcept;
 	TetrisPiece& setPieceLoc(size_t, size_t) noexcept;
@@ -363,6 +374,9 @@ private:
 		std::string layoutDefinition;
 		std::string imageFile;
 		std::pair<GLuint, GLuint> textureDims;
+
+		PieceDefinitionInformation(std::string layoutDefinition, std::string imageFile, std::pair<GLuint, GLuint> textureDims) :
+				layoutDefinition(layoutDefinition), imageFile(imageFile), textureDims(textureDims) {}
 	};
 
 	static std::vector<TetrisPieceTemplate> pieceDefinitions;

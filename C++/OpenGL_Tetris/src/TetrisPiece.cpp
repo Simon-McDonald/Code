@@ -66,8 +66,13 @@ bool TetrisPiece::loadConfiguredPieces(void) {
 	}
 
 	// temporary, TODO generate from configuration file
-	std::vector<PieceDefinitionInformation> defInfoVector({{"x,0,1;2,3,x", "test-alt.bmp", {2, 2}}, {"0,1,x;x,2,3", "test.bmp", {2, 2}}});
-	//std::vector<PieceDefinitionInformation> defInfoVector({{"0,1;2,3", "test-alt.bmp", {2, 2}}, {"0,1;2,3", "test.bmp", {2, 2}}});
+	//std::vector<PieceDefinitionInformation> defInfoVector({{"x,0,1;2,3,x", "test-alt.bmp", {2, 2}}, {"0,1,x;x,2,3", "test.bmp", {2, 2}}});
+	std::vector<PieceDefinitionInformation> defInfoVector;
+	defInfoVector.reserve(2);
+	defInfoVector.emplace_back(PieceDefinitionInformation(std::string("x,0,1;2,3,x"), std::string("test-alt.bmp"), std::make_pair<GLuint, GLuint>(2, 2)));
+	defInfoVector.emplace_back(PieceDefinitionInformation(std::string("0,1,x;x,2,3"), std::string("test.bmp"), std::make_pair<GLuint, GLuint>(2, 2)));
+
+
 
 	TetrisPiece::setupShaderTextures(defInfoVector, TetrisPiece::pieceTextureIds, TetrisPiece::pieceTextureDims);
 
