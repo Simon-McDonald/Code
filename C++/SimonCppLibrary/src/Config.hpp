@@ -46,6 +46,12 @@ public:
 	void listConfigKeys(ConfigHeader, std::vector<ConfigKey>);
 	void listConfigKeyValues(ConfigHeader, std::vector<KeyValuePair>);
 
+	template<typename DataType>
+	DataType getValue(ConfigHeader, ConfigKey);
+
+	template<typename DataType>
+	DataType getValue(ConfigHeader, ConfigKey, DataType);
+
 private:
 	typedef std::map<ConfigHeader, ConfigMap> ConfigHeaderMap;
 

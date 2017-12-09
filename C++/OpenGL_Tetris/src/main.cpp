@@ -15,6 +15,9 @@
 #include "CheckErrors.h"
 #include "ResourceManager.h"
 #include "LevelInstance.hpp"
+#include "LevelInstanceInvisPieces.hpp"
+
+#include "MenuInstance.hpp"
 
 class ProgramManager : protected UtilityManager {
 public:
@@ -31,6 +34,7 @@ public:
 
 		CHECKERRORS();
 
+		//this->level.reset(new LevelInstanceInvisPieces());
 		this->level.reset(new LevelInstance());
 	}
 
@@ -54,7 +58,7 @@ public:
 		float deltaTime_sec = timer.Mark();
 		this->mainWindow.userInput();
 		this->mainWindow.clearWindow();
-		isRunning &= level->update((int)(deltaTime_sec * 1000), this->mainWindow.getInput());
+		isRunning &= level->update((int)(deltaTime_sec * 1000.0), this->mainWindow.getInput());
 
 		this->shaderMap.at("background").useProgram();
 		level->renderBackground();
@@ -104,7 +108,7 @@ int main(int argc, char *argv[])
 		while (program.Run());
 	}
 	catch (...) {
-		std::cout << "Got an exception!!!" << std::cout;
+		std::cout << "Got an unknown exception!" << std::cout;
 		return EXIT_FAILURE;
 	}
 

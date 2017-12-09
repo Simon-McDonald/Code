@@ -65,14 +65,20 @@ bool TetrisPiece::loadConfiguredPieces(void) {
 		return true;
 	}
 
-	// temporary, TODO generate from configuration file
-	//std::vector<PieceDefinitionInformation> defInfoVector({{"x,0,1;2,3,x", "test-alt.bmp", {2, 2}}, {"0,1,x;x,2,3", "test.bmp", {2, 2}}});
 	std::vector<PieceDefinitionInformation> defInfoVector;
-	defInfoVector.reserve(2);
-	defInfoVector.emplace_back(PieceDefinitionInformation(std::string("x,0,1;2,3,x"), std::string("test-alt.bmp"), std::make_pair<GLuint, GLuint>(2, 2)));
-	defInfoVector.emplace_back(PieceDefinitionInformation(std::string("0,1,x;x,2,3"), std::string("test.bmp"), std::make_pair<GLuint, GLuint>(2, 2)));
+	defInfoVector.reserve(7);
 
+	defInfoVector.emplace_back(PieceDefinitionInformation(std::string("x,1,x;3,4,5"), std::string("tetris-T.bmp"), std::make_pair<GLuint, GLuint>(3, 2)));
 
+	defInfoVector.emplace_back(PieceDefinitionInformation(std::string("x,1,2;3,4,x"), std::string("tetris-S.bmp"), std::make_pair<GLuint, GLuint>(3, 2)));
+	defInfoVector.emplace_back(PieceDefinitionInformation(std::string("0,1,x;x,4,5"), std::string("tetris-Z.bmp"), std::make_pair<GLuint, GLuint>(3, 2)));
+
+	defInfoVector.emplace_back(PieceDefinitionInformation(std::string("0,1;2,3"), std::string("tetris-square.bmp"), std::make_pair<GLuint, GLuint>(2, 2)));
+
+	defInfoVector.emplace_back(PieceDefinitionInformation(std::string("x,x,2;3,4,5"), std::string("tetris-L.bmp"), std::make_pair<GLuint, GLuint>(3, 2)));
+	defInfoVector.emplace_back(PieceDefinitionInformation(std::string("0,x,x;3,4,5"), std::string("tetris-revL.bmp"), std::make_pair<GLuint, GLuint>(3, 2)));
+
+	defInfoVector.emplace_back(PieceDefinitionInformation(std::string("0,1,2,3"), std::string("tetris-line.bmp"), std::make_pair<GLuint, GLuint>(4, 1)));
 
 	TetrisPiece::setupShaderTextures(defInfoVector, TetrisPiece::pieceTextureIds, TetrisPiece::pieceTextureDims);
 
@@ -99,21 +105,6 @@ bool TetrisPiece::prepShaderTextures(void) {
 	CHECKERRORS();
 	TetrisPiece::getShaderManager().bindVector2iv("uTextureDims", TetrisPiece::pieceTextureDims.size() / 2, &TetrisPiece::pieceTextureDims[0]);
 
-	/*GLint aaa[] = {2, 2, 2, 2};
-	std::string bbb = "uTextureDims";
-
-	GLint uniformLocation = glGetUniformLocation(TetrisPiece::getShaderManager().getShaderProgram(), bbb.c_str());
-	CHECKERRORS();
-	if (uniformLocation == -1) {
-		ERR << "NO ID, " << uniformLocation << END;
-	} else {
-		INFO << "ID: " << uniformLocation << END;
-		glUniform2iv(uniformLocation, 1, &aaa[0]);
-	}
-	CHECKERRORS();*/
-
-
-	//glUniform2iv(this->getUniformLocation(vectorName), vecLength, vector);
 	CHECKERRORS();
 	return TetrisPiece::getShaderManager().bindTextureArray("gSamplerArray", TetrisPiece::pieceTextureIds.size(), &TetrisPiece::pieceTextureIds[0], 0);
 }

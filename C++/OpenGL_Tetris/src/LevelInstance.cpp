@@ -7,8 +7,10 @@
 
 #include "LevelInstance.hpp"
 
-const double LevelInstance::minTimer_ms = 100;
+const double LevelInstance::minTimer_ms = 150;
 const float LevelInstance::stringStartX = 80.0 / 225.0;
+const double LevelInstance::pieceMoveDelta_ms = 50.0;
+const float LevelInstance::aspectRatio = 1.0;
 
 LevelInstance::LevelInstance(void) :
 		window{18, 10},
@@ -23,9 +25,12 @@ LevelInstance::LevelInstance(void) :
 		playerPointsText(&this->textImageInst, " ", stringStartX, -0.7, 1.5),
 		piecesSet(0),
 		rowsCleared(0),
-		playerPoints(0) {
+		playerPoints(0),
+		downButtonDuration(0.0),
+		leftButtonDuration(0.0),
+		rightButtonDuration(0.0) {
 
-	currentPiece.setPieceLoc(0, 6);
+	currentPiece.setPieceLoc(4, 15);
 	this->resetOutputStrings();
 }
 
@@ -33,7 +38,7 @@ bool LevelInstance::update(double deltaTime_ms, const UserInputStruct &userInput
 	this->currentTimer_ms -= deltaTime_ms;
 
 	// Implement user input, if false indicates that input locks piece (i.e. push down but piece can't move down).
-	if (!this->implementUserInput(userInput)) {
+	if (!this->implementUserInput(userInput, deltaTime_ms)) {
 		this->resetMoveTimer();
 		this->lockCurrentPiece();
 
@@ -96,7 +101,7 @@ bool LevelInstance::lockCurrentPiece() {
 
 bool LevelInstance::generateNextPiece() {
 	this->currentPiece = this->nextPiece;
-	this->currentPiece.setPieceLoc(0, 8);
+	this->currentPiece.setPieceLoc(4, 15);
 
 	this->nextPiece = TetrisPiece::generateNextTetrisPiece();
 
@@ -104,8 +109,7 @@ bool LevelInstance::generateNextPiece() {
 }
 
 bool LevelInstance::render(void) {
-	//GLfloat aspectRatio = 0.55;
-	GLfloat aspectRatio = 1.0;
+
 
 	GLfloat windowPixelHeight = (float) this->getWindow().getHeight();
 	GLfloat windowPixelWidth = (float) this->getWindow().getWidth();
@@ -116,16 +120,10 @@ bool LevelInstance::render(void) {
 	GLfloat blockSizes[] = {windowSize[0] * windowPixelWidth / (this->window.getWidth()),
 							windowSize[1] * windowPixelHeight / (this->window.getHeight() * aspectRatio)};
 
-//	INFO << "blockSizes: " << (windowSize * windowPixel)>
-
 	GLfloat minBlockSize = (blockSizes[0] > blockSizes[1]) ? blockSizes[1] : blockSizes[0];
-
-	//INFO << "minBlockSize: " << minBlockSize << END;
 
 	GLfloat newWindowSize[] = {minBlockSize * this->window.getWidth() / windowPixelWidth,
 			 	 	 	 	 aspectRatio * minBlockSize * this->window.getHeight() / windowPixelHeight};
-
-	//INFO << "newWindowSize: " << (newWindowSize[0] * windowPixelWidth) << ", " << (newWindowSize[1] * windowPixelHeight) << END;
 
 	// Calculate the dimensions for the next piece
 	GLfloat tempWindowBlocks[] = {5.0, 5.0};
@@ -164,8 +162,6 @@ bool LevelInstance::render(void) {
 }
 
 bool LevelInstance::renderBackground(void) {
-	GLfloat aspectRatio = 1.0;
-
 	GLfloat windowPixelHeight = (float) this->getWindow().getHeight();
 	GLfloat windowPixelWidth = (float) this->getWindow().getWidth();
 
@@ -180,7 +176,6 @@ bool LevelInstance::renderBackground(void) {
 	GLfloat newWindowSize[] = {minBlockSize * this->window.getWidth() / windowPixelWidth,
 			 	 	 	 	 aspectRatio * minBlockSize * this->window.getHeight() / windowPixelHeight};
 
-	//INFO << "newWindowSize: " << (newWindowSize[0] * windowPixelWidth) << ", " << (newWindowSize[1] * windowPixelHeight) << END;
 
 	// Calculate the dimensions for the next piece
 	GLfloat tempWindowBlocks[] = {5.0, 5.0};
@@ -195,7 +190,6 @@ bool LevelInstance::renderBackground(void) {
 	DataBuffer<GLfloat, 2, 2> borderBuffer(3, &borderPoints[0]);
 
 	borderBuffer.manageRender(1, 2);
-	//	DataBuffer<GLfloat, 2, 2> windowBuffer;
 	return true;
 }
 
@@ -224,21 +218,8 @@ bool LevelInstance::testPieceMove(TetrisPiece &piece) {
 	return true;
 }
 
-bool LevelInstance::implementUserInput(const UserInputStruct &userInput) {
-	UserInputStruct &input = this->getWindow().getInput();
+bool LevelInstance::implementUserInput(const UserInputStruct &input, double deltaTime_ms) {
 	bool result = true;
-
-	if (input.onClick.left) {
-		TetrisPiece tempPiece = this->currentPiece;
-		tempPiece.movePieceLeft();
-		this->testImplementPieceMove(tempPiece);
-	}
-
-	if (input.onClick.right) {
-		TetrisPiece tempPiece = this->currentPiece;
-		tempPiece.movePieceRight();
-		this->testImplementPieceMove(tempPiece);
-	}
 
 	if (input.onClick.up) {
 		TetrisPiece tempPiece = this->currentPiece;
@@ -246,11 +227,45 @@ bool LevelInstance::implementUserInput(const UserInputStruct &userInput) {
 		this->testImplementRotation(tempPiece);
 	}
 
-	if (input.onClick.down) {
+	if (input.onClick.down || (downButtonDuration > 0.75 * LevelInstance::pieceMoveDelta_ms)) {
+		this->downButtonDuration = 0.0;
 		TetrisPiece tempPiece = this->currentPiece;
 		tempPiece.movePieceDown();
 		result = this->testImplementPieceMove(tempPiece);
 		this->resetMoveTimer();
+	} else if (input.onDown.down) {
+		downButtonDuration += deltaTime_ms;
+	} else if (input.onRelease.down) {
+		downButtonDuration = 0.0;
+	}
+
+	if (input.onDown.left && input.onDown.right) {
+		this->leftButtonDuration = 0.0;
+		this->rightButtonDuration = 0.0;
+	} else {
+		if (input.onClick.left || (leftButtonDuration > 1.5 * LevelInstance::pieceMoveDelta_ms)) {
+			leftButtonDuration = 0.0;
+			TetrisPiece tempPiece = this->currentPiece;
+			tempPiece.movePieceLeft();
+			this->testImplementPieceMove(tempPiece);
+		} else if (input.onDown.left) {
+			leftButtonDuration += deltaTime_ms;
+		}
+
+		if (input.onClick.right || (rightButtonDuration > 1.5 * LevelInstance::pieceMoveDelta_ms)) {
+			this->rightButtonDuration = 0.0;
+			TetrisPiece tempPiece = this->currentPiece;
+			tempPiece.movePieceRight();
+			this->testImplementPieceMove(tempPiece);
+		} else if (input.onDown.right) {
+			rightButtonDuration += deltaTime_ms;
+		}
+	}
+	if (input.onRelease.left) {
+		leftButtonDuration = 0.0;
+	}
+	if (input.onRelease.right) {
+		rightButtonDuration = 0.0;
 	}
 
 	return result;

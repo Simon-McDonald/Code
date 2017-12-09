@@ -27,6 +27,11 @@ window_height=600
 file=ExportedFontLarge.bmp
 start_char=32
 
+[GAME_SETTINGS]
+min_tick_time_ms=150.0
+lateral_move_delta_ms=75.0
+down_move_delta_ms=50.0
+
 [GAME_PIECES]
 list=SPIECE,ZPIECE,TPIECE,IPIECE,LPIECE,JPIECE,OPIECE
 

@@ -168,9 +168,6 @@ void GridWindow::removeRows(const std::vector<size_t> &rows) {
 			size_t newBoardPos = (row - lostRows) * this->width + col;
 
 			if (this->isPopulated[oldBoardPos] >= 0 && oldBoardPos != newBoardPos) {
-
-				//INFO << "OldPos: " <<oldBoardPos << ", NewPos: " << newBoardPos << ", Width: " << this->width << ", Col: " << col << END;
-				//INFO << "the bla: " << this->isPopulated[oldBoardPos] << ", blockIndex: " << (int) this->blockMatrix[this->isPopulated[oldBoardPos]].blockIndex << ", new: " << newBoardPos << END;
 				this->blockMatrix[this->isPopulated[oldBoardPos]].blockIndex = newBoardPos;
 
 				this->isPopulated[newBoardPos] = this->isPopulated[oldBoardPos];
@@ -178,20 +175,15 @@ void GridWindow::removeRows(const std::vector<size_t> &rows) {
 			}
 		}
 	}
-
-	//INFO << "Moved the blocks down!" << END;
 }
 
 void GridWindow::render(void) {
 	CHECKERRORS();
 	this->getShaderManager().setUniformBool("uUniformSettings", false);
-
-
 	CHECKERRORS();
 	this->getShaderManager().setUniformInt("uNumRotations", 0);
 	CHECKERRORS();
 	this->getShaderManager().setUniformInt("uBlockMod", this->width);
-	//indexBuffer.ActivateRenderBufferContents(1);
 	CHECKERRORS();
 	indexBuffer.manageRender(1, 2, 3, 4, 5, 6);
 	CHECKERRORS();

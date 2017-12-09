@@ -46,20 +46,14 @@ private:
 		Colour blockColour;
 	};
 
-
 	size_t height, width;
 
 	std::vector<gridBlock> blockMatrix;
-	//std::array<gridBlock, 1000> blockMatrix;
 
 	DataBuffer<GLubyte, 1, 1, 1, 1, 1, 3> indexBuffer;
 
 	std::vector<int> isPopulated;
 	size_t currentBlock;
-	//DataBuffer indexBuffer;
-	//DataBufferTemplate<GL_UNSIGNED_BYTE, 1, 1, 1, 1> indexBuffer;
-
-	//DataBuffer colourBuffer;
 };
 
 #endif /* GRIDWINDOW_HPP_ */

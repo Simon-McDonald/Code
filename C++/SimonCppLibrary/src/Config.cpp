@@ -17,6 +17,24 @@
 
 #include "Logger.hpp"
 
+namespace bla {
+	template<typename DataType>
+	DataType convert(std::string item) {
+		std::stringstream streamConverter(item);
+
+		DataType value;
+		streamConverter >> value;
+		// check for error
+
+		return value;
+	}
+
+	template<>
+	std::string convert<std::string>(std::string item) {
+		return item;
+	}
+}
+
 Config::Config(std::string configFilePath) {
 	std::ifstream configFile;
 	configFile.open(configFilePath.c_str());
@@ -273,3 +291,32 @@ void Config::listConfigKeyValues(ConfigHeader header, std::vector<KeyValuePair> 
 		keyValueList.push_back(*inMapItr);
 	}
 } /* listConfigKeyValues */
+
+template<typename DataType>
+DataType Config::getValue(ConfigHeader header, ConfigKey key) {
+	std::string item = this->getString(header, key);
+
+	try {
+		DataType value = bla::convert<DataType>(item);
+		return value;
+	} catch (...) {
+		std::string errorMessage = "Bad conversion '" + header + "'";
+		throw std::invalid_argument(errorMessage);
+	}
+}
+
+template<typename DataType>
+DataType Config::getValue(ConfigHeader header, ConfigKey key, DataType dataType) {
+	std::string item = this->getStringEmpty(header, key);
+
+	try {
+		DataType value = bla::convert<DataType>(item);
+		return value;
+	} catch (...) {
+		// some warning
+		return dataType;
+	}
+}
+
+
+

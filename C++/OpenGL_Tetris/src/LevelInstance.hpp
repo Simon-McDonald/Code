@@ -18,8 +18,8 @@
 /*
  * Manager class for a level of Tetris.
  * Game variants to add:
- *  - Standard
- *  - Set pieces are invisible
+ *  - Standard------------------------------------------
+ *  - Set pieces are invisible--------------------------
  *  - No boundaries on either side
  *  - Random assortment of pieces at beginning
  *  - Incomplete rows periodically added from bottom
@@ -30,19 +30,24 @@ public:
 
 	bool update(double deltaTime_ms, const UserInputStruct & userInput);
 
-	bool render(void);
+	virtual bool render(void);
 	bool renderText(void);
 	bool renderBackground(void);
 
-	~LevelInstance(void);
+	virtual ~LevelInstance(void);
 
-private:
-	static const double minTimer_ms;
-	static const float stringStartX;
+protected:
 
 	GridWindow window;
 	TetrisPiece currentPiece;
 	TetrisPiece nextPiece;
+
+private:
+	static const double minTimer_ms;
+	static const float stringStartX;
+	static const double pieceMoveDelta_ms;
+	static const float aspectRatio;
+
 	double timerDuration_ms;
 	double currentTimer_ms;
 	double timerChangeScaling;
@@ -56,7 +61,9 @@ private:
 	unsigned rowsCleared;
 	unsigned playerPoints;
 
-
+	double downButtonDuration;
+	double leftButtonDuration;
+	double rightButtonDuration;
 
 	void resetMoveTimer(void);
 
@@ -65,7 +72,7 @@ private:
 	bool testImplementPieceMove(TetrisPiece &piece);
 	bool testImplementRotation(TetrisPiece &piece);
 
-	bool implementUserInput(const UserInputStruct &userInput);
+	bool implementUserInput(const UserInputStruct &userInput, double deltaTime_ms);
 
 	bool moveCurrentPieceDown(void);
 

@@ -119,41 +119,44 @@ void OpenGLWindow::userInput (void) {
 	this->userInputStruct.onClick = resetVersion;
 	this->userInputStruct.onRelease = resetVersion;
 
+//	Repeating SDL_KEYDOWN events will occur if key repeat is enabled (see SDL_EnableKeyRepeat).
+
 	SDL_Event windowEvent;
 	while (SDL_PollEvent(&windowEvent)) {
 		switch (windowEvent.type) {
 			case SDL_QUIT:
+				if (!this->userInputStruct.onDown.quit) this->userInputStruct.onClick.quit = true;
 				this->userInputStruct.onDown.quit = true;
 				break;
 			case SDL_KEYDOWN:
 				switch(windowEvent.key.keysym.sym) {
 					case SDLK_ESCAPE:
+						if (!this->userInputStruct.onDown.quit) this->userInputStruct.onClick.quit = true;
 						this->userInputStruct.onDown.quit = true;
-						this->userInputStruct.onClick.quit = true;
 						break;
 					case SDLK_SPACE:
+						if (!this->userInputStruct.onDown.space) this->userInputStruct.onClick.space = true;
 						this->userInputStruct.onDown.space = true;
-						this->userInputStruct.onClick.space = true;
 						break;
 					case SDLK_a:
 					case SDLK_LEFT:
+						if (!this->userInputStruct.onDown.left) this->userInputStruct.onClick.left = true;
 						this->userInputStruct.onDown.left = true;
-						this->userInputStruct.onClick.left = true;
 						break;
 					case SDLK_d:
 					case SDLK_RIGHT:
+						if (!this->userInputStruct.onDown.right) this->userInputStruct.onClick.right = true;
 						this->userInputStruct.onDown.right = true;
-						this->userInputStruct.onClick.right = true;
 						break;
 					case SDLK_w:
 					case SDLK_UP:
+						if (!this->userInputStruct.onDown.up) this->userInputStruct.onClick.up = true;
 						this->userInputStruct.onDown.up = true;
-						this->userInputStruct.onClick.up = true;
 						break;
 					case SDLK_s:
 					case SDLK_DOWN:
+						if (!this->userInputStruct.onDown.down) this->userInputStruct.onClick.down = true;
 						this->userInputStruct.onDown.down = true;
-						this->userInputStruct.onClick.down = true;
 						break;
 				}
 				break;

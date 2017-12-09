@@ -444,7 +444,7 @@ public:
 
 	~DataBuffer(void) {
 		if (this->bufferId != -1u) {
-			INFO << "Deleting: " << this->bufferId << END;
+			//INFO << "Deleting: " << this->bufferId << END;
 			glDeleteBuffers(1, &this->bufferId);
 			this->bufferId = -1u;
 		}

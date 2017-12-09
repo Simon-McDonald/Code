@@ -56,12 +56,6 @@ void main() {
 	
 	gl_Position = vec4(uWindowPos + (rotatedIndices + uPieceOffset) * blockSize, 0.0, 1.0);
 	
-
-	//vRenderFlag = (uUniformSettings) ? 1 : lRenderFlag;
-	//vFilterColour = (uUniformSettings) ? uFilterColour : lFilterColour;
-	//vNumRotations = (uUniformSettings) ? uNumRotations : lRotations;
-	//vTexArrayIdx = (uUniformSettings) ? uTexArrayIdx : lTextureIndex;
-	
 	if (uUniformSettings) {
 		vRenderFlag = 1;
 		vFilterColour = uFilterColour;
@@ -74,8 +68,7 @@ void main() {
 		vTexArrayIdx = lTextureIndex;
 	}
 	
-	
 	ivec2 textureGridSize = uTextureDims[vTexArrayIdx];
 	vTexBlockSize = vec2(1.0 / textureGridSize.x, 1.0 / textureGridSize.y);
-	vTexBaseLoc = vTexBlockSize * vec2(mod(lTexturePosition, textureGridSize.x), lTexturePosition / textureGridSize.y);
+	vTexBaseLoc = vTexBlockSize * vec2(mod(lTexturePosition, textureGridSize.x), lTexturePosition / textureGridSize.x);
 }
