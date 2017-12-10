@@ -12,7 +12,7 @@ in int vLetterIndex[];
 // GLfloat height;
 uniform vec4 letterInformation[128];
 
-uniform float uTextScaling;
+uniform vec2 uTextScaling;
 
 out vec2 gTextureCoord;
 
@@ -25,15 +25,15 @@ void main() {
 	gTextureCoord = vec2(letterInfo.x, letterInfo.y) + vec2(0.0, letterInfo.w);
 	EmitVertex();
 
-	gl_Position = vec4(blockPosition + vec2(letterInfo.z * uTextScaling, 0.0), 0.0, 1.0);
+	gl_Position = vec4(blockPosition + vec2(letterInfo.z * uTextScaling.x, 0.0), 0.0, 1.0);
 	gTextureCoord = vec2(letterInfo.x, letterInfo.y) + vec2(letterInfo.z, letterInfo.w);
 	EmitVertex();
 
-	gl_Position = vec4(blockPosition + vec2(0.0, letterInfo.w * uTextScaling), 0.0, 1.0);
+	gl_Position = vec4(blockPosition + vec2(0.0, letterInfo.w * uTextScaling.y), 0.0, 1.0);
 	gTextureCoord = vec2(letterInfo.x, letterInfo.y);
 	EmitVertex();
 
-	gl_Position = vec4(blockPosition + letterInfo.zw * vec2(uTextScaling, uTextScaling), 0.0, 1.0);
+	gl_Position = vec4(blockPosition + letterInfo.zw * uTextScaling, 0.0, 1.0);
 	gTextureCoord = vec2(letterInfo.x, letterInfo.y) + vec2(letterInfo.z, 0.0);
 	EmitVertex();
 	

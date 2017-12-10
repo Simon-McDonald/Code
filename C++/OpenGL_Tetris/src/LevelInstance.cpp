@@ -8,7 +8,7 @@
 #include "LevelInstance.hpp"
 
 const double LevelInstance::minTimer_ms = 150;
-const float LevelInstance::stringStartX = 80.0 / 225.0;
+const float LevelInstance::stringStartX = 85.0 / 225.0;
 const double LevelInstance::pieceMoveDelta_ms = 50.0;
 const float LevelInstance::aspectRatio = 1.0;
 
@@ -20,9 +20,12 @@ LevelInstance::LevelInstance(void) :
 		currentTimer_ms(timerDuration_ms),
 		timerChangeScaling(50),
 		textImageInst("TEXT"),
-		piecesSetText(&this->textImageInst, " ", stringStartX, -0.3, 1.5),
-		rowsClearedText(&this->textImageInst, " ", stringStartX, -0.5, 1.5),
-		playerPointsText(&this->textImageInst, " ", stringStartX, -0.7, 1.5),
+	    labelsText(&this->textImageInst, "Pieces:\nRows:\nScore:", stringStartX,
+	        -0.2, 1.5, 1.5, TextImage::TextAlignment::LEFT,
+	        TextImage::TextAlignment::TOP, 0.0, 0.05, GLColour<GLfloat>{1.0, 0.0, 0.0}),
+	    valuesText(&this->textImageInst, " ", stringStartX + 0.5,
+	        -0.25, 1.5, 1.5, TextImage::TextAlignment::RIGHT,
+	        TextImage::TextAlignment::TOP, 0.0, 0.05, GLColour<GLfloat>{1.0, 0.0, 0.0}),
 		piecesSet(0),
 		rowsCleared(0),
 		playerPoints(0),
@@ -176,7 +179,6 @@ bool LevelInstance::renderBackground(void) {
 	GLfloat newWindowSize[] = {minBlockSize * this->window.getWidth() / windowPixelWidth,
 			 	 	 	 	 aspectRatio * minBlockSize * this->window.getHeight() / windowPixelHeight};
 
-
 	// Calculate the dimensions for the next piece
 	GLfloat tempWindowBlocks[] = {5.0, 5.0};
 	GLfloat tempWindowSize[] = {minBlockSize * tempWindowBlocks[0] / windowPixelWidth,
@@ -194,9 +196,9 @@ bool LevelInstance::renderBackground(void) {
 }
 
 bool LevelInstance::renderText(void) {
-	piecesSetText.Render();
-	rowsClearedText.Render();
-	playerPointsText.Render();
+    labelsText.Render();
+    valuesText.Render();
+
 	return true;
 }
 
@@ -294,9 +296,8 @@ unsigned LevelInstance::pointsForRow(size_t numRowsCleared) {
 }
 
 void LevelInstance::resetOutputStrings(void) {
-	piecesSetText.updateText("Pieces: " + std::to_string(this->piecesSet));
-	rowsClearedText.updateText("Rows: " + std::to_string(this->rowsCleared));
-	playerPointsText.updateText("Score: " + std::to_string(this->playerPoints));
+    valuesText.updateText(std::to_string(this->piecesSet) + "\n" +
+        std::to_string(this->rowsCleared) + "\n" + std::to_string(this->playerPoints));
 }
 
 LevelInstance::~LevelInstance(void) {

@@ -10,10 +10,10 @@
 
 #include <utility>
 
-#include "UtilityManager.hpp"
 #include "GridWindow.hpp"
 #include "TetrisPiece.hpp"
 #include "TextImage.hpp"
+#include "Instance.hpp"
 
 /*
  * Manager class for a level of Tetris.
@@ -24,7 +24,7 @@
  *  - Random assortment of pieces at beginning
  *  - Incomplete rows periodically added from bottom
  */
-class LevelInstance : protected UtilityManager, protected WorldManager {
+class LevelInstance : public Instance {
 public:
 	LevelInstance(void);
 
@@ -53,9 +53,8 @@ private:
 	double timerChangeScaling;
 
 	TextImage textImageInst;
-	RenderableText piecesSetText;
-	RenderableText rowsClearedText;
-	RenderableText playerPointsText;
+	RenderableText labelsText;
+	RenderableText valuesText;
 
 	unsigned piecesSet;
 	unsigned rowsCleared;

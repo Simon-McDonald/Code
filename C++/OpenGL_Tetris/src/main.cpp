@@ -35,7 +35,8 @@ public:
 		CHECKERRORS();
 
 		//this->level.reset(new LevelInstanceInvisPieces());
-		this->level.reset(new LevelInstance());
+		//this->level.reset(new LevelInstance());
+		this->level.reset(new MenuInstance({"Standard Game", "Invisible Set Blocks", "Rising Level", "Strange Pieces", "No Walls", "Random Start Clutter", "Quit"}));
 	}
 
 	std::map<std::string, ShaderManager> generateShaderMap(void) {
@@ -85,7 +86,7 @@ private:
 
 	ResourceManager resourceManager;
 
-	std::unique_ptr<LevelInstance> level;
+	std::unique_ptr<Instance> level;
 
 	StopWatch timer;
 	bool isRunning;

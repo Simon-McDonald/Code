@@ -66,7 +66,7 @@ public:
 		size_t numSemiColon = 0;
 
 		for (size_t strIdx = 0; strIdx != templateString.size(); ++strIdx) {
-			INFO << "GOT CHAR " << templateString[strIdx] << END;
+			//INFO << "GOT CHAR " << templateString[strIdx] << END;
 
 			switch (templateString[strIdx]) {
 			case ',':
@@ -114,7 +114,7 @@ public:
 		size_t nextSemi = templateString.find_first_of(';', currentIdx);
 
 		while(currentIdx < templateString.length()) {
-			INFO << "NextComma: " << nextComma << ", nextSemi: " << nextSemi << ", in string '" << templateString << "'" << END;
+			//INFO << "NextComma: " << nextComma << ", nextSemi: " << nextSemi << ", in string '" << templateString << "'" << END;
 
 			if (nextComma < nextSemi) {
 				nextBreak = nextComma;
@@ -136,17 +136,17 @@ public:
 				nextBreak = templateString.length();
 			}
 
-			INFO << "CurrentIdx: " << currentIdx << ", nextBreak: " << nextBreak << END;
+			//INFO << "CurrentIdx: " << currentIdx << ", nextBreak: " << nextBreak << END;
 			std::string nextNum = templateString.substr(currentIdx, nextBreak - currentIdx);
 			currentIdx = nextBreak + 1;
 
-			INFO << "Try got value of '" << nextNum << "' from '" << templateString << "'" << END;
+			//INFO << "Try got value of '" << nextNum << "' from '" << templateString << "'" << END;
 
 			if (nextNum.compare("x")) {
 				textureIndices[heightIdx * width + widthIdx] = stoi(nextNum);
-				INFO << "------Add block: (" << (heightIdx * width + widthIdx) << "," << textureIndices[heightIdx * width + widthIdx] << ") - from " << nextNum << END;
-				INFO << "heightIdx: " << heightIdx << " - width: " << width << " - widthIdx: " << widthIdx << END;
-				INFO << "Height: " << height << END;
+				//INFO << "------Add block: (" << (heightIdx * width + widthIdx) << "," << textureIndices[heightIdx * width + widthIdx] << ") - from " << nextNum << END;
+				//INFO << "heightIdx: " << heightIdx << " - width: " << width << " - widthIdx: " << widthIdx << END;
+				//INFO << "Height: " << height << END;
 			}
 
 			++widthIdx;
@@ -154,11 +154,11 @@ public:
 			widthIdx %= width;
 		}
 
-		INFO << "The vector derived from '" << templateString << "', (w,h)=(" << width << "," << height << "), values: ";
-		for (auto bla : textureIndices) {
-			APPEND << bla << ", ";
-		}
-		APPEND << END;
+		//INFO << "The vector derived from '" << templateString << "', (w,h)=(" << width << "," << height << "), values: ";
+		//for (auto bla : textureIndices) {
+		//	APPEND << bla << ", ";
+		//}
+		//APPEND << END;
 
 		return textureIndices;
 	}

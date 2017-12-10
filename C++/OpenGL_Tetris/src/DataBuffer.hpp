@@ -21,6 +21,13 @@ struct Colour {
 	GLubyte b;
 };
 
+template<typename dataType>
+struct GLColour {
+    dataType r;
+    dataType g;
+    dataType b;
+};
+
 /*template<class T>
 struct check
 {

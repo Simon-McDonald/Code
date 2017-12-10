@@ -86,6 +86,7 @@ size_t TextImage::getBlockWidth(size_t textureWidth, size_t textureHeight, uint8
 
 void TextImage::calculatePieceDims(size_t texPixelWidth, size_t texPixelHeight, size_t blockPixelWidth,
     size_t blockPixelHeight, uint8_t *data, std::vector<letterInfo> &infoVec) {
+
     size_t texBlockWidth = texPixelWidth / blockPixelWidth;
     size_t texBlockHeight = texPixelHeight / blockPixelHeight;
 
@@ -99,7 +100,7 @@ void TextImage::calculatePieceDims(size_t texPixelWidth, size_t texPixelHeight, 
         size_t pixelWidthIdx = blockWidthIdx * blockPixelWidth;
         size_t pixelHeightIdx = blockHeightIdx * blockPixelHeight;
 
-        size_t index = texPixelWidth * (blockPixelHeight * blockHeightIdx + blockPixelHeight / 2)
+        size_t index = texPixelWidth * (blockPixelHeight * blockHeightIdx)
             + blockWidthIdx * blockPixelWidth;
         size_t letterWidth = 0;
         while (letterWidth < 2 * blockPixelWidth) {
@@ -115,16 +116,132 @@ void TextImage::calculatePieceDims(size_t texPixelWidth, size_t texPixelHeight, 
             }
         }
 
+        size_t letterHeight = 0;
+        while (letterHeight < 2 * blockPixelHeight) {
+            if ((data[3 * (index + letterHeight * texPixelWidth)] == 0 &&
+                data[3 * (index + letterHeight * texPixelWidth) + 1] >= 200 &&
+                data[3 * (index + letterHeight * texPixelWidth) + 2] >= 200) ||
+                (data[3 * (index + letterHeight * texPixelWidth)] >= 200 &&
+                data[3 * (index + letterHeight * texPixelWidth) + 1] == 0 &&
+                data[3 * (index + letterHeight * texPixelWidth) + 2] >= 200)) {
+
+                ++letterHeight;
+                break;
+            } else {
+                ++letterHeight;
+            }
+        }
+
         infoVec[blockIdx] = {
             ((float) pixelWidthIdx) / texPixelWidth,
             ((float) pixelHeightIdx) / texPixelHeight,
             ((float) (letterWidth - 1)) / texPixelWidth,
-            ((float) (blockPixelHeight - 1)) / texPixelHeight
+            //((float) (blockPixelHeight - 1)) / texPixelHeight
+            ((float) (letterHeight - 1)) / texPixelHeight
         };
     }
 }
 
-void TextImage::generateStringBuffers(std::string renderString, TextAlignment alignment,
+void TextImage::generateStringBuffers(std::string renderString,
+    DataBuffer<GLubyte, 1>& textBuffer, DataBuffer<GLfloat, 2> &spacingBuffer,
+    fontSizing &fontSizeInfo, TextAlignment hAlignment, TextAlignment vAlignment) const {
+
+    const size_t maxStringLength = renderString.size();
+
+    GLubyte charBuffer[maxStringLength];
+    letterSpacing spaceBuffer[maxStringLength];
+
+    GLfloat xOffset = 0, yOffset = 0;
+    size_t stringIdx = 0;
+    size_t bufferIdx = 0, lineStartIdx = 0;
+
+    while (stringIdx < maxStringLength) {
+        INFO << "xOffsetTop: " << xOffset << END;
+
+        if (renderString.at(stringIdx) == '\n') { // newline
+
+            GLfloat textWidth = xOffset - fontSizeInfo.textSpacingX;
+            switch (hAlignment) {
+            case TextAlignment::LEFT:
+                textWidth = 0.0;
+                break;
+            case TextAlignment::CENTRE:
+                textWidth /= 2.0;
+                break;
+            case TextAlignment::RIGHT:
+            default:
+                // Do nothing
+                break;
+            }
+
+            for (size_t charIdx = lineStartIdx; charIdx < bufferIdx; ++charIdx) {
+                INFO << "======Offset " << charIdx << END;
+                spaceBuffer[charIdx].spacingX -= textWidth;
+            }
+
+            yOffset += this->letterInfoVec[0].height + fontSizeInfo.textSpacingY;
+            lineStartIdx = bufferIdx;
+            xOffset = 0.0;
+
+        } else {
+            charBuffer[bufferIdx] = renderString.at(stringIdx) - this->ASCIIOffset;
+            spaceBuffer[bufferIdx] = {xOffset, -yOffset};
+
+            xOffset += this->letterInfoVec[charBuffer[bufferIdx]].width + fontSizeInfo.textSpacingX;
+            ++bufferIdx;
+        }
+
+        ++stringIdx;
+
+        INFO << "xOffsetBottom: " << xOffset << END;
+    }
+
+    GLfloat textWidth = xOffset - fontSizeInfo.textSpacingX;
+    switch (hAlignment) {
+    case TextAlignment::LEFT:
+        textWidth = 0.0;
+        break;
+    case TextAlignment::CENTRE:
+        textWidth /= 2.0;
+        break;
+    case TextAlignment::RIGHT:
+    default:
+        // Do nothing
+        break;
+    }
+
+    INFO << "lineStartIdx: " << lineStartIdx << ", bufferIdx: " << bufferIdx << END;
+    for (size_t charIdx = lineStartIdx; charIdx < bufferIdx; ++charIdx) {
+        INFO << "======Offset " << charIdx << END;
+        spaceBuffer[charIdx].spacingX -= textWidth;
+    }
+
+    yOffset += this->letterInfoVec[0].height + fontSizeInfo.textSpacingY;
+
+    GLfloat textHeight = yOffset - fontSizeInfo.textSpacingY;
+
+    switch (vAlignment) {
+    case TextAlignment::TOP:
+        textHeight = 0.0;
+        break;
+    case TextAlignment::CENTRE:
+        textHeight /= 2.0;
+        break;
+    case TextAlignment::BOTTOM:
+    default:
+        // Do nothing
+        break;
+    }
+
+    for (size_t charIdx = 0; charIdx < bufferIdx; ++charIdx) {
+        spaceBuffer[charIdx].spacingY -= textHeight;
+    }
+
+    textBuffer.resetBuffer(bufferIdx, &charBuffer[0]);
+    spacingBuffer.resetBuffer(bufferIdx, &spaceBuffer[0].spacingX);
+}
+
+/*void TextImage::generateStringBuffers(std::string renderString, TextAlignment alignment,
     DataBuffer<GLubyte, 1>& textBuffer, DataBuffer<GLfloat, 1> &spacingBuffer) const {
     const size_t stringLength = renderString.size();
 
@@ -160,22 +277,33 @@ void TextImage::generateStringBuffers(std::string renderString, TextAlignment al
 
     textBuffer.resetBuffer(stringLength, &charBuffer[0]);
     spacingBuffer.resetBuffer(stringLength, &spaceBuffer[0]);
-}
+}*/
 
 TextImage::~TextImage(void) {
     // delete buffers/images
 }
 
 RenderableText::RenderableText(TextImage *textImage, std::string renderableString, GLfloat xPos, GLfloat yPos,
-    GLfloat textSize, TextImage::TextAlignment hAlignment, TextImage::TextAlignment vAlignment) :
-        textImage(textImage), renderableString(renderableString), textSize(textSize), screenPosition { xPos, yPos },
-        horizontalAlignment(hAlignment), verticalAlignment(vAlignment) {
+    GLfloat textSize, GLfloat textSizeWidth, TextImage::TextAlignment hAlignment, TextImage::TextAlignment vAlignment,
+    GLfloat widthSpace, GLfloat heightSpace, GLColour<GLfloat> textColour) :
+        textImage(textImage), renderableString(renderableString), screenPosition{xPos, yPos},
+        fontSizeInfo{textSize, textSizeWidth > 0 ? textSizeWidth : textSize, widthSpace, heightSpace},
+        horizontalAlignment(hAlignment), verticalAlignment(vAlignment), textColour(textColour) {
     this->updateText(renderableString);
 }
 
+void RenderableText::setColour(GLColour<GLfloat> newColour) {
+    this->textColour = newColour;
+}
+
+void RenderableText::setSize(GLfloat widthSize, GLfloat heightSize) {
+    this->fontSizeInfo.textSizeX = widthSize;
+    this->fontSizeInfo.textSizeY = heightSize > 0.0 ? heightSize : widthSize;
+}
+
 void RenderableText::updateText(std::string renderableString) {
-    this->textImage->generateStringBuffers(renderableString, this->horizontalAlignment, this->renderText,
-        this->renderTextSpacing);
+    this->textImage->generateStringBuffers(renderableString, this->renderText, this->renderTextSpacing,
+        fontSizeInfo, horizontalAlignment, verticalAlignment);
 }
 
 void RenderableText::Render(void) {
@@ -187,7 +315,8 @@ void RenderableText::Render(void) {
     CHECKERRORS();
 
     this->getShaderManager().bindVector2("uScreenPosition", &screenPosition[0]);
-    this->getShaderManager().setUniformFloat("uTextScaling", this->textSize);
+    this->getShaderManager().bindVector2("uTextScaling", this->fontSizeInfo.textSizeX, this->fontSizeInfo.textSizeY);
+    this->getShaderManager().bindVector3("uTextColour", &this->textColour.r);
 
     CHECKERRORS();
 

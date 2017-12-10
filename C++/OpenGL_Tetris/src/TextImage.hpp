@@ -35,12 +35,25 @@ public:
 		GLfloat height;
 	};
 
+	struct fontSizing {
+	    GLfloat textSizeX;
+	    GLfloat textSizeY;
+	    GLfloat textSpacingX;
+	    GLfloat textSpacingY;
+	};
+
+	struct letterSpacing {
+	    GLfloat spacingX;
+	    GLfloat spacingY;
+	};
+
 	TextImage(Config::ConfigHeader configHeader);
 
 	void setShaderUniforms(void) const;
 
-	void generateStringBuffers(std::string renderString, TextAlignment alignment, DataBuffer<GLubyte, 1>& textBuffer,
-			DataBuffer<GLfloat, 1> &spacingBuffer) const;
+	void generateStringBuffers(std::string renderString,
+	    DataBuffer<GLubyte, 1>& textBuffer, DataBuffer<GLfloat, 2> &spacingBuffer,
+	    fontSizing &fontSizeInfo, TextAlignment hAlignment, TextAlignment vAlignment) const;
 
 	~TextImage(void);
 
@@ -62,9 +75,15 @@ private:
 class RenderableText : protected UtilityManager, protected WorldManager {
 public:
 	RenderableText(TextImage *textImage, std::string renderableString,
-			GLfloat xPos, GLfloat yPos, GLfloat textSize,
-			TextImage::TextAlignment hAlignment = TextImage::TextAlignment::RIGHT,
-			TextImage::TextAlignment vAlignment = TextImage::TextAlignment::TOP);
+			GLfloat xPos, GLfloat yPos,
+			GLfloat textSize, GLfloat textSizeWidth = 0.0,
+			TextImage::TextAlignment hAlignment = TextImage::TextAlignment::LEFT,
+			TextImage::TextAlignment vAlignment = TextImage::TextAlignment::TOP,
+			GLfloat widthSpace = 0.0, GLfloat heightSpace = 0.0,
+			GLColour<GLfloat> textColour = {0.0, 0.0, 0.0});
+
+	void setColour(GLColour<GLfloat> textColour);
+	void setSize(GLfloat widthSize, GLfloat heightSize = 0.0);
 
 	void updateText(std::string renderableString);
 
@@ -74,14 +93,14 @@ private:
 	const TextImage *textImage;
 	std::string renderableString;
 	DataBuffer<GLubyte, 1> renderText;
-	DataBuffer<GLfloat, 1> renderTextSpacing;
+	DataBuffer<GLfloat, 2> renderTextSpacing;
 
-	//DataBuffer<GLfloat, 2>
-
-	GLfloat textSize;
 	GLfloat screenPosition[2];
+	TextImage::fontSizing fontSizeInfo;
 	TextImage::TextAlignment horizontalAlignment;
 	TextImage::TextAlignment verticalAlignment;
+
+	GLColour<GLfloat> textColour;
 };
 
 #endif /* TEXTIMAGE_HPP_ */
