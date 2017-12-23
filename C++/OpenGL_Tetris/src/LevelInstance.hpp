@@ -17,13 +17,6 @@
 
 /*
  * Manager class for a level of Tetris.
- * Game variants to add:
- *  - Standard------------------------------------------
- *  - Set pieces are invisible--------------------------
- *  - No boundaries on either side----------------------
- *  - Random assortment of pieces at beginning----------
- *  - Incomplete rows periodically added from bottom
- *  - Odd shaped pieces
  */
 class LevelInstance : public Instance {
 public:
