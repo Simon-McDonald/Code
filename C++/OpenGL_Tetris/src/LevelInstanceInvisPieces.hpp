@@ -15,7 +15,7 @@
  */
 class LevelInstanceInvisPieces : public LevelInstance {
 public:
-	virtual bool render(void);
+    virtual void renderMainWindow(GLfloat blockSize) override;
 };
 
 #endif /* SRC_LEVELINSTANCEINVISPIECES_HPP_ */

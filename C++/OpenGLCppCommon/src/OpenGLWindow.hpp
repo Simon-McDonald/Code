@@ -17,6 +17,7 @@
 struct ButtonEventStruct {
 	bool quit;
 	bool space;
+	bool enter;
 	bool left;
 	bool right;
 	bool up;

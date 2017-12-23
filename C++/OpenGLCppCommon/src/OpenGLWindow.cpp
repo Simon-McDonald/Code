@@ -95,6 +95,7 @@ void OpenGLWindow::userInput (void) {
 	/*struct ButtonEventStruct {
 		bool quit;
 		bool space;
+		bool enter;
 		bool left;
 		bool right;
 		bool up;
@@ -138,6 +139,10 @@ void OpenGLWindow::userInput (void) {
 						if (!this->userInputStruct.onDown.space) this->userInputStruct.onClick.space = true;
 						this->userInputStruct.onDown.space = true;
 						break;
+					case SDLK_RETURN:
+						if (!this->userInputStruct.onDown.enter) this->userInputStruct.onClick.enter = true;
+						this->userInputStruct.onDown.enter = true;
+						break;
 					case SDLK_a:
 					case SDLK_LEFT:
 						if (!this->userInputStruct.onDown.left) this->userInputStruct.onClick.left = true;
@@ -165,6 +170,10 @@ void OpenGLWindow::userInput (void) {
 					case SDLK_SPACE:
 						this->userInputStruct.onDown.space = false;
 						this->userInputStruct.onRelease.space = true;
+						break;
+					case SDLK_RETURN:
+						this->userInputStruct.onDown.enter = false;
+						this->userInputStruct.onRelease.enter = true;
 						break;
 					case SDLK_a:
 					case SDLK_LEFT:

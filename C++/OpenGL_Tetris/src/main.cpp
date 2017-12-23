@@ -14,9 +14,8 @@
 
 #include "CheckErrors.h"
 #include "ResourceManager.h"
-#include "LevelInstance.hpp"
-#include "LevelInstanceInvisPieces.hpp"
 
+#include "Levels.hpp"
 #include "MenuInstance.hpp"
 
 class ProgramManager : protected UtilityManager {
@@ -28,15 +27,12 @@ public:
 
 		CHECKERRORS();
 
-		resourceManager.setupShaderDataFormat();
 		WorldManager::Initialise(&this->mainWindow, &this->shaderMap);
 		currentShader = ShaderManager::getActiveShaderManager();
 
 		CHECKERRORS();
 
-		//this->level.reset(new LevelInstanceInvisPieces());
-		//this->level.reset(new LevelInstance());
-		this->level.reset(new MenuInstance({"Standard Game", "Invisible Set Blocks", "Rising Level", "Strange Pieces", "No Walls", "Random Start Clutter", "Quit"}));
+		this->level.reset(generateInstance(InstanceType::MENU));
 	}
 
 	std::map<std::string, ShaderManager> generateShaderMap(void) {
@@ -59,7 +55,21 @@ public:
 		float deltaTime_sec = timer.Mark();
 		this->mainWindow.userInput();
 		this->mainWindow.clearWindow();
-		isRunning &= level->update((int)(deltaTime_sec * 1000.0), this->mainWindow.getInput());
+		isRunning = level->update((int)(deltaTime_sec * 1000.0), this->mainWindow.getInput());
+
+		if (!isRunning) {
+		    InstanceType nextType = level->endState();
+
+		    if (nextType != InstanceType::QUIT) {
+		        isRunning = true;
+
+		        INFO << "Avbout to reset" << END;
+		        level.reset(generateInstance(nextType));
+		        INFO << "ENDED" << END;
+		    }
+
+		    INFO << "Finished updating the instance type!!!" << END;
+		}
 
 		this->shaderMap.at("background").useProgram();
 		level->renderBackground();

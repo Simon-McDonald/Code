@@ -18,8 +18,7 @@ class GridWindow : protected UtilityManager, protected WorldManager {
 public:
 	GridWindow(unsigned height, unsigned width);
 
-	bool updateUserInput(const UserInputStruct &userInput);
-	bool update(double deltaTime_ms, const UserInputStruct & userInput);
+	void insertIntoBottom(size_t rowsToShift, Colour colour, std::vector<GLubyte> blockIndices);
 	size_t lockNextPiece(const TetrisPiece &newPiece, const std::pair<size_t, size_t> &piecePosition);
 	void render(void);
 	void setGridDimsInShader(void);
@@ -27,12 +26,14 @@ public:
 	void removeRows(const std::vector<size_t> &rows);
 	void validateBoard(void);
 
+	void setRowDefault(size_t row, Colour colour);
+
 	int getNextBlock(int curBlock);
 
-	bool operator() (size_t row, size_t col);
+	bool operator() (size_t row, size_t col) const;
 
-	size_t getHeight(void);
-	size_t getWidth(void);
+	size_t getHeight(void) const;
+	size_t getWidth(void) const;
 
 	~GridWindow(void);
 

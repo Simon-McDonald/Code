@@ -58,7 +58,7 @@ void main() {
 			rotationsOffset = 6;
 			break;
 	}
-
+	
 	gl_Position = vec4(blockPosition, 0.0, 1.0);
 	gTextureCoord = vTexBaseLoc[0] + getBlockOffset(getIndex(0));
 	EmitVertex();

@@ -146,6 +146,8 @@ void TextImage::generateStringBuffers(std::string renderString,
     DataBuffer<GLubyte, 1>& textBuffer, DataBuffer<GLfloat, 2> &spacingBuffer,
     fontSizing &fontSizeInfo, TextAlignment hAlignment, TextAlignment vAlignment) const {
 
+    INFO << "Generate buffer for: " << renderString << END;
+
     const size_t maxStringLength = renderString.size();
 
     GLubyte charBuffer[maxStringLength];
@@ -156,7 +158,7 @@ void TextImage::generateStringBuffers(std::string renderString,
     size_t bufferIdx = 0, lineStartIdx = 0;
 
     while (stringIdx < maxStringLength) {
-        INFO << "xOffsetTop: " << xOffset << END;
+        //INFO << "xOffsetTop: " << xOffset << END;
 
         if (renderString.at(stringIdx) == '\n') { // newline
 
@@ -193,7 +195,7 @@ void TextImage::generateStringBuffers(std::string renderString,
 
         ++stringIdx;
 
-        INFO << "xOffsetBottom: " << xOffset << END;
+        //INFO << "xOffsetBottom: " << xOffset << END;
     }
 
     GLfloat textWidth = xOffset - fontSizeInfo.textSpacingX;
@@ -239,45 +241,9 @@ void TextImage::generateStringBuffers(std::string renderString,
 
     textBuffer.resetBuffer(bufferIdx, &charBuffer[0]);
     spacingBuffer.resetBuffer(bufferIdx, &spaceBuffer[0].spacingX);
+
+    INFO << "Finished for: " << renderString << END;
 }
-
-/*void TextImage::generateStringBuffers(std::string renderString, TextAlignment alignment,
-    DataBuffer<GLubyte, 1>& textBuffer, DataBuffer<GLfloat, 1> &spacingBuffer) const {
-    const size_t stringLength = renderString.size();
-
-    GLubyte charBuffer[stringLength];
-    GLfloat spaceBuffer[stringLength];
-
-    charBuffer[0] = renderString.at(0) - this->ASCIIOffset;
-    spaceBuffer[0] = 0.0; //this->letterInfoVec[charBuffer[0]].width;
-
-    for (size_t charIdx = 1; charIdx < stringLength; ++charIdx) {
-        charBuffer[charIdx] = renderString.at(charIdx) - this->ASCIIOffset;
-        spaceBuffer[charIdx] = this->letterInfoVec[charBuffer[charIdx - 1]].width + spaceBuffer[charIdx - 1] + 0.01;
-    }
-
-    GLfloat textWidth = spaceBuffer[stringLength - 1] + this->letterInfoVec[charBuffer[stringLength - 1]].width;
-    switch (alignment) {
-    case TextAlignment::RIGHT:
-    case TextAlignment::BOTTOM:
-        textWidth = 0.0;
-        break;
-    case TextAlignment::CENTRE:
-        textWidth /= 2.0;
-        break;
-    case TextAlignment::LEFT:
-    case TextAlignment::TOP:
-        // Do nothing
-        break;
-    }
-
-    for (size_t charIdx = 0; charIdx < stringLength; ++charIdx) {
-        spaceBuffer[charIdx] = spaceBuffer[charIdx] - textWidth;
-    }
-
-    textBuffer.resetBuffer(stringLength, &charBuffer[0]);
-    spacingBuffer.resetBuffer(stringLength, &spaceBuffer[0]);
-}*/
 
 TextImage::~TextImage(void) {
     // delete buffers/images

@@ -7,8 +7,20 @@
 
 #include "LevelInstanceInvisPieces.hpp"
 
-bool LevelInstanceInvisPieces::render(void) {
-	//GLfloat aspectRatio = 0.55;
+void LevelInstanceInvisPieces::renderMainWindow(GLfloat blockSize) {
+    this->window.setGridDimsInShader();
+    this->setMainWindowUniforms(blockSize);
+
+    this->getShaderManager().bindVector2i("uPieceOffset", this->currentPiece.getPieceLoc().first, this->currentPiece.getPieceLoc().second);
+    this->currentPiece.RenderPiece();
+
+    this->getShaderManager().bindVector2i("uPieceOffset", 0, 0);
+    this->window.render();
+}
+
+/*void LevelInstanceInvisPieces::render(void) {
+    this->getShaderManager().setUniformInt("uGridWidth", this->window.getWidth());
+
 	GLfloat aspectRatio = 1.0;
 
 	GLfloat windowPixelHeight = (float) this->getWindow().getHeight();
@@ -63,8 +75,6 @@ bool LevelInstanceInvisPieces::render(void) {
 	this->getShaderManager().bindVector2("uWindowPos", 2 * tempWindowCentre[0] - 1 - tempWindowSize[0],
 														2 * tempWindowCentre[1] - 1 - tempWindowSize[1]);
 	this->nextPiece.RenderPiece();
-
-	return true;
 }
-
+*/
 

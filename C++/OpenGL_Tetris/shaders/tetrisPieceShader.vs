@@ -15,6 +15,7 @@ uniform vec2 uWindowPos;
 
 uniform ivec2 uPieceOffset;
 uniform int uBlockMod;
+uniform int uGridWidth;
 
 uniform bool uUniformSettings;
 
@@ -37,6 +38,7 @@ void main() {
 	vec2 blockSize = uWindowSize / uWindowDims;
 	vBlockSize = blockSize;
 	ivec2 blockIndices = ivec2(mod(lGridPosition, uBlockMod), lGridPosition / uBlockMod);
+		
 	ivec2 rotatedIndices;
 	
 	switch (uNumRotations - 4 * (uNumRotations / 4)) {
@@ -52,6 +54,12 @@ void main() {
 		default:
 			rotatedIndices = blockIndices;
 			break;
+	}
+	
+	if ((rotatedIndices.x + uPieceOffset.x + 1) > uGridWidth) {
+		rotatedIndices.x -= uGridWidth;
+	} else if ((rotatedIndices.x + uPieceOffset.x) < 0) {
+		rotatedIndices.x += uGridWidth;
 	}
 	
 	gl_Position = vec4(uWindowPos + (rotatedIndices + uPieceOffset) * blockSize, 0.0, 1.0);

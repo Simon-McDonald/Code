@@ -45,16 +45,23 @@ Colour TetrisPiece::generateRandomColour(void) {
 bool TetrisPiece::setupShaderTextures(std::vector<PieceDefinitionInformation> &defInfoVector,
 									  std::vector<GLuint> &textureIds,
 									  std::vector<GLint> &textureDims) {
-	textureIds.resize(defInfoVector.size());
-	pieceTextureDims.resize(defInfoVector.size() * 2);
+	textureIds.resize(defInfoVector.size() + 1);
+	pieceTextureDims.resize((defInfoVector.size() + 1) * 2);
 
 	bool success = true;
 
+	// Load the texture for generic blocks not part of any piece.
+	textureIds[0] = ResourceManager::loadTexture("block.bmp");
+	textureDims[0] = 1;
+	textureDims[1] = 1;
+
 	for (size_t vecIdx = 0; vecIdx < defInfoVector.size(); ++vecIdx) {
-		textureIds[vecIdx] = ResourceManager::loadTexture(defInfoVector[vecIdx].imageFile);
-		textureDims[vecIdx * 2] = defInfoVector[vecIdx].textureDims.first;
-		textureDims[vecIdx * 2 + 1] = defInfoVector[vecIdx].textureDims.second;
-		success &= textureIds[vecIdx] != -1u;
+	    size_t vecIdxPlus = vecIdx + 1;
+
+		textureIds[vecIdxPlus] = ResourceManager::loadTexture(defInfoVector[vecIdx].imageFile);
+		textureDims[vecIdxPlus * 2] = defInfoVector[vecIdx].textureDims.first;
+		textureDims[vecIdxPlus * 2 + 1] = defInfoVector[vecIdx].textureDims.second;
+		success &= textureIds[vecIdxPlus] != -1u;
 	}
 
 	return success;
@@ -90,7 +97,7 @@ bool TetrisPiece::loadConfiguredPieces(void) {
 	//TetrisPiece::pieceDefinitions.emplace_back("0,1,x;x,2,3", "test.bmp");
 
 	for (size_t idx = 0; idx < defInfoVector.size(); ++idx) {
-		TetrisPiece::pieceDefinitions.emplace_back(defInfoVector[idx].layoutDefinition, idx);
+		TetrisPiece::pieceDefinitions.emplace_back(defInfoVector[idx].layoutDefinition, idx + 1);
 	}
 
 
@@ -188,12 +195,20 @@ TetrisPiece& TetrisPiece::setPieceLoc(size_t widthIdx, size_t heightIdx) noexcep
 	return *this;
 }
 
-TetrisPiece& TetrisPiece::movePieceLeft(void) noexcept {
+TetrisPiece& TetrisPiece::movePieceLeft(size_t width) noexcept {
+    if ((this->pieceLoc.first + this->getWidth()) == 0) {
+        this->pieceLoc.first += width;
+    }
+
 	this->pieceLoc.first--;
 	return *this;
 }
 
-TetrisPiece& TetrisPiece::movePieceRight(void) noexcept {
+TetrisPiece& TetrisPiece::movePieceRight(size_t width) noexcept {
+    if (this->pieceLoc.first == width) {
+        this->pieceLoc.first -= width;
+    }
+
 	this->pieceLoc.first++;
 	return *this;
 }

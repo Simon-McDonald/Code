@@ -10,16 +10,19 @@
 
 #include "Instance.hpp"
 #include "TextImage.hpp"
+#include "GridWindow.hpp"
 
 class MenuInstance : public Instance {
 public:
-    MenuInstance(std::vector<std::string> itemNames);
+    MenuInstance(std::vector<std::pair<InstanceType, std::string>> itemNames);
 
 	virtual bool update(double deltaTime_ms, const UserInputStruct & userInput) override;
 
-	virtual bool render(void) override;
-	virtual bool renderText(void) override;
-	virtual bool renderBackground(void) override;
+	virtual void render(void) override;
+	virtual void renderText(void) override;
+	virtual void renderBackground(void) override;
+
+	virtual InstanceType endState(void);
 
 	virtual ~MenuInstance(void);
 
@@ -29,7 +32,12 @@ protected:
 
     TextImage textImageInst;
 	std::vector<RenderableText> items;
+	std::vector<InstanceType> instanceTypes;
 	size_t menuIndex;
+
+	GridWindow title;
+
+	GLuint blockTextureId;
 
 	void updateSelectedColours(size_t oldSelectedIdx, size_t newSelectedIdx);
 };
