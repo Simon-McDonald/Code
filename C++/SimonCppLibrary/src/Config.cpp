@@ -5,7 +5,7 @@
  *      Author: Simon
  */
 
-#include "Config.hpp"
+/*#include "Config.hpp"
 
 #include <assert.h>
 #include <ctype.h>
@@ -78,7 +78,7 @@ Config::Config(std::string configFilePath) {
 	}
 
 	configFile.close();
-} /* Config::Config */
+}
 
 bool Config::addKey(ConfigHeader header, ConfigKey key, std::string value) {
 	if (!header.length() || !key.length() || !value.length()) {
@@ -99,11 +99,11 @@ bool Config::addKey(ConfigHeader header, ConfigKey key, std::string value) {
 
 	map.emplace(key, value);
 	return true;
-} /* Config::addKey */
+}
 
 bool Config::containsHeader(ConfigHeader header) {
 	return this->configMap.count(header);
-} /* Config::containsHeader */
+}
 
 bool Config::containsKey(ConfigHeader header, ConfigKey key) {
 	if (!this->containsHeader(header)) {
@@ -112,7 +112,7 @@ bool Config::containsKey(ConfigHeader header, ConfigKey key) {
 	}
 
 	return this->configMap.at(header).count(key);
-} /* Config::containsKey */
+}
 
 std::string Config::getString(ConfigHeader header, ConfigKey key) {
 	if (!this->containsKey(header, key)) {
@@ -128,7 +128,7 @@ std::string Config::getString(ConfigHeader header, ConfigKey key) {
 	}
 
 	return value;
-} /* Config::getString */
+}
 
 std::string Config::getStringEmpty(ConfigHeader header, ConfigKey key) {
 	if (!this->containsHeader (header)) {
@@ -140,7 +140,7 @@ std::string Config::getStringEmpty(ConfigHeader header, ConfigKey key) {
 	}
 
 	return this->configMap.at (header).at (key);
-} /* Config::getStringEmpty */
+}
 
 bool Config::getBool(ConfigHeader header, ConfigKey key) {
 	std::string value = this->getStringEmpty (header, key);
@@ -166,7 +166,7 @@ bool Config::getBool(ConfigHeader header, ConfigKey key) {
 	}
 
 	return false;
-} /* Config::getBool */
+}
 
 char Config::getChar (ConfigHeader header, ConfigKey key) {
 	std::string value = this->getString (header, key);
@@ -177,13 +177,13 @@ char Config::getChar (ConfigHeader header, ConfigKey key) {
 	}
 
 	return value.at(0);
-} /* Config::getChar */
+}
 
 unsigned char Config::getUnsignedChar(ConfigHeader header, ConfigKey key) {
 	std::string value = this->getString (header, key);
 
 	return this->getChar(header, key);
-} /* Config::getUnsignedChar */
+}
 
 int Config::getInt(ConfigHeader header, ConfigKey key) {
 	std::string value = this->getString(header, key);
@@ -195,13 +195,8 @@ int Config::getInt(ConfigHeader header, ConfigKey key) {
 
 	int intValue = atoi(value.c_str());
 
-	/*if (!intValue && value != to_string (intValue)) {
-		std::string errorMessage = "Value '" + value + "' for key '" + key + "' under header '" + header + "' cannot be cast to an integer";
-		throw std::invalid_argument (errorMessage);
-	}*/
-
 	return intValue;
-} /* Config::getInt */
+}
 
 unsigned Config::getUInt(ConfigHeader header, ConfigKey key) {
 	std::string value = this->getString(header, key);
@@ -214,7 +209,7 @@ unsigned Config::getUInt(ConfigHeader header, ConfigKey key) {
 	unsigned intValue = stoul(value);
 
 	return intValue;
-} /* Config::getUInt */
+}
 
 float Config::getFloat(ConfigHeader header, ConfigKey key) {
 	std::string value = this->getString(header, key);
@@ -227,7 +222,7 @@ float Config::getFloat(ConfigHeader header, ConfigKey key) {
 	float floatValue = atof(value.c_str());
 
 	return floatValue;
-} /* Config::getFloat */
+}
 
 void Config::getVector(ConfigHeader header, ConfigKey key, std::vector<std::string> &valueList) {
 	std::string value = this->getString(header, key);
@@ -256,11 +251,11 @@ void Config::displayConfig(std::ostream &os) {
 			os << inMapItr->first << ":" << inMapItr->second << std::endl;
 		}
 	}
-} /* Config::displayConfig */
+}
 
 void Config::displayConfig(void) {
 	this->displayConfig(std::cout);
-} /* Config::displayConfig */
+}
 
 void Config::listConfigKeys(ConfigHeader header, std::vector<ConfigKey> keyList) {
 	if (!this->containsHeader(header)) {
@@ -275,7 +270,7 @@ void Config::listConfigKeys(ConfigHeader header, std::vector<ConfigKey> keyList)
 		 inMapItr++) {
 		keyList.push_back(inMapItr->first);
 	}
-} /* listConfigKeys */
+}
 
 void Config::listConfigKeyValues(ConfigHeader header, std::vector<KeyValuePair> keyValueList) {
 	if (!this->containsHeader(header)) {
@@ -290,7 +285,7 @@ void Config::listConfigKeyValues(ConfigHeader header, std::vector<KeyValuePair> 
 		 inMapItr++) {
 		keyValueList.push_back(*inMapItr);
 	}
-} /* listConfigKeyValues */
+}
 
 template<typename DataType>
 DataType Config::getValue(ConfigHeader header, ConfigKey key) {
@@ -316,7 +311,7 @@ DataType Config::getValue(ConfigHeader header, ConfigKey key, DataType dataType)
 		// some warning
 		return dataType;
 	}
-}
+}*/
 
 
 
