@@ -10,9 +10,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "Logger.h"
-#include "Config.h"
-#include "StopWatch.h"
+#include "Logger.hpp"
+#include "Config.hpp"
+#include "StopWatch.hpp"
 
 #include "Player.h"
 

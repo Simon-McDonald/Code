@@ -12,7 +12,6 @@
 #include <cstring>
 
 #include <SDL_image.h>
-#include <SOIL.h>
 
 #include "ShaderManager.h"
 #include "CheckErrors.h"

@@ -8,8 +8,8 @@
 #ifndef UTILITYMANAGER_H_
 #define UTILITYMANAGER_H_
 
-#include <Config.h>
-#include <Logger.h>
+#include <Config.hpp>
+#include <Logger.hpp>
 
 class UtilityManager {
 public:
