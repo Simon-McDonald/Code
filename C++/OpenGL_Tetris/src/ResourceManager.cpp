@@ -5,10 +5,11 @@
  *      Author: Simon
  */
 
+#include "ResourceManager.hpp"
+
 #include <string>
 
-#include "CheckErrors.h"
-#include "ResourceManager.h"
+#include <CheckErrors.h>
 
 ResourceManager::ResourceManager(void) {
     glGenVertexArrays (1, &this->vertexArrayID);
@@ -16,7 +17,7 @@ ResourceManager::ResourceManager(void) {
 }
 
 SDL_Surface* ResourceManager::loadRawImage(std::string imageFileName) {
-	std::string texturePath = ResourceManager::getConfig().getString("RESOURCES", "images_dir") + "\\" + imageFileName;
+	std::string texturePath = ResourceManager::getConfig().getValue<std::string>("RESOURCES", "images_dir") + "\\" + imageFileName;
 
 	SDL_Surface *textureData = IMG_Load(texturePath.c_str());
 	if (!textureData) {
@@ -41,18 +42,16 @@ GLuint ResourceManager::dataToTexture(std::string textureFileName, SDL_Surface *
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);//GL_LINEAR, GL_NEAREST
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);//GL_LINEAR, GL_NEAREST
-	// For pixelated images
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	return textureBufferID;
 }
 
 GLuint ResourceManager::loadTexture(const std::string &textureFileName) {
-	std::string texturePath = ResourceManager::getConfig().getString("RESOURCES", "images_dir") + "\\" + textureFileName;
+	std::string texturePath = ResourceManager::getConfig().getValue<std::string>("RESOURCES", "images_dir") + "\\" + textureFileName;
 
 	SDL_Surface *textureData = IMG_Load(texturePath.c_str());
 	if (!textureData) {
@@ -75,12 +74,13 @@ GLuint ResourceManager::loadTexture(const std::string &textureFileName) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	// For pixelated images
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	return textureBufferID;
+}
+
+void ResourceManager::deleteTexture(const GLuint textureId) {
+    glDeleteTextures(1, &textureId);
 }
 
 ResourceManager::~ResourceManager(void) {

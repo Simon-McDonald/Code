@@ -25,6 +25,7 @@ MenuInstance::MenuInstance(std::vector<std::pair<InstanceType, std::string>> ite
 
     this->updateSelectedColours(menuIndex, menuIndex);
 
+    // Setup the title. Could be done more cleanly.
     blockTextureId = ResourceManager::loadTexture("block.bmp");
 
     //150: xxxxxxxxxxxxxxxxxxxxxxxxx : 174
@@ -41,13 +42,6 @@ MenuInstance::MenuInstance(std::vector<std::pair<InstanceType, std::string>> ite
     this->title.insertIntoBottom(0, {0, 255, 0}, {43, 68, 93, 118, 143}); // I
     this->title.insertIntoBottom(0, {255, 165, 0}, {45, 46, 72, 96, 120, 146, 147}); // S
     this->title.insertIntoBottom(0, {150, 150, 150}, {0, 24, 150, 174}); // Corners
-}
-
-void MenuInstance::updateSelectedColours(size_t oldSelectedIdx, size_t newSelectedIdx) {
-    this->items.at(oldSelectedIdx).setColour(MenuInstance::defaultColour);
-    this->items.at(oldSelectedIdx).setSize(1.5, 1.5);
-    this->items.at(newSelectedIdx).setColour(MenuInstance::selectedColour);
-    this->items.at(newSelectedIdx).setSize(2.0, 2.0);
 }
 
 bool MenuInstance::update(double deltaTime_ms, const UserInputStruct & userInput) {
@@ -107,6 +101,14 @@ InstanceType MenuInstance::endState(void) {
     return instanceTypes.at(this->menuIndex);
 }
 
-MenuInstance::~MenuInstance(void) {}
+void MenuInstance::updateSelectedColours(size_t oldSelectedIdx, size_t newSelectedIdx) {
+    this->items.at(oldSelectedIdx).setColour(MenuInstance::defaultColour);
+    this->items.at(oldSelectedIdx).setSize(1.5, 1.5);
+    this->items.at(newSelectedIdx).setColour(MenuInstance::selectedColour);
+    this->items.at(newSelectedIdx).setSize(2.0, 2.0);
+}
 
-
+MenuInstance::~MenuInstance(void) {
+    ResourceManager::deleteTexture(this->blockTextureId);
+    this->blockTextureId = -1u;
+}

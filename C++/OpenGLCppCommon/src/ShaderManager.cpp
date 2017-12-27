@@ -103,8 +103,7 @@ bool ShaderManager::InitialiseShader(void) {
 } /* ShaderManager::Initialise */
 
 void ShaderManager::setFeedbackVaryings(void) {
-	std::vector<std::string> varyings;
-	this->getConfig().getVector(this->header, "feedback_variables", varyings);
+	std::vector<std::string> varyings = this->getConfig().getList<std::string>(this->header, "feedback_variables");
 
 	const GLchar *feedbackVaryings[10] = {0};
 
@@ -122,13 +121,13 @@ GLuint ShaderManager::createShader(GLenum type, Config::ConfigKey key) {
 		//this->getLogger().Log(Logger::info, LOG_ARGS, "No shader folder path");
 		return -1u;
 	}
-	std::string path = this->getConfig().getString(ShaderManager::resourceLoc, "shader_dir");
+	std::string path = this->getConfig().getValue<std::string>(ShaderManager::resourceLoc, "shader_dir");
 
 	if (!this->getConfig().containsHeader(this->header) ||
 	    !this->getConfig().containsKey(this->header, key)) {
 		return -1u;
 	}
-	std::string value = this->getConfig().getString(this->header, key);
+	std::string value = this->getConfig().getValue<std::string>(this->header, key);
 
 	std::string shaderText;
 	std::string shaderFile = path + "/" + value;

@@ -33,7 +33,7 @@ bool OpenGLWindow::WindowInitialise(void) {
 	std::string widthKey = "window_width";
 	if (this->getConfig().containsHeader(this->header) &&
 		this->getConfig().containsKey(this->header, widthKey)) {
-		this->width = this->getConfig().getInt(this->header, widthKey);
+		this->width = this->getConfig().getValue<int>(this->header, widthKey);
 	} else {
 		this->width = 800;
 	}
@@ -41,7 +41,7 @@ bool OpenGLWindow::WindowInitialise(void) {
 	std::string heightKey = "window_height";
 	if (this->getConfig().containsHeader(this->header) &&
 		this->getConfig().containsKey(this->header, heightKey)) {
-		this->height = this->getConfig().getInt(this->header, heightKey);
+		this->height = this->getConfig().getValue<int>(this->header, heightKey);
 	} else {
 		this->height = 600;
 	}

@@ -8,9 +8,11 @@
 #ifndef TEXTIMAGE_HPP_
 #define TEXTIMAGE_HPP_
 
-#include "UtilityManager.hpp"
-#include "WorldManager.hpp"
+#include <UtilityManager.hpp>
+#include <WorldManager.hpp>
+
 #include "DataBuffer.hpp"
+#include "BufferObjects.hpp"
 
 /*
  * Defines the font of the text to be displayed. Initialised by pointing to the configuration header containing the
@@ -47,14 +49,28 @@ public:
 	    GLfloat spacingY;
 	};
 
+	/*
+	 * Construct font with a configuration header. Must contain 'file' pointing to appropriate image and 'start_char'
+	 * indicating the starting character in the image. Image must have lines dividing characters and marking character
+	 * sizes.
+	 */
 	TextImage(Config::ConfigHeader configHeader);
 
+	/*
+	 * Prepare to render text with this font.
+	 */
 	void setShaderUniforms(void) const;
 
+	/*
+	 * Generate the underlying buffer data to render text with this font.
+	 */
 	void generateStringBuffers(std::string renderString,
 	    DataBuffer<GLubyte, 1>& textBuffer, DataBuffer<GLfloat, 2> &spacingBuffer,
 	    fontSizing &fontSizeInfo, TextAlignment hAlignment, TextAlignment vAlignment) const;
 
+	/*
+	 * Free the texture buffer.
+	 */
 	~TextImage(void);
 
 private:
@@ -62,45 +78,14 @@ private:
 	unsigned ASCIIOffset;
 	std::vector<letterInfo> letterInfoVec;
 
+	/*
+	 * Helper functions for the generation of data.
+	 */
 	SDL_Surface* getImageObject(Config::ConfigHeader configHeader);
 	size_t getBlockHeight(size_t textureWidth, size_t textureHeight, uint8_t *data);
 	size_t getBlockWidth(size_t textureWidth, size_t textureHeight, uint8_t *data);
 	void calculatePieceDims(size_t texWidth, size_t texHeight, size_t texBlockWidth, size_t texBlockHeight,
 	        uint8_t *data, std::vector<letterInfo> &infoVec);
-};
-
-/*
- * Specific string of characters to render to screen.
- */
-class RenderableText : protected UtilityManager, protected WorldManager {
-public:
-	RenderableText(TextImage *textImage, std::string renderableString,
-			GLfloat xPos, GLfloat yPos,
-			GLfloat textSize, GLfloat textSizeWidth = 0.0,
-			TextImage::TextAlignment hAlignment = TextImage::TextAlignment::LEFT,
-			TextImage::TextAlignment vAlignment = TextImage::TextAlignment::TOP,
-			GLfloat widthSpace = 0.0, GLfloat heightSpace = 0.0,
-			GLColour<GLfloat> textColour = {0.0, 0.0, 0.0});
-
-	void setColour(GLColour<GLfloat> textColour);
-	void setSize(GLfloat widthSize, GLfloat heightSize = 0.0);
-
-	void updateText(std::string renderableString);
-
-	void Render(void);
-
-private:
-	const TextImage *textImage;
-	std::string renderableString;
-	DataBuffer<GLubyte, 1> renderText;
-	DataBuffer<GLfloat, 2> renderTextSpacing;
-
-	GLfloat screenPosition[2];
-	TextImage::fontSizing fontSizeInfo;
-	TextImage::TextAlignment horizontalAlignment;
-	TextImage::TextAlignment verticalAlignment;
-
-	GLColour<GLfloat> textColour;
 };
 
 #endif /* TEXTIMAGE_HPP_ */

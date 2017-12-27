@@ -6,10 +6,6 @@ layout (max_vertices = 4) out;
 
 in int vLetterIndex[];
 
-// GLfloat startX;
-// GLfloat startY;
-// GLfloat width;
-// GLfloat height;
 uniform vec4 letterInformation[128];
 
 uniform vec2 uTextScaling;
@@ -19,7 +15,6 @@ out vec2 gTextureCoord;
 void main() {
 	vec4 letterInfo = letterInformation[vLetterIndex[0]];
 	vec2 blockPosition = gl_in[0].gl_Position.xy;
-
 
 	gl_Position = vec4(blockPosition, 0.0, 1.0);
 	gTextureCoord = vec2(letterInfo.x, letterInfo.y) + vec2(0.0, letterInfo.w);

@@ -5,6 +5,7 @@
  *      Author: Simon
  */
 
+#include <CheckErrors.h>
 #include <memory>
 #include <map>
 
@@ -12,11 +13,8 @@
 #include <StopWatch.hpp>
 #include <WorldManager.hpp>
 
-#include "CheckErrors.h"
-#include "ResourceManager.h"
-
 #include "Levels.hpp"
-#include "MenuInstance.hpp"
+#include "ResourceManager.hpp"
 
 class ProgramManager : protected UtilityManager {
 public:
@@ -62,13 +60,8 @@ public:
 
 		    if (nextType != InstanceType::QUIT) {
 		        isRunning = true;
-
-		        INFO << "Avbout to reset" << END;
 		        level.reset(generateInstance(nextType));
-		        INFO << "ENDED" << END;
 		    }
-
-		    INFO << "Finished updating the instance type!!!" << END;
 		}
 
 		this->shaderMap.at("background").useProgram();
@@ -85,9 +78,7 @@ public:
 		return isRunning;
 	}
 
-	~ProgramManager(void) {
-		INFO << "Ending the program" << END;
-	}
+	~ProgramManager(void) {}
 
 private:
 	OpenGLWindow mainWindow;

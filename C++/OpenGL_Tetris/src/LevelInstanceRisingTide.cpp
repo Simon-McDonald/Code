@@ -11,15 +11,13 @@ const double LevelInstanceRisingTide::minLevelTimer_ms = 2000.0;
 const double LevelInstanceRisingTide::levelTimerDelta_ms = 100.0;
 
 LevelInstanceRisingTide::LevelInstanceRisingTide(void) :
-        LevelInstanceRandomStart(), riseTimerDuration_ms(5000), riseTimer_ms(riseTimerDuration_ms) {}
+        LevelInstanceRandomStart(0), riseTimerDuration_ms(5000), riseTimer_ms(riseTimerDuration_ms) {}
 
 void LevelInstanceRisingTide::resetLevelTimer(void) {
     this->riseTimer_ms = this->riseTimerDuration_ms;
 }
 
 bool LevelInstanceRisingTide::updateTimerEvents(double deltaTime_ms) {
-    INFO << "Start" << END;
-
     bool temp = LevelInstanceRandomStart::updateTimerEvents(deltaTime_ms);
 
     auto bla = this->getWindow().getInput();
@@ -28,8 +26,6 @@ bool LevelInstanceRisingTide::updateTimerEvents(double deltaTime_ms) {
     }
 
     this->riseTimer_ms -= deltaTime_ms;
-
-    INFO << "Middle 1" << END;
 
     if (temp && this->riseTimer_ms <= 0) {
         this->riseTimerDuration_ms -= LevelInstanceRisingTide::levelTimerDelta_ms;
@@ -51,10 +47,7 @@ bool LevelInstanceRisingTide::updateTimerEvents(double deltaTime_ms) {
 
         this->resetLevelTimer();
     }
-    INFO << "Middle 2" << END;
 
-    //bool temp = LevelInstanceRandomStart::updateTimerEvents(deltaTime_ms);
-    INFO << "End" << END;
     return temp;
 }
 

@@ -8,6 +8,7 @@
 #ifndef SRC_TETRISPIECETEMPLATE_HPP_
 #define SRC_TETRISPIECETEMPLATE_HPP_
 
+#include <CheckErrors.h>
 #include <cassert>
 #include <stdexcept>
 #include <vector>
@@ -16,8 +17,8 @@
 #include <WorldManager.hpp>
 
 #include "DataBuffer.hpp"
-#include "CheckErrors.h"
-#include "ResourceManager.h"
+#include "BufferObjects.hpp"
+#include "ResourceManager.hpp"
 
 /* Class to define a generic 'template' for a tetris piece. This 'template' defines the size, profile and behaviour of
  * a piece that can be used in the game. The piece definitions are read from the configuration file. The 'template'

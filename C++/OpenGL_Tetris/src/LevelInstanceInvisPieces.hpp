@@ -11,10 +11,13 @@
 #include "LevelInstance.hpp"
 
 /*
- *
+ * Cause the pieces that are set to be invisible.
  */
 class LevelInstanceInvisPieces : public LevelInstance {
 public:
+    /*
+     * Simply don't render the grid window.
+     */
     virtual void renderMainWindow(GLfloat blockSize) override;
 };
 

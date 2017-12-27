@@ -14,7 +14,7 @@ bool LevelInstanceNoWalls::testPieceMove(TetrisPiece &piece) const {
         for (size_t widthIndex = 0; widthIndex < piece.getWidth(); ++widthIndex) {
 
             if (piece(widthIndex, heightIndex) &&
-                ((/*(widthIndex + location.first >= this->window.getWidth()) ||*/ (heightIndex + location.second >= this->window.getHeight())) ||
+                ((heightIndex + location.second >= this->window.getHeight()) ||
                 this->window(widthIndex + location.first + this->window.getWidth(), heightIndex + location.second)))
             {
                 return false;

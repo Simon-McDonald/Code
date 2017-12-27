@@ -8,7 +8,8 @@
 #include <stdexcept>
 
 #include "TextImage.hpp"
-#include "ResourceManager.h"
+
+#include "ResourceManager.hpp"
 
 TextImage::TextImage(Config::ConfigHeader configHeader) :
     textureId(-1u), ASCIIOffset(0) {
@@ -39,8 +40,8 @@ SDL_Surface* TextImage::getImageObject(Config::ConfigHeader configHeader) {
         throw std::invalid_argument("Header '" + configHeader + "' does not exist!");
     }
 
-    std::string fileName = this->getConfig().getString(configHeader, "file");
-    ASCIIOffset = this->getConfig().getUInt(configHeader, "start_char");
+    std::string fileName = this->getConfig().getValue<std::string>(configHeader, "file");
+    ASCIIOffset = this->getConfig().getValue<unsigned>(configHeader, "start_char");
 
     SDL_Surface* imageVar = ResourceManager::loadRawImage(fileName);
 
@@ -136,7 +137,6 @@ void TextImage::calculatePieceDims(size_t texPixelWidth, size_t texPixelHeight, 
             ((float) pixelWidthIdx) / texPixelWidth,
             ((float) pixelHeightIdx) / texPixelHeight,
             ((float) (letterWidth - 1)) / texPixelWidth,
-            //((float) (blockPixelHeight - 1)) / texPixelHeight
             ((float) (letterHeight - 1)) / texPixelHeight
         };
     }
@@ -145,8 +145,6 @@ void TextImage::calculatePieceDims(size_t texPixelWidth, size_t texPixelHeight, 
 void TextImage::generateStringBuffers(std::string renderString,
     DataBuffer<GLubyte, 1>& textBuffer, DataBuffer<GLfloat, 2> &spacingBuffer,
     fontSizing &fontSizeInfo, TextAlignment hAlignment, TextAlignment vAlignment) const {
-
-    INFO << "Generate buffer for: " << renderString << END;
 
     const size_t maxStringLength = renderString.size();
 
@@ -158,8 +156,6 @@ void TextImage::generateStringBuffers(std::string renderString,
     size_t bufferIdx = 0, lineStartIdx = 0;
 
     while (stringIdx < maxStringLength) {
-        //INFO << "xOffsetTop: " << xOffset << END;
-
         if (renderString.at(stringIdx) == '\n') { // newline
 
             GLfloat textWidth = xOffset - fontSizeInfo.textSpacingX;
@@ -177,7 +173,6 @@ void TextImage::generateStringBuffers(std::string renderString,
             }
 
             for (size_t charIdx = lineStartIdx; charIdx < bufferIdx; ++charIdx) {
-                INFO << "======Offset " << charIdx << END;
                 spaceBuffer[charIdx].spacingX -= textWidth;
             }
 
@@ -194,8 +189,6 @@ void TextImage::generateStringBuffers(std::string renderString,
         }
 
         ++stringIdx;
-
-        //INFO << "xOffsetBottom: " << xOffset << END;
     }
 
     GLfloat textWidth = xOffset - fontSizeInfo.textSpacingX;
@@ -214,7 +207,6 @@ void TextImage::generateStringBuffers(std::string renderString,
 
     INFO << "lineStartIdx: " << lineStartIdx << ", bufferIdx: " << bufferIdx << END;
     for (size_t charIdx = lineStartIdx; charIdx < bufferIdx; ++charIdx) {
-        INFO << "======Offset " << charIdx << END;
         spaceBuffer[charIdx].spacingX -= textWidth;
     }
 
@@ -241,53 +233,8 @@ void TextImage::generateStringBuffers(std::string renderString,
 
     textBuffer.resetBuffer(bufferIdx, &charBuffer[0]);
     spacingBuffer.resetBuffer(bufferIdx, &spaceBuffer[0].spacingX);
-
-    INFO << "Finished for: " << renderString << END;
 }
 
 TextImage::~TextImage(void) {
-    // delete buffers/images
+    ResourceManager::deleteTexture(this->textureId);
 }
-
-RenderableText::RenderableText(TextImage *textImage, std::string renderableString, GLfloat xPos, GLfloat yPos,
-    GLfloat textSize, GLfloat textSizeWidth, TextImage::TextAlignment hAlignment, TextImage::TextAlignment vAlignment,
-    GLfloat widthSpace, GLfloat heightSpace, GLColour<GLfloat> textColour) :
-        textImage(textImage), renderableString(renderableString), screenPosition{xPos, yPos},
-        fontSizeInfo{textSize, textSizeWidth > 0 ? textSizeWidth : textSize, widthSpace, heightSpace},
-        horizontalAlignment(hAlignment), verticalAlignment(vAlignment), textColour(textColour) {
-    this->updateText(renderableString);
-}
-
-void RenderableText::setColour(GLColour<GLfloat> newColour) {
-    this->textColour = newColour;
-}
-
-void RenderableText::setSize(GLfloat widthSize, GLfloat heightSize) {
-    this->fontSizeInfo.textSizeX = widthSize;
-    this->fontSizeInfo.textSizeY = heightSize > 0.0 ? heightSize : widthSize;
-}
-
-void RenderableText::updateText(std::string renderableString) {
-    this->textImage->generateStringBuffers(renderableString, this->renderText, this->renderTextSpacing,
-        fontSizeInfo, horizontalAlignment, verticalAlignment);
-}
-
-void RenderableText::Render(void) {
-
-    CHECKERRORS();
-
-    this->textImage->setShaderUniforms();
-
-    CHECKERRORS();
-
-    this->getShaderManager().bindVector2("uScreenPosition", &screenPosition[0]);
-    this->getShaderManager().bindVector2("uTextScaling", this->fontSizeInfo.textSizeX, this->fontSizeInfo.textSizeY);
-    this->getShaderManager().bindVector3("uTextColour", &this->textColour.r);
-
-    CHECKERRORS();
-
-    this->renderTextSpacing.bindEnableLayoutPointers(1);
-    this->renderText.manageRender(0);
-    this->renderTextSpacing.disableLayoutPointers(1);
-}
-

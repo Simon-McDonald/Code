@@ -48,9 +48,47 @@ int GridWindow::getNextBlock(int curBlock) {
 	return nextBlock;
 }
 
-void GridWindow::insertIntoBottom(size_t rowsToShift, Colour colour, std::vector<GLubyte> blockIndices) {
-    INFO << "AAAAAAAAA" << END;
+void GridWindow::validateBoard(void) {
+    size_t popCount = 0, blockCount = 0;
 
+    for (size_t row = 0; row < this->height; ++row) {
+        for (size_t col = 0; col < this->width; ++col) {
+            size_t vecIdx = row * this->width + col;
+
+            if (this->isPopulated[vecIdx] >= 0) {
+                ++popCount;
+            }
+            if (this->blockMatrix[vecIdx].renderBlock > 0) {
+                ++blockCount;
+            }
+        }
+    }
+
+    if (popCount != blockCount) {
+        ERR << "Count mismatch, pop: " << popCount << ", block: " << blockCount << END;
+    }
+
+    for (size_t row = 0; row < this->height; ++row) {
+        for (size_t col = 0; col < this->width; ++col) {
+            size_t vecIdx = row * this->width + col;
+
+            if (this->isPopulated[vecIdx] >= 0) {
+
+                if (this->blockMatrix[this->isPopulated[vecIdx]].renderBlock <= 0) {
+                    ERR << "Missing block, containerIdx: " << vecIdx << ", blockId: "
+                        << this->blockMatrix[this->isPopulated[vecIdx]].blockIndex << END;
+                }
+
+                if (this->blockMatrix[this->isPopulated[vecIdx]].blockIndex != vecIdx) {
+                    ERR << "Index mismatch, containerIdx: " << vecIdx << ", dataIdx: " << this->isPopulated[vecIdx]
+                        << ", act: " << (int) this->blockMatrix[this->isPopulated[vecIdx]].blockIndex << END;
+                }
+            }
+        }
+    }
+}
+
+void GridWindow::insertIntoBottom(size_t rowsToShift, GLColour<GLubyte> colour, std::vector<GLubyte> blockIndices) {
     // Remove top 'rowsToShift' number of rows
     for (size_t row = this->height - rowsToShift; row < this->height; ++row) {
         for (size_t col = 0; col < this->width; ++col) {
@@ -95,8 +133,7 @@ void GridWindow::insertIntoBottom(size_t rowsToShift, Colour colour, std::vector
         this->currentBlock = nextInfoPos;
     }
 
-    INFO << "DDDDDDDDD" << END;
-
+    // Remove full rows and update buffer
     std::vector<size_t> fullRows = this->listFullRows();
     this->removeRows(fullRows);
 
@@ -105,8 +142,7 @@ void GridWindow::insertIntoBottom(size_t rowsToShift, Colour colour, std::vector
     this->validateBoard();
 }
 
-void GridWindow::setRowDefault(size_t row, Colour colour) {
-    INFO << "Adding a row!" << END;
+void GridWindow::setRowDefault(size_t row, GLColour<GLubyte> colour) {
     for (size_t col = 0; col < this->getWidth(); ++col) {
         size_t boardPos = row * this->width + col;
 
@@ -135,6 +171,35 @@ void GridWindow::setRowDefault(size_t row, Colour colour) {
     this->validateBoard();
 }
 
+void GridWindow::removeRows(const std::vector<size_t> &rows) {
+    for (size_t row : rows) {
+        for (size_t col = 0; col < this->width; ++col) {
+            this->blockMatrix[this->isPopulated[row * this->width + col]].renderBlock = 0;
+
+            this->isPopulated[row * this->width + col] = -1;
+        }
+    }
+
+    for (size_t row = 0, lostRows = 0; row < this->height; ++row) {
+        if ((lostRows < rows.size()) && (row == rows[lostRows])) {
+            ++lostRows;
+        }
+
+        for (size_t col = 0; col < this->width; ++col) {
+
+            size_t oldBoardPos = row * this->width + col;
+            size_t newBoardPos = (row - lostRows) * this->width + col;
+
+            if (this->isPopulated[oldBoardPos] >= 0 && oldBoardPos != newBoardPos) {
+                this->blockMatrix[this->isPopulated[oldBoardPos]].blockIndex = newBoardPos;
+
+                this->isPopulated[newBoardPos] = this->isPopulated[oldBoardPos];
+                this->isPopulated[oldBoardPos] = -1;
+            }
+        }
+    }
+}
+
 size_t GridWindow::lockNextPiece(const TetrisPiece &newPiece, const std::pair<size_t, size_t> &piecePosition) {
 	for (size_t heightIndex = 0; heightIndex < newPiece.getHeight(); ++heightIndex) {
 		for (size_t widthIndex = 0; widthIndex < newPiece.getWidth(); ++widthIndex) {
@@ -160,6 +225,7 @@ size_t GridWindow::lockNextPiece(const TetrisPiece &newPiece, const std::pair<si
 		}
 	}
 
+	// Remove full rows and update data buffer.
 	std::vector<size_t> fullRows = this->listFullRows();
 	size_t numFullRows = fullRows.size();
 	this->removeRows(fullRows);
@@ -169,45 +235,6 @@ size_t GridWindow::lockNextPiece(const TetrisPiece &newPiece, const std::pair<si
 	this->validateBoard();
 
 	return numFullRows;
-}
-
-void GridWindow::validateBoard(void) {
-	size_t popCount = 0, blockCount = 0;
-
-	for (size_t row = 0; row < this->height; ++row) {
-		for (size_t col = 0; col < this->width; ++col) {
-			size_t vecIdx = row * this->width + col;
-
-			if (this->isPopulated[vecIdx] >= 0) {
-				++popCount;
-			}
-			if (this->blockMatrix[vecIdx].renderBlock > 0) {
-				++blockCount;
-			}
-		}
-	}
-
-	if (popCount != blockCount) {
-		ERR << "Count mismatch, pop: " << popCount << ", block: " << blockCount << END;
-	}
-
-
-	for (size_t row = 0; row < this->height; ++row) {
-		for (size_t col = 0; col < this->width; ++col) {
-			size_t vecIdx = row * this->width + col;
-
-			if (this->isPopulated[vecIdx] >= 0) {
-
-				if (this->blockMatrix[this->isPopulated[vecIdx]].renderBlock <= 0) {
-					ERR << "Missing block, containerIdx: " << vecIdx << ", blockId: " << this->blockMatrix[this->isPopulated[vecIdx]].blockIndex << END;
-				}
-
-				if (this->blockMatrix[this->isPopulated[vecIdx]].blockIndex != vecIdx) {
-					ERR << "Index mismatch, containerIdx: " << vecIdx << ", dataIdx: " << this->isPopulated[vecIdx] << ", act: " << (int) this->blockMatrix[this->isPopulated[vecIdx]].blockIndex << END;
-				}
-			}
-		}
-	}
 }
 
 std::vector<size_t> GridWindow::listFullRows(void) {
@@ -228,40 +255,9 @@ std::vector<size_t> GridWindow::listFullRows(void) {
 	return listRows;
 }
 
-void GridWindow::removeRows(const std::vector<size_t> &rows) {
-	for (size_t row : rows) {
-		for (size_t col = 0; col < this->width; ++col) {
-			this->blockMatrix[this->isPopulated[row * this->width + col]].renderBlock = 0;
-
-			this->isPopulated[row * this->width + col] = -1;
-		}
-	}
-
-	for (size_t row = 0, lostRows = 0; row < this->height; ++row) {
-		if ((lostRows < rows.size()) && (row == rows[lostRows])) {
-			++lostRows;
-		}
-
-		for (size_t col = 0; col < this->width; ++col) {
-
-			size_t oldBoardPos = row * this->width + col;
-			size_t newBoardPos = (row - lostRows) * this->width + col;
-
-			if (this->isPopulated[oldBoardPos] >= 0 && oldBoardPos != newBoardPos) {
-				this->blockMatrix[this->isPopulated[oldBoardPos]].blockIndex = newBoardPos;
-
-				this->isPopulated[newBoardPos] = this->isPopulated[oldBoardPos];
-				this->isPopulated[oldBoardPos] = -1;
-			}
-		}
-	}
-}
-
 void GridWindow::render(void) {
 	CHECKERRORS();
 	this->getShaderManager().setUniformBool("uUniformSettings", false);
-	CHECKERRORS();
-	this->getShaderManager().setUniformInt("uNumRotations", 0);
 	CHECKERRORS();
 	this->getShaderManager().setUniformInt("uBlockMod", this->width);
 	CHECKERRORS();

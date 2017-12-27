@@ -6,9 +6,6 @@ layout (max_vertices = 25) out;
 
 in vec2 vBoxDims[];
 
-//uniform float uBorderWidth;
-//uniform float uFilterColour;
-
 out vec3 gFilterColour;
 
 const float AR = 540.0 / 600.0;

@@ -35,7 +35,7 @@ namespace cvt {
 	}
 
 	template<>
-	bool fromStr<std::string>(const std::string item, std::string &value) noexcept {
+	inline bool fromStr<std::string>(const std::string item, std::string &value) noexcept {
 		value = item;
 		return true;
 	}
@@ -57,7 +57,7 @@ namespace cvt {
 	}
 
 	template<>
-	std::string fromStr<std::string>(const std::string item) {
+	inline std::string fromStr<std::string>(const std::string item) {
 		return item;
 	}
 
@@ -79,7 +79,7 @@ namespace cvt {
 	}
 
 	template<>
-	std::string toStr<std::string>(std::string &value) {
+	inline std::string toStr<std::string>(std::string &value) {
 		return value;
 	}
 }

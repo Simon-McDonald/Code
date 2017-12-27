@@ -7,20 +7,20 @@
 
 #include "LevelInstanceRandomStart.hpp"
 
-LevelInstanceRandomStart::LevelInstanceRandomStart(void) : LevelInstance(),
+LevelInstanceRandomStart::LevelInstanceRandomStart(size_t rowsToFill) : LevelInstance(),
     generator((unsigned int) time(0)), randomGen(0.0, 1.0) {
 
-    size_t half_height = this->window.getHeight() / 2;
+    size_t numRows = rowsToFill > this->window.getHeight() ? this->window.getHeight() : rowsToFill;
     std::vector<GLubyte> randomBlocks;
 
-    for (GLubyte row = 0; row < half_height; ++row) {
+    for (GLubyte row = 0; row < numRows; ++row) {
         std::vector<GLubyte> tempRandomRow = this->generateRandomBlocksRow(
             this->window.getWidth(), row * this->window.getWidth());
 
         randomBlocks.insert(randomBlocks.end(), tempRandomRow.begin(), tempRandomRow.end());
     }
 
-    this->window.insertIntoBottom(half_height, {150, 150, 150}, randomBlocks);
+    this->window.insertIntoBottom(numRows, {150, 150, 150}, randomBlocks);
 }
 
 std::vector<GLubyte> LevelInstanceRandomStart::generateRandomBlocksRow(GLubyte width, GLubyte offset) {

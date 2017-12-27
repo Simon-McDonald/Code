@@ -37,52 +37,8 @@ LevelInstance::LevelInstance(void) :
 	    animationTimer_ms(0.0),
 	    animationIndex (0) {
 
-	currentPiece.setPieceLoc(4, 15);
+    this->setCurrentPieceStartLoc();
 	this->resetOutputStrings();
-}
-
-void LevelInstance::startGameEndedAnimation(void) {
-    this->gameEnded = true;
-    this->animationTimer_ms = LevelInstance::animationDelta_ms;
-    this->animationIndex = 0;
-}
-
-bool LevelInstance::updateEndAnimation(double deltaTime_ms) {
-    this->animationTimer_ms -= deltaTime_ms;
-
-    if (this->animationTimer_ms <= 0) {
-        INFO << "GGGGGGGGGG: " << this->animationIndex << END;
-        if (this->animationIndex == this->window.getHeight()) {
-            INFO << "QUITTING!!!" << END;
-            return false;
-        }
-
-        this->window.setRowDefault(animationIndex, {150, 150, 150});
-        ++this->animationIndex;
-
-        this->animationTimer_ms = LevelInstance::animationDelta_ms;
-    }
-
-    return true;
-}
-
-bool LevelInstance::updateTimerEvents(double deltaTime_ms) {
-    this->currentTimer_ms -= deltaTime_ms;
-
-    if (this->currentTimer_ms <= 0) {
-        this->resetMoveTimer();
-
-        if (!this->moveCurrentPieceDown()) {
-            this->lockCurrentPiece();
-
-            if (!this->generateNextPiece()) {
-                // game over
-                return false;
-            }
-        }
-    }
-
-    return true;
 }
 
 bool LevelInstance::update(double deltaTime_ms, const UserInputStruct &userInput) {
@@ -113,49 +69,114 @@ bool LevelInstance::update(double deltaTime_ms, const UserInputStruct &userInput
     return result;
 }
 
+void LevelInstance::render(void) {
+    GLfloat minBlockSize = this->calculateMinBlockSize();
+    this->setupCommonUniforms();
+    this->renderMainWindow(minBlockSize);
+    this->renderAuxiliaryWindow(minBlockSize);
+}
+
+void LevelInstance::renderText(void) {
+    labelsText.Render();
+    valuesText.Render();
+}
+
+// TODO maintain single buffer between each rendering call.
+void LevelInstance::renderBackground(void) {
+    GLfloat blockSize = this->calculateMinBlockSize();
+
+    auto mainWindowCentre = this->getMainWindowCentre();
+    auto mainWindowSize = this->getMainWindowDims(blockSize);
+
+    auto auxWindowCentre = this->getAuxiliaryWindowCentre();
+    auto auxWindowSize = this->getAuxiliaryWindowDims(blockSize);
+
+    auto textWindowCentre = this->getTextWindowCentre();
+    auto textWindowSize = this->getTextWindowDims();
+
+    std::vector<GLfloat> borderPoints = {
+        mainWindowCentre.first, mainWindowCentre.second, mainWindowSize.first, mainWindowSize.second,
+        auxWindowCentre.first, auxWindowCentre.second, auxWindowSize.first, auxWindowSize.second,
+        textWindowCentre.first, textWindowCentre.second, textWindowSize.first, textWindowSize.second};
+
+    DataBuffer<GLfloat, 2, 2> borderBuffer(3, &borderPoints[0]);
+    borderBuffer.manageRender(1, 2);
+}
+
+InstanceType LevelInstance::endState(void) {
+    return InstanceType::MENU;
+}
+
+LevelInstance::~LevelInstance(void) {}
+
+bool LevelInstance::updateTimerEvents(double deltaTime_ms) {
+    this->currentTimer_ms -= deltaTime_ms;
+
+    if (this->currentTimer_ms <= 0) {
+        this->resetMoveTimer();
+
+        if (!this->moveCurrentPieceDown()) {
+            this->lockCurrentPiece();
+
+            if (!this->generateNextPiece()) {
+                // game over
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 bool LevelInstance::moveCurrentPieceDown() {
-	TetrisPiece tempPiece = this->currentPiece;
-	tempPiece.movePieceDown();
+    TetrisPiece tempPiece = this->currentPiece;
+    tempPiece.movePieceDown();
 
-	return this->testImplementPieceMove(tempPiece);
-}
-
-bool LevelInstance::testImplementPieceMove(TetrisPiece &piece) {
-	if (testPieceMove(piece)) {
-		this->currentPiece = piece;
-
-		return true;
-	}
-	return false;
-}
-
-void LevelInstance::resetMoveTimer(void) {
-	this->currentTimer_ms = this->timerDuration_ms;
-}
-
-bool LevelInstance::lockCurrentPiece() {
-	size_t numRows = this->window.lockNextPiece(this->currentPiece, this->currentPiece.getPieceLoc());
-
-	this->playerPoints += this->pointsForRow(numRows);
-	this->rowsCleared += numRows;
-	this->piecesSet += 1;
-	this->resetOutputStrings();
-
-	this->timerDuration_ms -= this->timerChangeScaling * numRows;
-	if (this->timerDuration_ms < minTimer_ms) {
-		this->timerDuration_ms = minTimer_ms;
-	}
-
-	return numRows > 0;
+    return this->testImplementPieceMove(tempPiece);
 }
 
 bool LevelInstance::generateNextPiece() {
-	this->currentPiece = this->nextPiece;
-	this->currentPiece.setPieceLoc(4, 15);
+    this->currentPiece = this->nextPiece;
+    this->setCurrentPieceStartLoc();
 
-	this->nextPiece = TetrisPiece::generateNextTetrisPiece();
+    this->nextPiece = TetrisPiece::generateNextTetrisPiece();
 
-	return this->testPieceMove(this->currentPiece);
+    return this->testPieceMove(this->currentPiece);
+}
+
+bool LevelInstance::lockCurrentPiece() {
+    size_t numRows = this->window.lockNextPiece(this->currentPiece, this->currentPiece.getPieceLoc());
+
+    this->playerPoints += this->pointsForRow(numRows);
+    this->rowsCleared += numRows;
+    this->piecesSet += 1;
+    this->resetOutputStrings();
+
+    this->timerDuration_ms -= this->timerChangeScaling * numRows;
+    if (this->timerDuration_ms < minTimer_ms) {
+        this->timerDuration_ms = minTimer_ms;
+    }
+
+    return numRows > 0;
+}
+
+bool LevelInstance::testPieceMove(TetrisPiece &piece) const {
+    std::pair<size_t, size_t> location = piece.getPieceLoc();
+
+    for (size_t heightIndex = 0; heightIndex < piece.getHeight(); ++heightIndex) {
+        for (size_t widthIndex = 0; widthIndex < piece.getWidth(); ++widthIndex) {
+
+            if (piece(widthIndex, heightIndex) &&
+                (((widthIndex + location.first >= this->window.getWidth()) ||
+                  (heightIndex + location.second >= this->window.getHeight())) ||
+                this->window(widthIndex + location.first, heightIndex + location.second)))
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 GLfloat LevelInstance::calculateMinBlockSize(void) {
@@ -165,35 +186,10 @@ GLfloat LevelInstance::calculateMinBlockSize(void) {
     GLfloat windowPixelWidth = (float) this->getWindow().getWidth();
 
     GLfloat blockSizes[] = {windowSize[0] * windowPixelWidth / (this->window.getWidth()),
-                            windowSize[1] * windowPixelHeight / (this->window.getHeight() * LevelInstance::aspectRatio)};
+                            windowSize[1] * windowPixelHeight /
+                                (this->window.getHeight() * LevelInstance::aspectRatio)};
 
     return (blockSizes[0] > blockSizes[1]) ? blockSizes[1] : blockSizes[0];
-}
-
-GLfloat LevelInstance::calculateWindowWidth(size_t blockWidth, GLfloat blockSize) {
-    return blockSize * blockWidth / this->getWindow().getWidth();
-}
-
-GLfloat LevelInstance::calculateWindowHeight(size_t blockHeight, GLfloat blockSize) {
-    return LevelInstance::aspectRatio * blockSize  * blockHeight / this->getWindow().getHeight();
-}
-
-std::pair<GLfloat, GLfloat> LevelInstance::getMainWindowDims(GLfloat blockSize) {
-    return std::make_pair<GLfloat, GLfloat>(
-        this->calculateWindowWidth(this->window.getWidth(), blockSize),
-        this->calculateWindowHeight(this->window.getHeight(), blockSize));
-}
-std::pair<GLfloat, GLfloat> LevelInstance::getMainWindowCentre(void) {
-    return std::make_pair<GLfloat, GLfloat>(180.0 / 540.0, 0.5);
-}
-
-void LevelInstance::setMainWindowUniforms(GLfloat blockSize) {
-    auto newWindowSize = this->getMainWindowDims(blockSize);
-    auto windowCentre = this->getMainWindowCentre();
-
-    this->getShaderManager().bindVector2("uWindowSize", newWindowSize.first * 2, newWindowSize.second * 2);
-    this->getShaderManager().bindVector2("uWindowPos", 2 * windowCentre.first - 1 - newWindowSize.first,
-                                                       2 * windowCentre.second - 1 - newWindowSize.second);
 }
 
 std::pair<GLfloat, GLfloat> LevelInstance::getAuxiliaryWindowDims(GLfloat blockSize) {
@@ -205,6 +201,44 @@ std::pair<GLfloat, GLfloat> LevelInstance::getAuxiliaryWindowDims(GLfloat blockS
 }
 std::pair<GLfloat, GLfloat> LevelInstance::getAuxiliaryWindowCentre(void) {
     return std::make_pair<GLfloat, GLfloat>(450 / 540.0, 480.0 / 600.0);
+}
+
+std::pair<GLfloat, GLfloat> LevelInstance::getMainWindowDims(GLfloat blockSize) {
+    return std::make_pair<GLfloat, GLfloat>(
+        this->calculateWindowWidth(this->window.getWidth(), blockSize),
+        this->calculateWindowHeight(this->window.getHeight(), blockSize));
+}
+std::pair<GLfloat, GLfloat> LevelInstance::getMainWindowCentre(void) {
+    return std::make_pair<GLfloat, GLfloat>(180.0 / 540.0, 0.5);
+}
+
+std::pair<GLfloat, GLfloat> LevelInstance::getTextWindowDims(void) {
+    return std::make_pair<GLfloat, GLfloat>(0.32, 0.3);
+}
+std::pair<GLfloat, GLfloat> LevelInstance::getTextWindowCentre(void) {
+    return std::make_pair<GLfloat, GLfloat>(0.82, 0.32);
+}
+
+GLfloat LevelInstance::calculateWindowWidth(size_t blockWidth, GLfloat blockSize) {
+    return blockSize * blockWidth / this->getWindow().getWidth();
+}
+
+GLfloat LevelInstance::calculateWindowHeight(size_t blockHeight, GLfloat blockSize) {
+    return LevelInstance::aspectRatio * blockSize  * blockHeight / this->getWindow().getHeight();
+}
+
+void LevelInstance::setupCommonUniforms(void) {
+    this->getShaderManager().setUniformInt("uGridWidth", this->window.getWidth());
+    this->currentPiece.prepShaderTextures();
+}
+
+void LevelInstance::setMainWindowUniforms(GLfloat blockSize) {
+    auto newWindowSize = this->getMainWindowDims(blockSize);
+    auto windowCentre = this->getMainWindowCentre();
+
+    this->getShaderManager().bindVector2("uWindowSize", newWindowSize.first * 2, newWindowSize.second * 2);
+    this->getShaderManager().bindVector2("uWindowPos", 2 * windowCentre.first - 1 - newWindowSize.first,
+                                                       2 * windowCentre.second - 1 - newWindowSize.second);
 }
 
 void LevelInstance::setAuxiliaryWindowUniforms(GLfloat blockSize) {
@@ -223,7 +257,8 @@ void LevelInstance::renderMainWindow(GLfloat blockSize) {
     this->getShaderManager().bindVector2i("uPieceOffset", 0, 0);
     this->window.render();
 
-    this->getShaderManager().bindVector2i("uPieceOffset", this->currentPiece.getPieceLoc().first, this->currentPiece.getPieceLoc().second);
+    this->getShaderManager().bindVector2i("uPieceOffset", this->currentPiece.getPieceLoc().first,
+                                          this->currentPiece.getPieceLoc().second);
     this->currentPiece.RenderPiece();
 
 }
@@ -235,67 +270,63 @@ void LevelInstance::renderAuxiliaryWindow(GLfloat blockSize) {
     this->nextPiece.RenderPiece();
 }
 
-void LevelInstance::setupCommonUniforms(void) {
-    this->getShaderManager().setUniformInt("uGridWidth", this->window.getWidth());
-    this->currentPiece.prepShaderTextures();
+void LevelInstance::setCurrentPieceStartLoc(void) {
+    currentPiece.setPieceLoc(4, 15);
 }
 
-void LevelInstance::render(void) {
-	GLfloat minBlockSize = this->calculateMinBlockSize();
-	this->setupCommonUniforms();
-	this->renderMainWindow(minBlockSize);
-	this->renderAuxiliaryWindow(minBlockSize);
+void LevelInstance::startGameEndedAnimation(void) {
+    this->gameEnded = true;
+    this->animationTimer_ms = LevelInstance::animationDelta_ms;
+    this->animationIndex = 0;
 }
 
-std::pair<GLfloat, GLfloat> LevelInstance::getTextWindowDims(void) {
-    return std::make_pair<GLfloat, GLfloat>(0.32, 0.3);
-}
-std::pair<GLfloat, GLfloat> LevelInstance::getTextWindowCentre(void) {
-    return std::make_pair<GLfloat, GLfloat>(0.82, 0.32);
-}
+bool LevelInstance::updateEndAnimation(double deltaTime_ms) {
+    this->animationTimer_ms -= deltaTime_ms;
 
-void LevelInstance::renderBackground(void) {
-	GLfloat blockSize = this->calculateMinBlockSize();
+    if (this->animationTimer_ms <= 0) {
+        if (this->animationIndex == this->window.getHeight()) {
+            return false;
+        }
 
-    auto mainWindowCentre = this->getMainWindowCentre();
-	auto mainWindowSize = this->getMainWindowDims(blockSize);
+        this->window.setRowDefault(animationIndex, {150, 150, 150});
+        ++this->animationIndex;
 
-    auto auxWindowCentre = this->getAuxiliaryWindowCentre();
-	auto auxWindowSize = this->getAuxiliaryWindowDims(blockSize);
+        this->animationTimer_ms = LevelInstance::animationDelta_ms;
+    }
 
-	auto textWindowCentre = this->getTextWindowCentre();
-    auto textWindowSize = this->getTextWindowDims();
-
-	std::vector<GLfloat> borderPoints = {
-	    mainWindowCentre.first, mainWindowCentre.second, mainWindowSize.first, mainWindowSize.second,
-	    auxWindowCentre.first, auxWindowCentre.second, auxWindowSize.first, auxWindowSize.second,
-		textWindowCentre.first, textWindowCentre.second, textWindowSize.first, textWindowSize.second};
-
-	DataBuffer<GLfloat, 2, 2> borderBuffer(3, &borderPoints[0]);
-	borderBuffer.manageRender(1, 2);
+    return true;
 }
 
-void LevelInstance::renderText(void) {
-    labelsText.Render();
-    valuesText.Render();
+void LevelInstance::resetMoveTimer(void) {
+    this->currentTimer_ms = this->timerDuration_ms;
 }
 
-bool LevelInstance::testPieceMove(TetrisPiece &piece) const {
-	std::pair<size_t, size_t> location = piece.getPieceLoc();
+bool LevelInstance::testImplementPieceMove(TetrisPiece &piece) {
+	if (testPieceMove(piece)) {
+		this->currentPiece = piece;
 
-	for (size_t heightIndex = 0; heightIndex < piece.getHeight(); ++heightIndex) {
-		for (size_t widthIndex = 0; widthIndex < piece.getWidth(); ++widthIndex) {
-
-			if (piece(widthIndex, heightIndex) &&
-				(((widthIndex + location.first >= this->window.getWidth()) || (heightIndex + location.second >= this->window.getHeight())) ||
-				this->window(widthIndex + location.first, heightIndex + location.second)))
-			{
-				return false;
-			}
-		}
+		return true;
 	}
+	return false;
+}
 
-	return true;
+bool LevelInstance::testImplementRotation(TetrisPiece &piece) {
+    if (this->testImplementPieceMove(piece)) {
+        return true;
+    }
+
+    piece.movePieceLeft(this->window.getWidth());
+    if (this->testImplementPieceMove(piece)) {
+        return true;
+    }
+
+    piece.movePieceRight(this->window.getWidth());
+    piece.movePieceRight(this->window.getWidth());
+    if (this->testImplementPieceMove(piece)) {
+        return true;
+    }
+
+    return false;
 }
 
 bool LevelInstance::implementUserInput(const UserInputStruct &input, double deltaTime_ms) {
@@ -351,25 +382,6 @@ bool LevelInstance::implementUserInput(const UserInputStruct &input, double delt
 	return result;
 }
 
-bool LevelInstance::testImplementRotation(TetrisPiece &piece) {
-	if (this->testImplementPieceMove(piece)) {
-		return true;
-	}
-
-	piece.movePieceLeft(this->window.getWidth());
-	if (this->testImplementPieceMove(piece)) {
-		return true;
-	}
-
-	piece.movePieceRight(this->window.getWidth());
-    piece.movePieceRight(this->window.getWidth());
-	if (this->testImplementPieceMove(piece)) {
-		return true;
-	}
-
-	return false;
-}
-
 unsigned LevelInstance::pointsForRow(size_t numRowsCleared) {
 	return numRowsCleared * numRowsCleared;
 }
@@ -378,9 +390,3 @@ void LevelInstance::resetOutputStrings(void) {
     valuesText.updateText(std::to_string(this->piecesSet) + "\n" +
         std::to_string(this->rowsCleared) + "\n" + std::to_string(this->playerPoints));
 }
-
-InstanceType LevelInstance::endState(void) {
-    return InstanceType::MENU;
-}
-
-LevelInstance::~LevelInstance(void) {}

@@ -13,13 +13,19 @@
 #include "LevelInstance.hpp"
 
 /*
- *
+ * Start the level with a random assortment of blocks covering the bottom half of the grid.
  */
 class LevelInstanceRandomStart : public LevelInstance {
 public:
-    LevelInstanceRandomStart(void);
+    /*
+     * Call the super constructor and add the random blocks.
+     */
+    LevelInstanceRandomStart(size_t rowsToFill);
 
 protected:
+    /*
+     * Generate a row of random blocks. Offset is the starting index of the line to insert.
+     */
     std::vector<GLubyte> generateRandomBlocksRow(GLubyte width, GLubyte offset);
 
 private:

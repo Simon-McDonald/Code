@@ -11,14 +11,22 @@
 #include "LevelInstanceRandomStart.hpp"
 
 /*
- *
+ * Periodically add a new row to the bottom of the screen. Inherits from the RandomStart level.
+ * TODO don't have blocks at start
  */
 class LevelInstanceRisingTide: public LevelInstanceRandomStart {
 public:
     LevelInstanceRisingTide(void);
 
 protected:
+    /*
+     * Add the new line.
+     */
     void addNewRisingLine(void);
+
+    /*
+     * Tack on the functionality to manage the timing of adding new rows.
+     */
     virtual bool updateTimerEvents(double deltaTime_ms) override;
 
 private:
