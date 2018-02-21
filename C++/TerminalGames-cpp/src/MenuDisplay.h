@@ -13,29 +13,26 @@
 
 #include "ConsoleWindow.h"
 
-namespace Window {
+class MenuDisplay {
+public:
+    struct menuItem {
+        std::string menuString;
+        void (*menuItemCb)(void);
+    };
 
-	class MenuDisplay {
-	public:
-		MenuDisplay (std::string title);
+    MenuDisplay(std::string title);
 
-		void addMenuItem (std::string menuString, void (*menuItemCb) (void));
-		void printMenu (void);
-		void updateMenu (void);
-		void enterMenu (void);
+    void addMenuItem(std::string menuString, void (*menuItemCb)(void));
+    void printMenu(void);
+    void updateMenu(void);
+    void enterMenu(void);
 
-		~MenuDisplay (void);
+    ~MenuDisplay(void);
 
-	private:
-		struct menuItem {
-			std::string menuString;
-			void (*menuItemCb) (void);
-		};
-
-		std::string title;
-		std::vector<menuItem> menuOptions;
-		unsigned int currentIndex;
-	};
-}
+private:
+    std::string title;
+    std::vector<menuItem> menuOptions;
+    unsigned int currentIndex;
+};
 
 #endif /* MENUDISPLAY_H_ */

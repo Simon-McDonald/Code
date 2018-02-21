@@ -9,14 +9,10 @@
 
 RenderableActor::RenderableActor(Config::ConfigHeader config) :
     configHeader(config),
-    texture(RenderableActor::getConfig().getValue<std::string>(this->configHeader, "texture"), GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE) {
-
-    GLfloat dataPoints[] = {0.0, 0.0, 0.5, 0.5};
-    this->data.resetBuffer(1, &dataPoints[0]);
+    flesh(config) {
 }
 
 void RenderableActor::render(ShaderManager &shader) {
-    this->texture.bindTexture(shader, "gActorSkin");
-
-    this->data.manageRender(1, 2);
+    this->skeleton.setUniform(shader);
+    this->flesh.render(shader);
 }

@@ -2,7 +2,6 @@
 [RESOURCES]
 shader_dir=shaders
 images_dir=images
-meshes_dir=meshes
 
 [TETRIS_PIECE_SHADER]
 vertex_shader=tetrisPieceShader.vs

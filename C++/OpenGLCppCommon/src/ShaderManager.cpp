@@ -163,6 +163,7 @@ GLuint ShaderManager::createShader(GLenum type, Config::ConfigKey key) {
 		//this->getLogger().Log(Logger::error, LOG_ARGS, "Shader '%s' of type %i failed to compile, error: %s", shaderFile.c_str(), type, errorMsgBfr);
 
 		return -1u;
+		exit(1);
 	} else {
 		INFO << "Shader '" << shaderFile << "' of type " << type << " compiled successfully!" << END;
 	}

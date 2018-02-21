@@ -9,23 +9,18 @@
 #define USERINPUT_H_
 
 namespace UserInput {
-	enum ScreenColour {
-		BLACK = 0
-	};
+    enum ScreenColour {
+        BLACK = 0
+    };
 
-	enum InputEnum {
-		LEFT,
-		RIGHT,
-		UP,
-		DOWN,
-		ENTER,
-		voidEntry
-	};
+    enum InputEnum {
+        LEFT, RIGHT, UP, DOWN, ENTER, voidEntry
+    };
 }
 
 typedef struct {
-	bool keyPress;
-	UserInput::InputEnum key;
+    bool keyPress;
+    UserInput::InputEnum key;
 } inputStruct;
 
 #endif /* USERINPUT_H_ */

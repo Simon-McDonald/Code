@@ -5,14 +5,17 @@
  *      Author: Simon
  */
 
+#include "texBuffer.hpp"
+
 #include <stdexcept>
 
 #include <GL/glew.h>
 
-#include "TextureBuffer.hpp"
 
-SDL_Surface* TextureBuffer::loadRawImage(std::string imageFileName) {
-    std::string texturePath = TextureBuffer::getConfig().getValue<std::string>("RESOURCES", "images_dir") + "\\" + imageFileName;
+namespace buf {
+
+SDL_Surface* texBuffer::loadRawImage(std::string imageFileName) {
+    std::string texturePath = texBuffer::getConfig().getValue<std::string>("RESOURCES", "images_dir") + "\\" + imageFileName;
 
     SDL_Surface *textureData = IMG_Load(texturePath.c_str());
     if (!textureData) {
@@ -25,13 +28,13 @@ SDL_Surface* TextureBuffer::loadRawImage(std::string imageFileName) {
     return textureData;
 }
 
-void TextureBuffer::deleteSDLSurface(SDL_Surface* surface) {
+void texBuffer::deleteSDLSurface(SDL_Surface* surface) {
     SDL_FreeSurface (surface);
 }
 
-TextureBuffer::TextureBuffer(std::string fileName,
+texBuffer::texBuffer(std::string fileName,
     GLenum sWrapMethod, GLenum tWrapMethod, GLenum magFilter, GLenum minFilter) : bufferId(-1u) {
-    SDL_Surface *textureData = TextureBuffer::loadRawImage(fileName);
+    SDL_Surface *textureData = texBuffer::loadRawImage(fileName);
     if (!textureData) {
         std::string errorMsg = "Unable to load '" + fileName + "' as a texture!";
         throw std::invalid_argument(errorMsg);
@@ -40,9 +43,9 @@ TextureBuffer::TextureBuffer(std::string fileName,
     glGenTextures(1, &this->bufferId);
     glBindTexture(GL_TEXTURE_2D, this->bufferId);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, textureData->w, textureData->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData->pixels);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureData->w, textureData->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData->pixels);
 
-    TextureBuffer::deleteSDLSurface(textureData);
+    texBuffer::deleteSDLSurface(textureData);
 
     // Sets the wrap parameter for texture in the S and T dimensions (width and height?). Options are:
     // GL_CLAMP_TO_EDGE - clamps to relevant dimension
@@ -65,12 +68,12 @@ TextureBuffer::TextureBuffer(std::string fileName,
     glGenerateMipmap(GL_TEXTURE_2D);
 }
 
-TextureBuffer::TextureBuffer(TextureBuffer&& orig) noexcept : bufferId(-1u) {
+texBuffer::texBuffer(texBuffer&& orig) noexcept : bufferId(-1u) {
     this->bufferId = orig.bufferId;
     orig.bufferId = -1u;
 }
 
-TextureBuffer& TextureBuffer::operator=(TextureBuffer&& orig) noexcept {
+texBuffer& texBuffer::operator=(texBuffer&& orig) noexcept {
     auto tempId = this->bufferId;
 
     this->bufferId = orig.bufferId;
@@ -79,12 +82,14 @@ TextureBuffer& TextureBuffer::operator=(TextureBuffer&& orig) noexcept {
     return *this;
 }
 
-bool TextureBuffer::bindTexture(ShaderManager &shader, std::string textureLoc) {
+bool texBuffer::bindTexture(ShaderManager &shader, std::string textureLoc) {
     return shader.bindTexture(textureLoc, this->bufferId);
 }
 
-TextureBuffer::~TextureBuffer(void) {
+texBuffer::~texBuffer(void) {
     if (this->bufferId != -1u) {
         glDeleteTextures(1, &this->bufferId);
     }
 }
+
+};

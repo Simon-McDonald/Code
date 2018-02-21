@@ -137,6 +137,9 @@ public:
 
 		glBindBuffer(bufType, this->bufferId);
 
+		INFO << "TOTAL: " << (dataLength * strideLength * sizeof(GLtype)) << END;
+		INFO << "Stride: " << strideLength << END;
+
 		glBufferData(bufType, dataLength * strideLength * sizeof(GLtype), dataBuffer, bufUsage);
 		this->numElements = dataLength;
 
@@ -189,6 +192,10 @@ public:
 		}
 	}
 
+    GLuint getId(void) {
+        return this->bufferId;
+    }
+
 private:
 	GLuint bufferId;
 	GLuint numElements;
@@ -214,6 +221,7 @@ public:
 	 * Change the data contained within the buffer.
 	 */
 	void resetBuffer(int dataLength, GLtype *dataBuffer) {
+	    INFO << "Public Stride: " << elem1 << END;
 		this->glBuffer<GLtype, bufUsage, bufType, elemSizes...>::resetBuffer(dataLength, elem1, dataBuffer);
 	}
 
@@ -285,6 +293,10 @@ public:
 		}
 	}
 
+	GLuint getId(void) {
+	    return this->glBuffer<GLtype, bufUsage, bufType>::getId();
+	}
+
 protected:
 	/*
 	 * Private constructor to assist in recursion.
@@ -298,6 +310,7 @@ protected:
 	 */
 	template <typename DataType>
 	void resetBuffer(int dataLength, int strideLength, DataType *dataBuffer) {
+        INFO << "Private Stride: " << strideLength << END;
 		this->glBuffer<GLtype, bufUsage, bufType, elemSizes...>::resetBuffer(dataLength, strideLength + elem1, dataBuffer);
 	}
 
@@ -326,19 +339,19 @@ protected:
 
 /* Aliased buffers of usage types */
 template <typename GLtype, GLenum bufType, GLuint... T>
-using staticBuffer = buf::glBuffer<GLtype, GL_STATIC_DRAW, bufType, T...>;
+using staticBuffer = glBuffer<GLtype, GL_STATIC_DRAW, bufType, T...>;
 
 template <typename GLtype, GLenum bufType, GLuint... T>
-using dynamicBuffer = buf::glBuffer<GLtype, GL_DYNAMIC_DRAW, bufType, T...>;
+using dynamicBuffer = glBuffer<GLtype, GL_DYNAMIC_DRAW, bufType, T...>;
 
 /* Aliased uniform buffers. */
 template <typename GLtype, GLenum bufUsage, GLuint... T>
-using uniformBuffer = buf::glBuffer<GLtype, bufUsage, GL_UNIFORM_BUFFER, T...>;
+using uniformBuffer = glBuffer<GLtype, bufUsage, GL_UNIFORM_BUFFER, T...>;
 
-template <typename GLtype, GLenum bufUsage, GLuint... T>
+template <typename GLtype, GLuint... T>
 using staticUniformBuffer = uniformBuffer<GLtype, GL_STATIC_DRAW, T...>;
 
-template <typename GLtype, GLenum bufUsage, GLuint... T>
+template <typename GLtype, GLuint... T>
 using dynamicUniformBuffer = uniformBuffer<GLtype, GL_DYNAMIC_DRAW, T...>;
 
 /* Aliased array buffers. */

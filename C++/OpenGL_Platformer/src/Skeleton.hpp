@@ -11,30 +11,33 @@
 #include <WorldManager.hpp>
 #include <UtilityManager.hpp>
 
+#include "glBuffer.hpp"
+
 namespace mod {
 
     struct Node {
         size_t parentIdx;
-        float x;
-        float y;
-        float rot;
+        GLfloat x;
+        GLfloat y;
+        GLfloat rot;
     };
 
     struct Point {
-        float x;
-        float y;
-        float rot;
+        GLfloat x;
+        GLfloat y;
+        GLfloat rot;
+        GLfloat filler;
     };
 
 class Skeleton : protected WorldManager, protected UtilityManager {
 public:
     Skeleton();
 
-    void setUniform(void);
+    void setUniform(ShaderManager &shader);
 
 private:
     std::vector<Node> nodes;
-    buf::dynamicUniformBuffer<GLfloat, 2, 1> flesh;
+    buf::dynamicUniformBuffer<GLfloat, 2, 1, 1> flesh;
 
     std::vector<Point> generateUniformData(void);
 };

@@ -1,21 +1,19 @@
 //============================================================================
-// Name        : test-cpp.cpp
+// Name        : TerminalGames.cpp
 // Author      : Simon
 // Version     :
 // Copyright   : Your copyright notice
-// Description : Hello World in C++, Ansi-style
+// Description : Run application
 //============================================================================
 
 #include "MenuDisplay.h"
 #include "SnakeGame.h"
 
-int main ()
-{
-	Window::MenuDisplay mainMenu ("Main Menu");
+int main() {
+    MenuDisplay mainMenu("Main Menu");
+    mainMenu.addMenuItem("Snake", SnakeGame::RunSnakeGame);
 
-	mainMenu.addMenuItem ("Snake", SnakeGame::RunSnakeGame);
+    mainMenu.enterMenu();
 
-	mainMenu.enterMenu ();
-
-	return EXIT_SUCCESS;
-} /* main */
+    return EXIT_SUCCESS;
+}
