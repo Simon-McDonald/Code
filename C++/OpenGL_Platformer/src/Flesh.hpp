@@ -11,8 +11,8 @@
 #include <WorldManager.hpp>
 #include <UtilityManager.hpp>
 
-#include "texBuffer.hpp"
 #include "glBuffer.hpp"
+#include "texBuffer.hpp"
 
 namespace mod {
 

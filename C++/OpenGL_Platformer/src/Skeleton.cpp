@@ -23,18 +23,9 @@ namespace mod {
         auto list = this->generateUniformData();
 
         flesh.resetBuffer(list.size(), &list[0].x);
-
-        GLuint bla = glGetUniformBlockIndex(shader.getShaderProgram(), "NodeList");
-        //GLuint bla2 = glGetUniformLocation(shader.getShaderProgram(), "node.coord");
-
-        INFO << "BLA: " << (bla) << END;
-        glUniformBlockBinding(shader.getShaderProgram(), bla, 3);
-        glBindBufferBase(GL_UNIFORM_BUFFER, 3, flesh.getId());
-
+        flesh.bindUniformBuffer(shader.getShaderProgram(), 3, "NodeList");
 
         CHECKERRORS();
-        //bind/enable buffer
-        //flesh...
     }
 
     std::vector<Point> Skeleton::generateUniformData(void) {

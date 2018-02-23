@@ -8,6 +8,8 @@
 #ifndef DATABUFFER_HPP_
 #define DATABUFFER_HPP_
 
+#include <utility>
+
 #include <GL/glew.h>
 
 #include <CheckErrors.h>
@@ -90,7 +92,7 @@ public:
 		glBindBuffer(bufType, 0);
 	}
 
-	glBuffer(void) : bufferId(-1u), numElements(0) {}
+	glBuffer(void) {}
 
 	/*
 	 * Copy assignment and construction disabled. Move assignment and construction only.
@@ -135,15 +137,12 @@ public:
 		    return;
 		}
 
-		glBindBuffer(bufType, this->bufferId);
-
-		INFO << "TOTAL: " << (dataLength * strideLength * sizeof(GLtype)) << END;
-		INFO << "Stride: " << strideLength << END;
+		this->bindBuffer();
 
 		glBufferData(bufType, dataLength * strideLength * sizeof(GLtype), dataBuffer, bufUsage);
 		this->numElements = dataLength;
 
-		glBindBuffer(bufType, 0);
+		this->unbindBuffer();
 	}
 
 	/*
@@ -161,10 +160,6 @@ public:
 		}
 	}
 
-	void enableLayoutPointers(std::pair<GLuint, GLuint> dimensions) const noexcept {}
-
-    void disableLayoutPointers(void) const noexcept {}
-
     void unbindBuffer(void) const noexcept {
         glBindBuffer(bufType, 0);
     }
@@ -173,12 +168,15 @@ public:
         return this->bufferId != -1u;
     }
 
-	/*
-	 * Render the data. TODO render only part of the data and change type of object rendered.
-	 */
-	void render(void) const noexcept {
-		if (this->numElements) {
-			glDrawArrays(GL_POINTS, 0, this->numElements);
+    /*
+     * Render the data.
+     */
+    void render(GLenum primitive = GL_POINTS, GLint offset = 0) const noexcept {
+        this->render(primitive, offset, this->numElements - offset);
+    }
+	void render(GLenum primitive, GLint offset, GLsizei numElems) const noexcept {
+		if (this->isValid()) {
+		    glDrawArrays(primitive, offset, numElems);
 		}
 	}
 
@@ -196,9 +194,19 @@ public:
         return this->bufferId;
     }
 
+protected:
+    void _enableLayoutPointers(GLuint stride, GLuint offset) const noexcept {}
+    void disableLayoutPointers(void) const noexcept {}
+
+    void bindUniformBuffer(GLuint shaderId, GLuint uniformBlockIndex, std::string uniformBlockName) {
+        GLuint blockIndex = glGetUniformBlockIndex(shaderId, uniformBlockName.c_str());
+        glUniformBlockBinding(shaderId, blockIndex, uniformBlockIndex);
+        glBindBufferBase(GL_UNIFORM_BUFFER, uniformBlockIndex, this->getId());
+    }
+
 private:
-	GLuint bufferId;
-	GLuint numElements;
+	GLuint bufferId{-1u};
+	GLuint numElements{0};
 };
 
 /*
@@ -215,38 +223,34 @@ public:
     glBuffer(GLuint dataLength, GLtype *dataBuffer) :
         glBuffer<GLtype, bufUsage, bufType, elemSizes...>(dataLength, elem1, dataBuffer) {}
 
-	glBuffer(void) : glBuffer<GLtype, bufUsage, bufType, elemSizes...>() {}
+    glBuffer(void) : glBuffer<GLtype, bufUsage, bufType, elemSizes...>() {}
 
 	/*
 	 * Change the data contained within the buffer.
 	 */
 	void resetBuffer(int dataLength, GLtype *dataBuffer) {
-	    INFO << "Public Stride: " << elem1 << END;
-		this->glBuffer<GLtype, bufUsage, bufType, elemSizes...>::resetBuffer(dataLength, elem1, dataBuffer);
+		//this->glBuffer<GLtype, bufUsage, bufType, elemSizes...>::resetBuffer(dataLength, elem1, dataBuffer);
+	    this->glBuffer<GLtype, bufUsage, bufType>::resetBuffer(dataLength, this->getStride(), dataBuffer);
 	}
 
 	/*
 	 * Bind/unbind buffer.
 	 */
     void bindBuffer() const noexcept {
-        this->glBuffer<GLtype, bufUsage, bufType, elemSizes...>::bindBuffer();
+        this->glBuffer<GLtype, bufUsage, bufType>::bindBuffer();
     }
 
     void unbindBuffer() const noexcept {
-        this->glBuffer<GLtype, bufUsage, bufType, elemSizes...>::unbindBuffer();
+        this->glBuffer<GLtype, bufUsage, bufType>::unbindBuffer();
     }
 
 	/*
 	 * Enables/disables layout pointers. Buffer must have been bound previously.
 	 */
 	template<typename... Layouts>
-	void enableLayoutPointers(GLuint layout1, Layouts... layouts) const noexcept {
+	void enableLayoutPointers(Layouts... layouts) const noexcept {
 		GLuint stride = this->getStride();
-
-		glEnableVertexAttribArray(layout1);
-		enableLayoutPointer<GLtype>(layout1, elem1, stride, 0u);
-
-		this->glBuffer<GLtype, bufUsage, bufType, elemSizes...>::enableLayoutPointers(std::make_pair<GLuint, GLuint>(std::move(stride), elem1), layouts...);
+		this->_enableLayoutPointers(stride, 0, layouts...);
 	}
 
     template<typename... Layouts>
@@ -269,7 +273,7 @@ public:
 	 * Rending the entirety of the buffer.
 	 */
 	void render(void) const noexcept {
-		this->glBuffer<GLtype, bufUsage, bufType, elemSizes...>::render();
+		this->glBuffer<GLtype, bufUsage, bufType>::render();
 	}
 
     /*
@@ -297,32 +301,33 @@ public:
 	    return this->glBuffer<GLtype, bufUsage, bufType>::getId();
 	}
 
+    using glBuffer<GLtype, bufUsage, bufType>::bindUniformBuffer;
+
 protected:
 	/*
 	 * Private constructor to assist in recursion.
 	 */
 	template <typename DataType>
 	glBuffer(GLuint dataLength, GLuint strideLength, DataType *dataBuffer) :
-		glBuffer<GLtype, bufUsage, bufType, elemSizes...>(dataLength, strideLength + elem1, dataBuffer) {}
+	glBuffer<GLtype, bufUsage, bufType, elemSizes...>(dataLength, strideLength + elem1, dataBuffer) {}
 
 	/*
 	 * Private resetBuffer function to assist in recursion.
 	 */
-	template <typename DataType>
+	/*template <typename DataType>
 	void resetBuffer(int dataLength, int strideLength, DataType *dataBuffer) {
-        INFO << "Private Stride: " << strideLength << END;
 		this->glBuffer<GLtype, bufUsage, bufType, elemSizes...>::resetBuffer(dataLength, strideLength + elem1, dataBuffer);
-	}
+	}*/
 
 	/*
 	 * Private enableLayoutPointers function to assist in recursion.
 	 */
 	template<typename... Layouts>
-	void enableLayoutPointers(std::pair<GLuint, GLuint> dimensions, GLuint layout1, Layouts... layouts) const noexcept {
+	void _enableLayoutPointers(GLuint stride, GLuint offset, GLuint layout1, Layouts... layouts) const noexcept {
 		glEnableVertexAttribArray(layout1);
-		enableLayoutPointer<GLtype>(layout1, elem1, dimensions.first, dimensions.second);
+		enableLayoutPointer<GLtype>(layout1, elem1, stride, offset);
 
-		this->glBuffer<GLtype, bufUsage, bufType, elemSizes...>::enableLayoutPointers(std::make_pair<GLuint, GLuint>(std::move(dimensions.first), elem1 + dimensions.second), layouts...);
+		this->glBuffer<GLtype, bufUsage, bufType, elemSizes...>::_enableLayoutPointers(stride, elem1 + offset, layouts...);
 	}
 
 	/*
@@ -333,7 +338,7 @@ protected:
 	}
 
 	bool isValid(void) const noexcept {
-		return this->glBuffer<GLtype, bufUsage, bufType, elemSizes...>::isValid();
+		return this->glBuffer<GLtype, bufUsage, bufType>::isValid();
 	}
 };
 

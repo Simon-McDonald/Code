@@ -20,6 +20,7 @@ void Flesh::render(ShaderManager &shader) {
     setupLayouts(shader);
 
     this->data.manageRender(1, 2);
+
 }
 
 void Flesh::setupLayouts(ShaderManager &shader) {
