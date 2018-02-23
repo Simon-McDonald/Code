@@ -369,6 +369,8 @@ using staticArrayBuffer = arrayBuffer<GLtype, GL_STATIC_DRAW, T...>;
 template <typename GLtype, GLuint... T>
 using dynamicArrayBuffer = arrayBuffer<GLtype, GL_DYNAMIC_DRAW, T...>;
 
+//TODO create helpers
+
 };
 
 #endif /* DATABUFFER_HPP_ */
