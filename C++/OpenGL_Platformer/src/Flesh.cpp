@@ -5,22 +5,35 @@
  *      Author: Simon
  */
 
+#include <limits>
+
 #include "Flesh.hpp"
 
 namespace mod {
 
-Flesh::Flesh(Config::ConfigHeader config) :
-    texture(Flesh::getConfig().getValue<std::string>(config, "texture"), GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE) {
+    std::istream& operator>>(std::istream &is, Area &area) {
+        int temp;
 
-    GLfloat dataPoints[] = {0.0, 0.0, 0.3, 0.3, 0.0, 0.0, 0.2, 0.2, 0.0, 0.0, 0.2, 0.2, 0.0, 0.0, 0.2, 0.2};
-    this->data.resetBuffer(sizeof(dataPoints) / sizeof(dataPoints[0] / 4), &dataPoints[0]);
+        is >> temp >> area.x >> area.y >> area.w >> area.h >> area.tx >> area.ty >> area.tw >> area.th;
+        is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        return is;
+    }
+
+Flesh::Flesh(std::vector<Area> areas, std::string skinTexture) :
+    texture(skinTexture, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE) {
+
+    this->data.resetBuffer(areas.size(), &areas[0].x);
 }
 
 void Flesh::render(ShaderManager &shader) {
     setupLayouts(shader);
 
-    this->data.manageRender(1, 2);
+    CHECKERRORS();
 
+    manageRenderArray(data, GL_POINTS, 1, 2, 3, 4);
+
+    CHECKERRORS();
 }
 
 void Flesh::setupLayouts(ShaderManager &shader) {

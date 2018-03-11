@@ -21,7 +21,7 @@ public:
 	ProgramManager(void) :
 			shaderMap(generateShaderMap()),
 			currentShader(nullptr),
-			player("PLAYER"),
+			player(RenderableActor::generateInstance("models/testModel.txt")),
 			isRunning(false) {
 
 		CHECKERRORS();
@@ -47,14 +47,15 @@ public:
 	}
 
 	bool Run(void) {
-		//float deltaTime_sec = timer.Mark();
+		float deltaTime_sec = timer.Mark();
+		duration_s += deltaTime_sec;
 		this->mainWindow.userInput();
 		this->mainWindow.clearWindow();
 
 		//isRunning = level->update((int)(deltaTime_sec * 1000.0), this->mainWindow.getInput());
 
 		this->shaderMap.at("actor").useProgram();
-		this->player.render(this->shaderMap.at("actor"));
+		this->player.render(this->shaderMap.at("actor"), duration_s);
 
 
 		this->mainWindow.updateWindow();
@@ -74,6 +75,7 @@ private:
 	RenderableActor player;
 
 	StopWatch timer;
+	float duration_s;
 	bool isRunning;
 };
 

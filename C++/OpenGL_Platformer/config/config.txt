@@ -2,6 +2,7 @@
 [RESOURCES]
 shader_dir=shaders
 images_dir=images
+models_dir=models
 
 [ACTOR_SHADER]
 vertex_shader=actorShader.vs
@@ -29,10 +30,3 @@ start_char=32
 [PLAYER]
 texture=player.png
 
-#[GAME_SETTINGS]
-#min_tick_time_ms=150.0
-#lateral_move_delta_ms=75.0
-#down_move_delta_ms=50.0
-
-#[GAME_PIECES]
-#list=SPIECE,ZPIECE,TPIECE,IPIECE,LPIECE,JPIECE,OPIECE

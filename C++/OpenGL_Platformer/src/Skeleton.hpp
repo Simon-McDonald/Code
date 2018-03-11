@@ -22,6 +22,8 @@ namespace mod {
         GLfloat rot;
     };
 
+    std::istream& operator>>(std::istream &is, Node &node);
+
     struct Point {
         GLfloat x;
         GLfloat y;
@@ -29,19 +31,40 @@ namespace mod {
         GLfloat filler;
     };
 
-class Skeleton : protected WorldManager, protected UtilityManager {
-public:
-    Skeleton();
+    class SkeletonOffset: protected WorldManager, protected UtilityManager {
+    public:
+        SkeletonOffset(std::vector<Node> nodes);
 
-    void setUniform(ShaderManager &shader);
+        SkeletonOffset operator*(float factor);
 
-private:
-    std::vector<Node> nodes;
-    buf::dynamicUniformBuffer<GLfloat, 2, 1, 1> flesh;
+        std::vector<Node>::iterator begin(void);
+        std::vector<Node>::iterator end(void);
 
-    std::vector<Point> generateUniformData(void);
-};
+    private:
+        std::vector<Node> nodeOffsets;
+    };
 
+    class Skeleton: protected WorldManager, protected UtilityManager {
+    public:
+        Skeleton(std::vector<Node> nodeList);
+
+        Skeleton duplicate(void);
+
+        void setUniform(ShaderManager &shader);
+
+        Skeleton operator+(SkeletonOffset offset);
+
+    private:
+        std::vector<Node> nodes;
+        buf::dynamicUniformBuffer<GLfloat, 2, 1, 1> flesh;
+
+        std::vector<Point> generateUniformData(void);
+    };
+
+    /*struct SkeletonGroup {
+        Skeleton baseSkeleton;
+        std::vector<SkeletonOffset> offsetList;
+    };*/
 };
 
 #endif /* SRC_SKELETON_HPP_ */

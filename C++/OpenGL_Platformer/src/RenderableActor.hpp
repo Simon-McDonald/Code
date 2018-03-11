@@ -16,15 +16,33 @@
 
 class RenderableActor : protected WorldManager, protected UtilityManager {
 public:
-    RenderableActor(Config::ConfigHeader);
+    static RenderableActor generateInstance(std::string fileName);
 
-    void render(ShaderManager &shader);
+    RenderableActor(
+        std::vector<mod::Node> &nodes,
+        std::vector<mod::Area> &surfaces,
+        std::string &texture,
+        std::map<std::string, std::vector<mod::Node>> &offsetLists);
+
+    void render(ShaderManager &shader, float delta_s);
 
 private:
     Config::ConfigHeader configHeader;
 
     mod::Flesh flesh;
     mod::Skeleton skeleton;
+
+    std::map<std::string, mod::SkeletonOffset> offsetList;
+
+    bool tempFlipper;
+    bool flag;
+    float prevFactor;
 };
+
+std::istream& readRenderableActorObjects(std::istream& is,
+                                         std::vector<mod::Node> &nodes,
+                                         std::vector<mod::Area> &surfaces,
+                                         std::string &texture,
+                                         std::map<std::string, std::vector<mod::Node>> &offsetLists);
 
 #endif /* SRC_RENDERABLEACTOR_HPP_ */
