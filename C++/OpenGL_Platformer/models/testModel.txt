@@ -22,7 +22,15 @@ player-alt.png
 4 0.0 0.0 50.0
 
 [state2]
-1 0.0 0.0 45.0
-2 0.0 0.0 -45.0
-3 0.0 0.0 50.0
-4 0.0 0.0 50.0
+1 0.0 0.0 90.0
+2 0.0 0.0 -90.0
+3 0.0 0.0 30.0
+4 0.0 0.0 30.0
+
+[animation1]
+entrance_animation=state1
+entry_duration_s=1
+loop_animation=state2
+loop_cadence_s=1
+exit_animation=state1
+exit_duration_s=2

@@ -13,6 +13,9 @@
 
 #include "Skeleton.hpp"
 #include "Flesh.hpp"
+#include "Offset.hpp"
+#include "Sequence.hpp"
+#include "Animation.hpp"
 
 class RenderableActor : protected WorldManager, protected UtilityManager {
 public:
@@ -22,8 +25,11 @@ public:
         std::vector<mod::Node> &nodes,
         std::vector<mod::Area> &surfaces,
         std::string &texture,
-        std::map<std::string, std::vector<mod::Node>> &offsetLists);
+        std::map<std::string, std::vector<mod::Node>> &offsetLists,
+        std::map<std::string, mod::SequenceDefinition> &sequenceDefs,
+        std::map<std::string, mod::AnimationDefinition> &animationsList);
 
+    void update(float delta_s, const UserInputStruct& input);
     void render(ShaderManager &shader, float delta_s);
 
 private:
@@ -32,17 +38,11 @@ private:
     mod::Flesh flesh;
     mod::Skeleton skeleton;
 
-    std::map<std::string, mod::SkeletonOffset> offsetList;
+    std::map<std::string, mod::Animation> animations;
 
     bool tempFlipper;
     bool flag;
     float prevFactor;
 };
-
-std::istream& readRenderableActorObjects(std::istream& is,
-                                         std::vector<mod::Node> &nodes,
-                                         std::vector<mod::Area> &surfaces,
-                                         std::string &texture,
-                                         std::map<std::string, std::vector<mod::Node>> &offsetLists);
 
 #endif /* SRC_RENDERABLEACTOR_HPP_ */

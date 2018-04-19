@@ -21,7 +21,7 @@ public:
 	ProgramManager(void) :
 			shaderMap(generateShaderMap()),
 			currentShader(nullptr),
-			player(RenderableActor::generateInstance("models/testModel.txt")),
+			player(RenderableActor::generateInstance("models/modelVersion2.txt")),
 			isRunning(false) {
 
 		CHECKERRORS();
@@ -48,15 +48,15 @@ public:
 
 	bool Run(void) {
 		float deltaTime_sec = timer.Mark();
-		duration_s += deltaTime_sec;
 		this->mainWindow.userInput();
 		this->mainWindow.clearWindow();
 
-		//isRunning = level->update((int)(deltaTime_sec * 1000.0), this->mainWindow.getInput());
+		const auto& input = this->mainWindow.getInput();
+
+		this->player.update(deltaTime_sec, input);
 
 		this->shaderMap.at("actor").useProgram();
 		this->player.render(this->shaderMap.at("actor"), duration_s);
-
 
 		this->mainWindow.updateWindow();
 		isRunning &= !this->mainWindow.getInput().onDown.quit;
@@ -94,8 +94,6 @@ int main(int argc, char *argv[])
 		}
 
 		while (program.Run());
-	} catch (std::invalid_argument &e) {
-	    std::cout << "Invalid_Argument Exception: " << e.what() << std::endl;
 	} catch (std::exception &e) {
 		std::cout << "Exception: " << e.what() << std::endl;
 		return EXIT_FAILURE;

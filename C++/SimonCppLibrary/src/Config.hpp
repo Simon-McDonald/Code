@@ -82,6 +82,90 @@ namespace cvt {
 	inline std::string toStr<std::string>(std::string &value) {
 		return value;
 	}
+
+	inline std::string trim(std::string text) {
+		if (!text.size()) {
+			return "";
+		}
+
+		size_t startIdx = 0;
+		while (startIdx < text.size() && isspace(text.at(startIdx))) {
+			++startIdx;
+		}
+
+		size_t endIdx = text.size() - 1;
+		while ((endIdx > startIdx) && (isspace(text.at(endIdx)))) {
+			--endIdx;
+		}
+
+		if (startIdx > endIdx) {
+			return "";
+		} else {
+			return text.substr(startIdx, endIdx - startIdx + 1);
+		}
+	}
+
+	/*
+	 * Split string by a delimiter.
+	 */
+	inline bool splitAtDelim(std::string &input, char delim, std::string &lhs, std::string &rhs) {
+		size_t delimIndex = input.find(delim); // split at first delim
+
+		if (delimIndex >= input.length()) {
+			return false;
+		}
+
+		// strip spaces
+		size_t startLhs = input.find_first_not_of(" ");
+		size_t endLhs = input.find_last_not_of(" ", delimIndex - 1);
+
+		if ((delimIndex == 0) || (startLhs == delimIndex)) {
+			lhs = "";
+		} else {
+			lhs = input.substr(startLhs, endLhs - startLhs + 1);
+		}
+
+		size_t startRhs = input.find_first_not_of(" ", delimIndex + 1);
+		size_t endRhs = input.find_last_not_of(" ");
+
+		if ((startRhs >= input.size()) || (endRhs == delimIndex)) {
+			rhs = "";
+		} else {
+			rhs = input.substr(startRhs, endRhs - startRhs + 1);
+		}
+
+		return true;
+	}
+
+	/*
+	 * Convert given DataType to string. Throws invalid_argument exception on failure.
+	 */
+	template<typename DataType>
+	std::vector<DataType> splitToList(std::string delimSeparatedList, char delim = ',') {
+		std::vector<DataType> returnList;
+
+		std::istringstream iss(delimSeparatedList);
+		for (std::string str; std::getline(iss, str, delim);) {
+			returnList.push_back(fromStr<DataType>(trim(str)));
+		}
+
+		return returnList;
+	}
+
+	/*
+	 * Split line of format <key>[keyDelim]<val1>[listDelim]<val2>[listDelim]...
+	 */
+	template<typename DataType>
+	std::vector<DataType> splitKeyList(std::string textLine, std::string keyValue,
+			char keyDelim = '=', char listDelim = ',') {
+		std::string textList;
+
+		if (!splitAtDelim(textLine, keyDelim, keyValue, textList)) {
+			return {};
+		}
+
+		return splitToList<DataType>(textList, listDelim);
+	}
 }
 
 class Config {
@@ -101,13 +185,9 @@ public:
 
 		ConfigHeader configHeader = "";
 
-		//std::cout << "AAAAAAAAAAAA" << std::endl;
-
 		while (!configFile.eof()) {
 			std::string fileLine;
 			getline(configFile, fileLine);
-
-			//std::cout << "Got line: " << fileLine << std::endl;
 
 			if (!fileLine.length()) {
 				continue;
@@ -117,7 +197,6 @@ public:
 			size_t lineEnd = fileLine.find_last_not_of(" ");
 
 			std::string trimmedLine = fileLine.substr(lineStart, lineEnd - lineStart + 1);
-			//std::cout << "Trimmed line: " << trimmedLine << std::endl;
 
 			if (trimmedLine.at(0) == '#') {
 				continue;
@@ -125,7 +204,6 @@ public:
 
 			if ((trimmedLine.at(0) == '[') && (trimmedLine.at(trimmedLine.length() - 1) == ']')) {
 				configHeader = trimmedLine.substr(1, trimmedLine.length() - 2);
-				//std::cout << "Header: " << configHeader << std::endl;
 				continue;
 			}
 
@@ -136,17 +214,14 @@ public:
 				delimIndex != 0) {
 
 				ConfigKey key = trimmedLine.substr(0, trimmedLine.find_last_not_of(" ", delimIndex - 1) + 1);
-				//std::cout << "Key: '" << key << "'" << std::endl;
 
 				std::string value = trimmedLine.substr(trimmedLine.find_first_not_of(" ", delimIndex + 1));
-				//std::cout << "Value: '" << value << "'" << std::endl;
 
 				this->addKey(configHeader, key, value);
 			} else {
 				// TODO ERROR File line unable to be registered.
 			}
 		}
-		//std::cout << "BBBBBBBBBBB" << std::endl;
 
 		configFile.close();
 	} /* Config::Config */

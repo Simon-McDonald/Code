@@ -13,37 +13,6 @@
 #include <CheckErrors.h>
 
 namespace mod {
-
-    std::istream& operator>>(std::istream &is, Node &node) {
-        is >> node.parentIdx >> node.x >> node.y >> node.rot;
-        is.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-        return is;
-    }
-
-    SkeletonOffset::SkeletonOffset(std::vector<Node> nodes) : nodeOffsets(nodes) {}
-
-    SkeletonOffset SkeletonOffset::operator*(float factor) {
-        SkeletonOffset tempOffset = *this;
-
-        for (auto &node : this->nodeOffsets) {
-            node.x *= factor;
-            node.y *= factor;
-            node.rot *= factor;
-        }
-
-        std::swap(*this, tempOffset);
-        return tempOffset;
-    }
-
-    std::vector<Node>::iterator SkeletonOffset::begin(void) {
-        return this->nodeOffsets.begin();
-    }
-
-    std::vector<Node>::iterator SkeletonOffset::end(void) {
-        return this->nodeOffsets.end();
-    }
-
     Skeleton::Skeleton(const std::vector<Node> nodeList) {
         this->nodes = nodeList;
     }
@@ -87,15 +56,11 @@ namespace mod {
         return skeleton;
     }
 
-    Skeleton Skeleton::operator+(SkeletonOffset offsets) {
-        Skeleton temp = this->duplicate();
+    Skeleton& operator+(Skeleton& skeleton, const Node& node) {
+        skeleton.nodes.at(node.parentIdx).x += node.x;
+        skeleton.nodes.at(node.parentIdx).y += node.y;
+        skeleton.nodes.at(node.parentIdx).rot += node.rot;
 
-        for (const auto& nodeOffset : offsets) {
-            temp.nodes.at(nodeOffset.parentIdx).x += nodeOffset.x;
-            temp.nodes.at(nodeOffset.parentIdx).y += nodeOffset.y;
-            temp.nodes.at(nodeOffset.parentIdx).rot += nodeOffset.rot;
-        }
-
-        return temp;
+        return skeleton;
     }
 };

@@ -1,0 +1,78 @@
+
+[SKELETON]
+-1 0.0 0.0 0.0
+0 0.05 -0.25 0.0
+0 -0.05 -0.25 0.0
+1 0.0 -0.25 0.0
+2 0.0 -0.25 0.0
+
+[FLESH]
+0 0.0  0.0  0.2 0.5 0.0 0.0 0.5 1.0
+1 0.0 -0.125 0.1 0.25 0.5 0.5 0.25 0.5
+2 0.0 -0.125 0.1 0.25 0.75 0.5 0.25 0.5
+3 0.0 -0.125 0.1 0.25 0.5 0.0 0.25 0.5
+4 0.0 -0.125 0.1 0.25 0.75 0.0 0.25 0.5
+
+[SKIN]
+file=player-alt.png
+
+[STATE]
+name=state2
+0 0 -0.02 0
+1 0 0 -20
+2 0 0 20
+3 0 0 20
+4 0 0 20
+
+[STATE]
+name=state3
+0 0 -0.02 0
+1 0 0 20
+2 0 0 -20
+3 0 0 20
+4 0 0 20
+
+[STATE]
+name=state4
+2 0 0 -40
+4 0 0 40
+
+[STATE]
+name=state5
+1 0 0 -40
+3 0 0 40
+
+[STATE]
+name=state0
+
+[SEQUENCE]
+name=sequence1
+state_list=state2
+time_stamps_s=0.5
+
+[SEQUENCE]
+name=sequence2
+state_list=state2,state4,state3
+time_stamps_s=0,0.5,1
+
+[SEQUENCE]
+name=sequence3
+state_list=state3,state5,state2
+time_stamps_s=0,0.5,1
+
+[SEQUENCE]
+name=sequence4
+state_list=state3,state0
+time_stamps_s=0,0.5
+
+[SEQUENCE]
+name=sequence5
+state_list=state2,state0
+time_stamps_s=0.0,0.5
+
+[ANIMATION]
+name=animation1
+transition_in=sequence1
+loop=sequence2,sequence3
+transition_out=sequence4,sequence5
+
